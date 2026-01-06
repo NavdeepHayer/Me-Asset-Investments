@@ -2,78 +2,95 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export function PageFlowLine() {
-  const [startY, setStartY] = useState(0);
-  const [endY, setEndY] = useState(0);
+  const [lineStyle, setLineStyle] = useState<{ top: number; height: number } | null>(null);
 
   const { scrollYProgress } = useScroll();
 
-  // Calculate start (hero bottom) and end (skyline bottom) positions
+  // Calculate line dimensions
   useEffect(() => {
-    const calculatePositions = () => {
-      const heroEl = document.querySelector('section');
-      const skylineEl = document.querySelector('[data-graphic="skyline"]');
+    const calculate = () => {
+      const heroEl = document.querySelector('[data-hero]') as HTMLElement;
+      const skylineEl = document.querySelector('[data-graphic="skyline"]') as HTMLElement;
 
-      if (heroEl) {
-        // Start at bottom of hero
-        setStartY(heroEl.offsetHeight);
+      if (!heroEl || !skylineEl) {
+        console.log('Missing elements:', { heroEl: !!heroEl, skylineEl: !!skylineEl });
+        return;
       }
 
-      if (skylineEl) {
-        // End at bottom of skyline
-        const rect = skylineEl.getBoundingClientRect();
-        const scrollTop = window.scrollY;
-        setEndY(scrollTop + rect.bottom);
+      // Get positions relative to document
+      const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
+
+      // Walk up the DOM to get true offset for skyline
+      let skylineTop = 0;
+      let el: HTMLElement | null = skylineEl;
+      while (el) {
+        skylineTop += el.offsetTop;
+        el = el.offsetParent as HTMLElement;
       }
+      const skylineBottom = skylineTop + skylineEl.offsetHeight;
+
+      setLineStyle({
+        top: heroBottom,
+        height: skylineBottom - heroBottom
+      });
     };
 
-    // Calculate after a short delay to ensure DOM is ready
-    const timer = setTimeout(calculatePositions, 100);
-    calculatePositions();
+    // Multiple attempts to ensure DOM is fully rendered
+    calculate();
+    const t1 = setTimeout(calculate, 200);
+    const t2 = setTimeout(calculate, 600);
+    const t3 = setTimeout(calculate, 1200);
 
-    window.addEventListener('resize', calculatePositions);
-    window.addEventListener('scroll', calculatePositions, { passive: true });
+    window.addEventListener('resize', calculate);
 
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener('resize', calculatePositions);
-      window.removeEventListener('scroll', calculatePositions);
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+      window.removeEventListener('resize', calculate);
     };
   }, []);
 
-  // Line draws as you scroll
-  const pathLength = useTransform(scrollYProgress, [0.05, 0.8], [0, 1]);
+  // Animated line draws as you scroll
+  const pathLength = useTransform(scrollYProgress, [0.08, 0.72], [0, 1]);
 
-  const lineHeight = endY - startY;
-  if (lineHeight <= 0) return null;
+  if (!lineStyle || lineStyle.height <= 0) return null;
 
   return (
     <>
       {/* Static background line - ALWAYS visible, never breaks */}
       <div
-        className="fixed left-1/2 -translate-x-1/2 pointer-events-none"
+        className="pointer-events-none"
         style={{
-          top: startY,
-          height: lineHeight,
+          position: 'fixed',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: 0,
+          bottom: 0,
           width: '1px',
           backgroundColor: 'rgba(255, 255, 255, 0.12)',
-          zIndex: 1
+          zIndex: 2
         }}
       />
 
-      {/* Animated line that draws on scroll */}
+      {/* Animated portion that draws as you scroll */}
       <motion.div
-        className="fixed left-1/2 -translate-x-1/2 pointer-events-none overflow-hidden"
+        className="pointer-events-none"
         style={{
-          top: startY,
-          height: lineHeight,
+          position: 'fixed',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          top: 0,
+          height: '100vh',
           width: '2px',
-          zIndex: 1
+          zIndex: 2
         }}
       >
         <svg
           className="w-full h-full"
           preserveAspectRatio="none"
           viewBox="0 0 2 100"
+          style={{ overflow: 'visible' }}
         >
           <motion.line
             x1="1"
