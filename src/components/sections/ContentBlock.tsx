@@ -132,8 +132,8 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
            L 108 170
            L 100 200"
         fill="none"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="1"
+        stroke="rgba(255,255,255,0.35)"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
@@ -355,8 +355,8 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
            L 100 170
            L 100 200"
         fill="none"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="1"
+        stroke="rgba(255,255,255,0.35)"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
@@ -525,8 +525,8 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
            L 80 180
            L 100 200"
         fill="none"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="1"
+        stroke="rgba(255,255,255,0.35)"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
@@ -711,8 +711,8 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
            L 112 65
            L 112 180"
         fill="none"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="1"
+        stroke="rgba(255,255,255,0.35)"
+        strokeWidth="1.5"
         strokeLinecap="round"
         strokeLinejoin="round"
         style={{ pathLength: flowThrough }}

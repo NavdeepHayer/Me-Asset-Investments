@@ -91,11 +91,11 @@ export function PageFlowLine() {
   const [crane, blueprint, framework, skyline] = graphics;
 
   // Spread amount for diverging/converging lines
-  const spread = 60;
+  const spread = 80;
 
   return (
     <>
-      {/* SVG overlay for connecting paths */}
+      {/* SVG overlay for connecting paths - MORE VISIBLE */}
       <svg
         className="pointer-events-none absolute left-0 top-0"
         style={{
@@ -109,24 +109,24 @@ export function PageFlowLine() {
         <motion.line
           x1={pageCenter - spread} y1={heroBottom}
           x2={crane.centerX} y2={crane.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: heroToCrane }}
         />
         <motion.line
           x1={pageCenter} y1={heroBottom}
           x2={crane.centerX} y2={crane.top}
-          stroke="rgba(255,255,255,0.18)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: heroToCrane }}
         />
         <motion.line
           x1={pageCenter + spread} y1={heroBottom}
           x2={crane.centerX} y2={crane.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: heroToCrane }}
         />
@@ -135,24 +135,24 @@ export function PageFlowLine() {
         <motion.line
           x1={crane.centerX} y1={crane.bottom}
           x2={blueprint.centerX - spread} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: craneToBlueprint }}
         />
         <motion.line
           x1={crane.centerX} y1={crane.bottom}
           x2={blueprint.centerX} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.18)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: craneToBlueprint }}
         />
         <motion.line
           x1={crane.centerX} y1={crane.bottom}
           x2={blueprint.centerX + spread} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: craneToBlueprint }}
         />
@@ -161,24 +161,24 @@ export function PageFlowLine() {
         <motion.line
           x1={blueprint.centerX - spread} y1={blueprint.bottom}
           x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: blueprintToFramework }}
         />
         <motion.line
           x1={blueprint.centerX} y1={blueprint.bottom}
           x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.18)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: blueprintToFramework }}
         />
         <motion.line
           x1={blueprint.centerX + spread} y1={blueprint.bottom}
           x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: blueprintToFramework }}
         />
@@ -187,24 +187,24 @@ export function PageFlowLine() {
         <motion.line
           x1={framework.centerX} y1={framework.bottom}
           x2={skyline.centerX - spread} y2={skyline.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: frameworkToSkyline }}
         />
         <motion.line
           x1={framework.centerX} y1={framework.bottom}
           x2={skyline.centerX} y2={skyline.top}
-          stroke="rgba(255,255,255,0.18)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: frameworkToSkyline }}
         />
         <motion.line
           x1={framework.centerX} y1={framework.bottom}
           x2={skyline.centerX + spread} y2={skyline.top}
-          stroke="rgba(255,255,255,0.12)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="1.5"
           strokeLinecap="round"
           style={{ pathLength: frameworkToSkyline }}
         />
