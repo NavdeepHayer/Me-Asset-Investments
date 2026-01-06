@@ -1,22 +1,29 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring } from "framer-motion";
 
 export function ScrollLines() {
   const { scrollYProgress } = useScroll();
 
-  // Main line progress - draws as you scroll through the page
-  const mainLineProgress = useTransform(scrollYProgress, [0, 0.85], [0, 1]);
+  // Smooth the scroll progress with a spring for fluid animation
+  const smoothProgress = useSpring(scrollYProgress, {
+    stiffness: 50,
+    damping: 20,
+    restDelta: 0.001
+  });
 
-  // Branch lines - each starts drawing at different scroll points
-  const branch1Progress = useTransform(scrollYProgress, [0.08, 0.18], [0, 1]);
-  const branch2Progress = useTransform(scrollYProgress, [0.28, 0.38], [0, 1]);
-  const branch3Progress = useTransform(scrollYProgress, [0.45, 0.55], [0, 1]);
-  const branch4Progress = useTransform(scrollYProgress, [0.62, 0.72], [0, 1]);
+  // Main line progress - draws slowly as you scroll through the entire page
+  const mainLineProgress = useTransform(smoothProgress, [0, 1], [0, 1]);
 
-  // Secondary parallel line - slightly delayed
-  const secondaryLineProgress = useTransform(scrollYProgress, [0.02, 0.87], [0, 1]);
+  // Branch lines - each draws over a longer scroll range for slower feel
+  const branch1Progress = useTransform(smoothProgress, [0.05, 0.20], [0, 1]);
+  const branch2Progress = useTransform(smoothProgress, [0.25, 0.40], [0, 1]);
+  const branch3Progress = useTransform(smoothProgress, [0.42, 0.58], [0, 1]);
+  const branch4Progress = useTransform(smoothProgress, [0.60, 0.78], [0, 1]);
 
-  // Tertiary accent line
-  const tertiaryLineProgress = useTransform(scrollYProgress, [0.05, 0.9], [0, 1]);
+  // Secondary parallel line - slightly delayed start
+  const secondaryLineProgress = useTransform(smoothProgress, [0.02, 1], [0, 1]);
+
+  // Tertiary accent line - more delayed
+  const tertiaryLineProgress = useTransform(smoothProgress, [0.05, 1], [0, 1]);
 
   return (
     <>
