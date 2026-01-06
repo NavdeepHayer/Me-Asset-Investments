@@ -65,17 +65,22 @@ export function PageFlowLine() {
 
   useEffect(() => {
     calculate();
-    const t1 = setTimeout(calculate, 200);
-    const t2 = setTimeout(calculate, 600);
-    const t3 = setTimeout(calculate, 1200);
+    // Multiple recalculations to catch late-rendering elements on mobile
+    const t1 = setTimeout(calculate, 100);
+    const t2 = setTimeout(calculate, 500);
+    const t3 = setTimeout(calculate, 1000);
+    const t4 = setTimeout(calculate, 2000);
 
     window.addEventListener('resize', calculate);
+    window.addEventListener('orientationchange', calculate);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
+      clearTimeout(t4);
       window.removeEventListener('resize', calculate);
+      window.removeEventListener('orientationchange', calculate);
     };
   }, [calculate]);
 
