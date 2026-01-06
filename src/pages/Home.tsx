@@ -1,7 +1,6 @@
 import { Hero, ContentBlock, TextSection, Team, MailingList, Footer } from "../components/sections";
 import { FloatingSocial } from "../components/ui/FloatingSocial";
 import { Header } from "../components/ui/Header";
-import { ScrollLines } from "../components/ui/ScrollLines";
 import { siteContent } from "../content/siteContent";
 
 export function Home() {
@@ -9,7 +8,6 @@ export function Home() {
 
   return (
     <>
-      <ScrollLines />
       <Header />
       <FloatingSocial />
 

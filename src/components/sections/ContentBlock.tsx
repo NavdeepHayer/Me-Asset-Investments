@@ -1,4 +1,5 @@
-import { motion } from "framer-motion";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
+import { useRef } from "react";
 import { ScrollReveal } from "../ui/ScrollReveal";
 
 interface ContentBlockProps {
@@ -21,7 +22,7 @@ export function ContentBlock({
     return (
       <section className={`py-12 sm:py-16 md:py-24 lg:py-32 ${className}`}>
         <div className="container-wide flex justify-center">
-          <GraphicElement variant={graphic} />
+          <GraphicElement variant={graphic} position="center" />
         </div>
       </section>
     );
@@ -38,7 +39,7 @@ export function ContentBlock({
               </ScrollReveal>
             </div>
             <div className="flex-1 flex justify-center">
-              <GraphicElement variant={graphic} />
+              <GraphicElement variant={graphic} position={graphicPosition} />
             </div>
           </div>
         ) : (
@@ -53,41 +54,102 @@ export function ContentBlock({
   );
 }
 
-function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framework" | "skyline" }) {
+function GraphicElement({ variant, position }: { variant: "crane" | "blueprint" | "framework" | "skyline"; position: "left" | "right" | "center" }) {
   const isWide = variant === "skyline";
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Track scroll progress of this element
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"] // Start when top enters bottom, end when bottom exits top
+  });
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 1.5, ease: "easeOut" }}
+      ref={containerRef}
       className={isWide
         ? "w-full max-w-[320px] h-[200px] sm:max-w-[360px] sm:h-[225px] md:max-w-[480px] md:h-[300px] lg:max-w-[600px] lg:h-[380px] xl:max-w-[700px] xl:h-[440px] 2xl:max-w-[800px] 2xl:h-[500px]"
         : "w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] xl:w-[500px] xl:h-[500px] 2xl:w-[580px] 2xl:h-[580px]"
       }
     >
-      {variant === "crane" && <CraneGraphic />}
-      {variant === "blueprint" && <BlueprintGraphic />}
-      {variant === "framework" && <FrameworkGraphic />}
-      {variant === "skyline" && <SkylineGraphic />}
+      {variant === "crane" && <CraneGraphic scrollProgress={scrollYProgress} position={position} />}
+      {variant === "blueprint" && <BlueprintGraphic scrollProgress={scrollYProgress} position={position} />}
+      {variant === "framework" && <FrameworkGraphic scrollProgress={scrollYProgress} position={position} />}
+      {variant === "skyline" && <SkylineGraphic scrollProgress={scrollYProgress} />}
     </motion.div>
   );
 }
 
+// Helper to create staggered scroll transforms
+function useScrollTransform(
+  scrollProgress: MotionValue<number>,
+  startAt: number,
+  endAt: number,
+  from: number = 0,
+  to: number = 1
+) {
+  return useTransform(scrollProgress, [startAt, endAt], [from, to]);
+}
+
+interface GraphicProps {
+  scrollProgress: MotionValue<number>;
+  position?: "left" | "right" | "center";
+}
+
 // Tower crane with detailed lattice structure
-function CraneGraphic() {
+function CraneGraphic({ scrollProgress, position }: GraphicProps) {
+  // Entry line: 0.05 - 0.2
+  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
+  // Main graphic elements: staggered from 0.15 - 0.7
+  const ground = useScrollTransform(scrollProgress, 0.15, 0.25);
+  const foundation = useScrollTransform(scrollProgress, 0.18, 0.28);
+  const towerLeft = useScrollTransform(scrollProgress, 0.2, 0.4);
+  const towerRight = useScrollTransform(scrollProgress, 0.22, 0.42);
+  const lattice = useScrollTransform(scrollProgress, 0.25, 0.5);
+  const slewing = useScrollTransform(scrollProgress, 0.4, 0.5);
+  const cabin = useScrollTransform(scrollProgress, 0.42, 0.52);
+  const jibTop = useScrollTransform(scrollProgress, 0.45, 0.6);
+  const jibBottom = useScrollTransform(scrollProgress, 0.47, 0.62);
+  const jibLattice = useScrollTransform(scrollProgress, 0.5, 0.65);
+  const counterJib = useScrollTransform(scrollProgress, 0.52, 0.62);
+  const peak = useScrollTransform(scrollProgress, 0.55, 0.65);
+  const pendant = useScrollTransform(scrollProgress, 0.58, 0.68);
+  const trolley = useScrollTransform(scrollProgress, 0.6, 0.75);
+  const hook = useScrollTransform(scrollProgress, 0.65, 0.78);
+  const load = useScrollTransform(scrollProgress, 0.7, 0.85);
+  const building = useScrollTransform(scrollProgress, 0.3, 0.45);
+  // Exit line: 0.75 - 0.9
+  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
+
+  // Determine entry/exit directions based on position
+  const isRight = position === "right";
+
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
+      {/* Entry connecting line */}
+      <motion.path
+        d={isRight ? "M -20 -20 Q 30 20, 100 100" : "M 220 -20 Q 170 20, 100 100"}
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+      <motion.path
+        d={isRight ? "M -15 -25 Q 35 15, 100 95" : "M 215 -25 Q 165 15, 100 95"}
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+
       {/* Ground and construction site base */}
       <motion.line
         x1="10" y1="185" x2="190" y2="185"
         stroke="rgba(255,255,255,0.08)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
+        style={{ pathLength: ground }}
       />
 
       {/* Crane base/foundation */}
@@ -96,10 +158,7 @@ function CraneGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="1.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        style={{ pathLength: foundation }}
       />
 
       {/* Main tower - left rail */}
@@ -107,23 +166,17 @@ function CraneGraphic() {
         x1="92" y1="170" x2="92" y2="38"
         stroke="rgba(255,255,255,0.18)"
         strokeWidth="1.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+        style={{ pathLength: towerLeft }}
       />
       {/* Main tower - right rail */}
       <motion.line
         x1="108" y1="170" x2="108" y2="38"
         stroke="rgba(255,255,255,0.18)"
         strokeWidth="1.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.5, ease: "easeOut" }}
+        style={{ pathLength: towerRight }}
       />
 
-      {/* Tower lattice cross-bracing - detailed */}
+      {/* Tower lattice cross-bracing */}
       {[165, 150, 135, 120, 105, 90, 75, 60, 45].map((y, i) => (
         <motion.path
           key={`lattice-${i}`}
@@ -131,10 +184,7 @@ function CraneGraphic() {
           fill="none"
           stroke="rgba(255,255,255,0.1)"
           strokeWidth="0.5"
-          initial={{ pathLength: 0 }}
-          whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.25, delay: 0.8 + i * 0.08 }}
+          style={{ pathLength: lattice, opacity: lattice }}
         />
       ))}
 
@@ -144,10 +194,7 @@ function CraneGraphic() {
         fill="rgba(255,255,255,0.1)"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="0.5"
-        initial={{ scale: 0 }}
-        whileInView={{ scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 1.5 }}
+        style={{ opacity: slewing, scale: slewing }}
       />
 
       {/* Operator cabin */}
@@ -156,10 +203,7 @@ function CraneGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 1.6 }}
+        style={{ pathLength: cabin }}
       />
 
       {/* Main jib (horizontal boom) - top chord */}
@@ -167,20 +211,14 @@ function CraneGraphic() {
         x1="100" y1="28" x2="175" y2="28"
         stroke="rgba(255,255,255,0.2)"
         strokeWidth="1.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 1.8, ease: "easeOut" }}
+        style={{ pathLength: jibTop }}
       />
       {/* Main jib - bottom chord */}
       <motion.line
         x1="100" y1="35" x2="175" y2="35"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 1.9, ease: "easeOut" }}
+        style={{ pathLength: jibBottom }}
       />
       {/* Jib lattice */}
       {[115, 130, 145, 160].map((x, i) => (
@@ -190,10 +228,7 @@ function CraneGraphic() {
           fill="none"
           stroke="rgba(255,255,255,0.08)"
           strokeWidth="0.5"
-          initial={{ pathLength: 0 }}
-          whileInView={{ pathLength: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.2, delay: 2.1 + i * 0.1 }}
+          style={{ pathLength: jibLattice, opacity: jibLattice }}
         />
       ))}
       {/* Jib tip */}
@@ -202,10 +237,7 @@ function CraneGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.2, delay: 2.5 }}
+        style={{ pathLength: jibLattice }}
       />
 
       {/* Counter-jib */}
@@ -213,10 +245,7 @@ function CraneGraphic() {
         x1="100" y1="30" x2="45" y2="30"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 2 }}
+        style={{ pathLength: counterJib }}
       />
       {/* Counterweights */}
       {[52, 60, 68].map((x, i) => (
@@ -226,10 +255,7 @@ function CraneGraphic() {
           fill="rgba(255,255,255,0.08)"
           stroke="rgba(255,255,255,0.1)"
           strokeWidth="0.5"
-          initial={{ opacity: 0, y: -5 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 2.3 + i * 0.1 }}
+          style={{ opacity: counterJib }}
         />
       ))}
 
@@ -239,10 +265,7 @@ function CraneGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 2.6 }}
+        style={{ pathLength: peak }}
       />
 
       {/* Pendant lines (cables from peak to jib) */}
@@ -251,30 +274,21 @@ function CraneGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="0.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 2.8 }}
+        style={{ pathLength: pendant }}
       />
       {/* Counter-jib pendant */}
       <motion.line
         x1="100" y1="18" x2="50" y2="30"
         stroke="rgba(255,255,255,0.08)"
         strokeWidth="0.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 2.9 }}
+        style={{ pathLength: pendant }}
       />
 
       {/* Trolley */}
       <motion.rect
         x="148" y="34" width="8" height="4"
         fill="rgba(255,255,255,0.15)"
-        initial={{ x: 115 }}
-        whileInView={{ x: 148 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.8, delay: 3.2, ease: [0.22, 1, 0.36, 1] }}
+        style={{ opacity: trolley }}
       />
 
       {/* Hook block and cable */}
@@ -283,34 +297,20 @@ function CraneGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.18)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 3.5 }}
+        style={{ pathLength: hook }}
       />
 
       {/* Load (steel beam) */}
-      <motion.g
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 4, ease: "easeOut" }}
-      >
+      <motion.g style={{ opacity: load }}>
         <rect x="140" y="108" width="24" height="4" fill="rgba(255,255,255,0.12)" />
         <line x1="140" y1="108" x2="140" y2="112" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
         <line x1="164" y1="108" x2="164" y2="112" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-        {/* Rigging lines */}
         <line x1="145" y1="105" x2="152" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <line x1="159" y1="105" x2="152" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
       </motion.g>
 
       {/* Building under construction (background) */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 1 }}
-      >
+      <motion.g style={{ opacity: building }}>
         <line x1="25" y1="185" x2="25" y2="140" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
         <line x1="55" y1="185" x2="55" y2="140" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
         <line x1="25" y1="160" x2="55" y2="160" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
@@ -321,26 +321,71 @@ function CraneGraphic() {
       <motion.circle
         cx="100" cy="18" r="2"
         fill="rgba(255,255,255,0.5)"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: [0, 1, 0.3, 1] }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.5, delay: 3, repeat: Infinity, repeatDelay: 0.5 }}
+        style={{ opacity: peak }}
+      />
+
+      {/* Exit connecting line */}
+      <motion.path
+        d={isRight ? "M 100 100 Q 30 180, -20 220" : "M 100 100 Q 170 180, 220 220"}
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
+      />
+      <motion.path
+        d={isRight ? "M 100 105 Q 35 185, -15 225" : "M 100 105 Q 165 185, 215 225"}
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
       />
     </motion.svg>
   );
 }
 
 // Architectural blueprint with grid and details
-function BlueprintGraphic() {
+function BlueprintGraphic({ scrollProgress, position }: GraphicProps) {
+  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
+  const grid = useScrollTransform(scrollProgress, 0.1, 0.25);
+  const outline = useScrollTransform(scrollProgress, 0.15, 0.35);
+  const walls = useScrollTransform(scrollProgress, 0.25, 0.45);
+  const doors = useScrollTransform(scrollProgress, 0.35, 0.5);
+  const windows = useScrollTransform(scrollProgress, 0.4, 0.55);
+  const stairs = useScrollTransform(scrollProgress, 0.45, 0.58);
+  const kitchen = useScrollTransform(scrollProgress, 0.5, 0.62);
+  const bathroom = useScrollTransform(scrollProgress, 0.52, 0.64);
+  const dimensions = useScrollTransform(scrollProgress, 0.55, 0.68);
+  const labels = useScrollTransform(scrollProgress, 0.6, 0.72);
+  const northArrow = useScrollTransform(scrollProgress, 0.65, 0.75);
+  const scale = useScrollTransform(scrollProgress, 0.68, 0.78);
+  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
+
+  const isLeft = position === "left";
+
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
+      {/* Entry connecting line */}
+      <motion.path
+        d={isLeft ? "M 220 -20 Q 170 20, 100 100" : "M -20 -20 Q 30 20, 100 100"}
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+      <motion.path
+        d={isLeft ? "M 215 -25 Q 165 15, 100 95" : "M -15 -25 Q 35 15, 100 95"}
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+
       {/* Background grid */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-      >
+      <motion.g style={{ opacity: grid }}>
         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
           <line key={`vg-${i}`} x1={20 + i * 16} y1="20" x2={20 + i * 16} y2="180" stroke="rgba(255,255,255,0.03)" strokeWidth="0.5" />
         ))}
@@ -349,16 +394,13 @@ function BlueprintGraphic() {
         ))}
       </motion.g>
 
-      {/* Main building outline - thick walls */}
+      {/* Main building outline */}
       <motion.path
         d="M 30 30 L 170 30 L 170 170 L 30 170 Z"
         fill="none"
         stroke="rgba(255,255,255,0.2)"
         strokeWidth="2"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
+        style={{ pathLength: outline }}
       />
 
       {/* Interior walls */}
@@ -367,40 +409,21 @@ function BlueprintGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.8 }}
+        style={{ pathLength: walls }}
       />
 
-      {/* Door openings with swing arcs */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 1.8 }}
-      >
-        {/* Door 1 - top left room */}
+      {/* Door openings */}
+      <motion.g style={{ opacity: doors }}>
         <path d="M 55 85 L 55 75" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
         <path d="M 55 85 A 10 10 0 0 0 65 85" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeDasharray="2,1" />
-
-        {/* Door 2 - entrance */}
         <path d="M 90 150 L 90 140" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
         <path d="M 90 150 A 10 10 0 0 1 100 150" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeDasharray="2,1" />
-
-        {/* Door 3 - right side */}
         <path d="M 130 105 L 130 95" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
         <path d="M 130 105 A 10 10 0 0 1 140 105" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" strokeDasharray="2,1" />
       </motion.g>
 
-      {/* Windows on exterior walls */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 2.2 }}
-      >
-        {/* Top windows */}
+      {/* Windows */}
+      <motion.g style={{ opacity: windows }}>
         {[50, 75, 120, 145].map((x, i) => (
           <g key={`tw-${i}`}>
             <line x1={x} y1="30" x2={x + 15} y2="30" stroke="rgba(255,255,255,0.25)" strokeWidth="3" />
@@ -408,7 +431,6 @@ function BlueprintGraphic() {
             <line x1={x + 15} y1="26" x2={x + 15} y2="30" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
           </g>
         ))}
-        {/* Left windows */}
         {[50, 100, 145].map((y, i) => (
           <g key={`lw-${i}`}>
             <line x1="30" y1={y} x2="30" y2={y + 15} stroke="rgba(255,255,255,0.25)" strokeWidth="3" />
@@ -416,7 +438,6 @@ function BlueprintGraphic() {
             <line x1="26" y1={y + 15} x2="30" y2={y + 15} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
           </g>
         ))}
-        {/* Right windows */}
         {[50, 145].map((y, i) => (
           <g key={`rw-${i}`}>
             <line x1="170" y1={y} x2="170" y2={y + 15} stroke="rgba(255,255,255,0.25)" strokeWidth="3" />
@@ -426,13 +447,8 @@ function BlueprintGraphic() {
         ))}
       </motion.g>
 
-      {/* Stairs symbol */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 2.5 }}
-      >
+      {/* Stairs */}
+      <motion.g style={{ opacity: stairs }}>
         {[0, 3, 6, 9, 12, 15, 18].map((offset, i) => (
           <line key={`stair-${i}`} x1={140 + offset} y1="140" x2={140 + offset} y2="160" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
         ))}
@@ -440,50 +456,28 @@ function BlueprintGraphic() {
         <path d="M 140 150 L 158 150" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
       </motion.g>
 
-      {/* Kitchen fixtures */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 2.8 }}
-      >
-        {/* Counter */}
+      {/* Kitchen */}
+      <motion.g style={{ opacity: kitchen }}>
         <rect x="95" y="35" width="30" height="8" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        {/* Sink */}
         <rect x="100" y="36" width="8" height="6" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" rx="1" />
-        {/* Stove */}
         <rect x="115" y="36" width="8" height="6" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
         <circle cx="117" cy="39" r="1" fill="rgba(255,255,255,0.06)" />
         <circle cx="121" cy="39" r="1" fill="rgba(255,255,255,0.06)" />
       </motion.g>
 
-      {/* Bathroom fixtures */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 3 }}
-      >
-        {/* Toilet */}
+      {/* Bathroom */}
+      <motion.g style={{ opacity: bathroom }}>
         <ellipse cx="40" cy="100" rx="4" ry="5" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <rect x="37" y="96" width="6" height="3" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        {/* Sink */}
         <rect x="50" y="90" width="8" height="6" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" rx="1" />
       </motion.g>
 
-      {/* Dimension lines */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 3.2 }}
-      >
-        {/* Bottom dimension */}
+      {/* Dimensions */}
+      <motion.g style={{ opacity: dimensions }}>
         <line x1="30" y1="185" x2="170" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <line x1="30" y1="183" x2="30" y2="187" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <line x1="170" y1="183" x2="170" y2="187" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <line x1="100" y1="183" x2="100" y2="187" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        {/* Left dimension */}
         <line x1="15" y1="30" x2="15" y2="170" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <line x1="13" y1="30" x2="17" y2="30" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <line x1="13" y1="170" x2="17" y2="170" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
@@ -496,52 +490,89 @@ function BlueprintGraphic() {
           key={`label-${i}`}
           x={x - 10} y={y - 4} width="20" height="8"
           fill="rgba(255,255,255,0.05)"
-          initial={{ scale: 0 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 3.4 + i * 0.1 }}
+          style={{ opacity: labels, scale: labels }}
         />
       ))}
 
       {/* North arrow */}
-      <motion.g
-        initial={{ scale: 0, rotate: -45 }}
-        whileInView={{ scale: 1, rotate: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 3.6, type: "spring" }}
-      >
+      <motion.g style={{ opacity: northArrow, scale: northArrow }}>
         <circle cx="160" cy="55" r="10" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
         <path d="M 160 47 L 160 63 M 155 52 L 160 47 L 165 52" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
         <circle cx="160" cy="47" r="1.5" fill="rgba(255,255,255,0.15)" />
       </motion.g>
 
       {/* Scale bar */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ delay: 3.8 }}
-      >
+      <motion.g style={{ opacity: scale }}>
         <rect x="35" y="180" width="30" height="2" fill="rgba(255,255,255,0.1)" />
         <rect x="35" y="180" width="15" height="2" fill="rgba(255,255,255,0.15)" />
       </motion.g>
+
+      {/* Exit connecting line */}
+      <motion.path
+        d={isLeft ? "M 100 100 Q 170 180, 220 220" : "M 100 100 Q 30 180, -20 220"}
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
+      />
+      <motion.path
+        d={isLeft ? "M 100 105 Q 165 185, 215 225" : "M 100 105 Q 35 185, -15 225"}
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
+      />
     </motion.svg>
   );
 }
 
 // Steel frame structure with detailed I-beams
-function FrameworkGraphic() {
+function FrameworkGraphic({ scrollProgress, position }: GraphicProps) {
+  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
+  const ground = useScrollTransform(scrollProgress, 0.1, 0.2);
+  const foundation = useScrollTransform(scrollProgress, 0.15, 0.25);
+  const columns = useScrollTransform(scrollProgress, 0.2, 0.5);
+  const flanges = useScrollTransform(scrollProgress, 0.35, 0.55);
+  const floors = useScrollTransform(scrollProgress, 0.4, 0.6);
+  const stiffeners = useScrollTransform(scrollProgress, 0.45, 0.62);
+  const bracing = useScrollTransform(scrollProgress, 0.5, 0.68);
+  const plates = useScrollTransform(scrollProgress, 0.55, 0.7);
+  const bolts = useScrollTransform(scrollProgress, 0.6, 0.72);
+  const scaffolding = useScrollTransform(scrollProgress, 0.55, 0.75);
+  const craneCable = useScrollTransform(scrollProgress, 0.65, 0.78);
+  const beam = useScrollTransform(scrollProgress, 0.7, 0.85);
+  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
+
+  const isRight = position === "right";
+
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
+      {/* Entry connecting line */}
+      <motion.path
+        d={isRight ? "M -20 -20 Q 30 20, 100 100" : "M 220 -20 Q 170 20, 100 100"}
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+      <motion.path
+        d={isRight ? "M -15 -25 Q 35 15, 100 95" : "M 215 -25 Q 165 15, 100 95"}
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+
       {/* Ground */}
       <motion.line
         x1="15" y1="180" x2="185" y2="180"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+        style={{ pathLength: ground }}
       />
 
       {/* Foundation */}
@@ -550,36 +581,25 @@ function FrameworkGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 0.3 }}
+        style={{ pathLength: foundation }}
       />
 
-      {/* Main columns - I-beam profile */}
+      {/* Main columns */}
       {[40, 80, 120, 160].map((x, i) => (
         <motion.g key={`col-${i}`}>
-          {/* Column main line */}
           <motion.line
             x1={x} y1="172" x2={x} y2="22"
             stroke="rgba(255,255,255,0.2)"
             strokeWidth="3"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1.2, delay: 0.5 + i * 0.15, ease: "easeOut" }}
+            style={{ pathLength: columns }}
           />
-          {/* I-beam flanges (top and bottom of each section) */}
           {[172, 142, 112, 82, 52, 22].map((y, j) => (
             <motion.line
               key={`flange-${i}-${j}`}
               x1={x - 4} y1={y} x2={x + 4} y2={y}
               stroke="rgba(255,255,255,0.15)"
               strokeWidth="1"
-              initial={{ scaleX: 0 }}
-              whileInView={{ scaleX: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.2, delay: 1.2 + i * 0.15 + j * 0.05 }}
+              style={{ opacity: flanges, scaleX: flanges }}
             />
           ))}
         </motion.g>
@@ -592,22 +612,15 @@ function FrameworkGraphic() {
             x1="40" y1={y} x2="160" y2={y}
             stroke="rgba(255,255,255,0.15)"
             strokeWidth="2"
-            initial={{ pathLength: 0 }}
-            whileInView={{ pathLength: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 1.5 + i * 0.15 }}
+            style={{ pathLength: floors }}
           />
-          {/* Web stiffeners */}
           {[55, 70, 95, 105, 135, 150].map((x, j) => (
             <motion.line
               key={`stiff-${i}-${j}`}
               x1={x} y1={y - 2} x2={x} y2={y + 2}
               stroke="rgba(255,255,255,0.08)"
               strokeWidth="0.5"
-              initial={{ scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.15, delay: 1.8 + i * 0.1 + j * 0.02 }}
+              style={{ opacity: stiffeners, scaleY: stiffeners }}
             />
           ))}
         </motion.g>
@@ -619,43 +632,31 @@ function FrameworkGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 2.5 }}
+        style={{ pathLength: bracing }}
       />
       <motion.path
         d="M 40 82 L 80 52 M 80 82 L 40 52"
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 2.7 }}
+        style={{ pathLength: bracing }}
       />
       <motion.path
         d="M 120 142 L 160 112 M 160 142 L 120 112"
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 2.9 }}
+        style={{ pathLength: bracing }}
       />
       <motion.path
         d="M 120 82 L 160 52 M 160 82 L 120 52"
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 3.1 }}
+        style={{ pathLength: bracing }}
       />
 
-      {/* Connection plates (gusset plates at intersections) */}
+      {/* Connection plates */}
       {[
         [40, 142], [40, 112], [40, 82], [40, 52],
         [80, 142], [80, 112], [80, 82], [80, 52],
@@ -666,41 +667,32 @@ function FrameworkGraphic() {
           key={`plate-${i}`}
           cx={x} cy={y} r="3"
           fill="rgba(255,255,255,0.12)"
-          initial={{ scale: 0 }}
-          whileInView={{ scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.15, delay: 3.3 + i * 0.02 }}
+          style={{ opacity: plates, scale: plates }}
         />
       ))}
 
-      {/* Bolt patterns on gusset plates */}
+      {/* Bolt patterns */}
       {[[40, 112], [80, 82], [120, 112], [160, 82]].map(([x, y], i) => (
-        <motion.g key={`bolts-${i}`}>
+        <motion.g key={`bolts-${i}`} style={{ opacity: bolts }}>
           {[[-2, -2], [2, -2], [-2, 2], [2, 2]].map(([dx, dy], j) => (
             <motion.circle
               key={`bolt-${i}-${j}`}
               cx={x + dx} cy={y + dy} r="0.8"
               fill="rgba(255,255,255,0.2)"
-              initial={{ scale: 0 }}
-              whileInView={{ scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.1, delay: 3.6 + i * 0.1 + j * 0.03 }}
+              style={{ scale: bolts }}
             />
           ))}
         </motion.g>
       ))}
 
-      {/* Scaffolding on left side */}
+      {/* Scaffolding */}
       <motion.path
         d="M 25 172 L 25 52 M 25 172 L 40 172 M 25 142 L 40 142 M 25 112 L 40 112 M 25 82 L 40 82 M 25 52 L 40 52"
         fill="none"
         stroke="rgba(255,255,255,0.06)"
         strokeWidth="1"
         strokeDasharray="3,2"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 3.8 }}
+        style={{ pathLength: scaffolding }}
       />
 
       {/* Crane cable at top */}
@@ -709,19 +701,11 @@ function FrameworkGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.2)"
         strokeWidth="1"
-        initial={{ opacity: 0, y: -10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6, delay: 4 }}
+        style={{ opacity: craneCable }}
       />
 
       {/* Beam being lifted */}
-      <motion.g
-        initial={{ opacity: 0, y: -25, rotate: 3 }}
-        whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 4.2, ease: "easeOut" }}
-      >
+      <motion.g style={{ opacity: beam }}>
         <rect x="85" y="28" width="30" height="5" fill="rgba(255,255,255,0.15)" />
         <line x1="85" y1="28" x2="85" y2="33" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
         <line x1="115" y1="28" x2="115" y2="33" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
@@ -729,40 +713,70 @@ function FrameworkGraphic() {
         <line x1="107" y1="25" x2="100" y2="20" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
       </motion.g>
 
-      {/* Welding sparks effect */}
-      <motion.g
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: [0, 1, 0] }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.3, delay: 4.5, repeat: 3, repeatDelay: 0.4 }}
-      >
-        {[0, 1, 2, 3, 4].map((i) => (
-          <circle
-            key={`spark-${i}`}
-            cx={82 + Math.random() * 6}
-            cy={50 + Math.random() * 6}
-            r="0.8"
-            fill="rgba(255,255,255,0.6)"
-          />
-        ))}
-      </motion.g>
+      {/* Exit connecting line */}
+      <motion.path
+        d={isRight ? "M 100 100 Q 30 180, -20 220" : "M 100 100 Q 170 180, 220 220"}
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
+      />
+      <motion.path
+        d={isRight ? "M 100 105 Q 35 185, -15 225" : "M 100 105 Q 165 185, 215 225"}
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
+      />
     </motion.svg>
   );
 }
 
 // City skyline with refined architecture
-function SkylineGraphic() {
+function SkylineGraphic({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
+  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
+  const ground = useScrollTransform(scrollProgress, 0.1, 0.2);
+  const b1 = useScrollTransform(scrollProgress, 0.12, 0.35);
+  const b2 = useScrollTransform(scrollProgress, 0.15, 0.38);
+  const b3 = useScrollTransform(scrollProgress, 0.18, 0.45);
+  const b4 = useScrollTransform(scrollProgress, 0.22, 0.42);
+  const b5 = useScrollTransform(scrollProgress, 0.25, 0.48);
+  const b6 = useScrollTransform(scrollProgress, 0.28, 0.45);
+  const b7 = useScrollTransform(scrollProgress, 0.3, 0.42);
+  const b8 = useScrollTransform(scrollProgress, 0.32, 0.4);
+  const windows = useScrollTransform(scrollProgress, 0.4, 0.7);
+  const details = useScrollTransform(scrollProgress, 0.5, 0.75);
+  const lights = useScrollTransform(scrollProgress, 0.65, 0.8);
+  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
+
   return (
-    <motion.svg viewBox="0 0 320 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 320 200" className="w-full h-full overflow-visible">
+      {/* Entry connecting line - from top center */}
+      <motion.path
+        d="M 160 -40 Q 160 20, 160 100"
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+      <motion.path
+        d="M 165 -40 Q 165 20, 165 100"
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: entryLine }}
+      />
+
       {/* Ground line */}
       <motion.line
         x1="5" y1="180" x2="315" y2="180"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
+        style={{ pathLength: ground }}
       />
 
       {/* Building 1 - Art Deco tower */}
@@ -771,27 +785,15 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.14)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.3, delay: 0.1, ease: "easeOut" }}
+        style={{ pathLength: b1 }}
       />
       <motion.line x1="27" y1="55" x2="27" y2="180" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"
-        initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
-        transition={{ duration: 0.8, delay: 1.2 }}
+        style={{ pathLength: b1 }}
       />
       {[85, 100, 115, 130, 145, 160].map((y, i) => (
-        <motion.g key={`b1-w-${i}`}>
-          <rect x="17" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)"
-            style={{ opacity: 0 }} />
-          <rect x="34" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)"
-            style={{ opacity: 0 }} />
-          <motion.rect x="17" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.2, delay: 1.4 + i * 0.04 }} />
-          <motion.rect x="34" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.2, delay: 1.45 + i * 0.04 }} />
+        <motion.g key={`b1-w-${i}`} style={{ opacity: windows }}>
+          <rect x="17" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)" />
+          <rect x="34" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)" />
         </motion.g>
       ))}
 
@@ -801,23 +803,17 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.1, delay: 0.2, ease: "easeOut" }}
+        style={{ pathLength: b2 }}
       />
-      {/* Curtain wall grid */}
       {[95, 110, 125, 140, 155, 170].map((y, i) => (
         <motion.line key={`b2-h-${i}`} x1="52" y1={y} x2="83" y2={y}
           stroke="rgba(255,255,255,0.05)" strokeWidth="0.5"
-          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
-          transition={{ duration: 0.3, delay: 1.2 + i * 0.05 }} />
+          style={{ pathLength: details }} />
       ))}
       {[58, 67, 76].map((x, i) => (
         <motion.line key={`b2-v-${i}`} x1={x} y1="85" x2={x} y2="180"
           stroke="rgba(255,255,255,0.04)" strokeWidth="0.5"
-          initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 1.3 + i * 0.1 }} />
+          style={{ pathLength: details }} />
       ))}
 
       {/* Building 3 - Landmark skyscraper (tallest) */}
@@ -826,31 +822,19 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.22)"
         strokeWidth="1.5"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.6, delay: 0.35, ease: "easeOut" }}
+        style={{ pathLength: b3 }}
       />
       <motion.line x1="112" y1="30" x2="112" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
-        transition={{ duration: 1, delay: 1.5 }}
+        style={{ pathLength: b3 }}
       />
-      {/* Setbacks */}
       <motion.path d="M 98 60 L 98 30 M 126 60 L 126 30" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
-        transition={{ duration: 0.5, delay: 1.7 }}
+        style={{ pathLength: details }}
       />
       {[40, 55, 70, 85, 100, 115, 130, 145, 160].map((y, i) => (
-        <motion.g key={`b3-w-${i}`}>
-          <motion.rect x="100" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.15, delay: 1.8 + i * 0.03 }} />
-          <motion.rect x="108" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.15, delay: 1.85 + i * 0.03 }} />
-          <motion.rect x="120" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.15, delay: 1.9 + i * 0.03 }} />
+        <motion.g key={`b3-w-${i}`} style={{ opacity: windows }}>
+          <rect x="100" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)" />
+          <rect x="108" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)" />
+          <rect x="120" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)" />
         </motion.g>
       ))}
 
@@ -860,23 +844,16 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.11)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
+        style={{ pathLength: b4 }}
       />
-      {/* Rooftop equipment */}
       <motion.path d="M 150 88 L 150 82 L 158 82 L 158 88 M 165 88 L 165 85 L 170 85 L 170 88"
         fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        initial={{ pathLength: 0 }} whileInView={{ pathLength: 1 }} viewport={{ once: true }}
-        transition={{ duration: 0.4, delay: 1.4 }}
+        style={{ pathLength: details }}
       />
       {[105, 120, 135, 150, 165].map((y, i) => (
-        <motion.g key={`b4-w-${i}`}>
+        <motion.g key={`b4-w-${i}`} style={{ opacity: windows }}>
           {[143, 152, 161, 170].map((x, j) => (
-            <motion.rect key={`b4-w-${i}-${j}`} x={x} y={y} width="5" height="6" fill="rgba(255,255,255,0.06)"
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-              transition={{ duration: 0.2, delay: 1.5 + i * 0.06 + j * 0.02 }} />
+            <rect key={`b4-w-${i}-${j}`} x={x} y={y} width="5" height="6" fill="rgba(255,255,255,0.06)" />
           ))}
         </motion.g>
       ))}
@@ -887,19 +864,12 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.4, delay: 0.65, ease: "easeOut" }}
+        style={{ pathLength: b5 }}
       />
       {[70, 88, 106, 124, 142, 160].map((y, i) => (
-        <motion.g key={`b5-w-${i}`}>
-          <motion.rect x="197" y={y} width="4" height="6" fill="rgba(255,255,255,0.07)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.2, delay: 1.9 + i * 0.04 }} />
-          <motion.rect x="211" y={y} width="4" height="6" fill="rgba(255,255,255,0.07)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.2, delay: 1.95 + i * 0.04 }} />
+        <motion.g key={`b5-w-${i}`} style={{ opacity: windows }}>
+          <rect x="197" y={y} width="4" height="6" fill="rgba(255,255,255,0.07)" />
+          <rect x="211" y={y} width="4" height="6" fill="rgba(255,255,255,0.07)" />
         </motion.g>
       ))}
 
@@ -909,17 +879,12 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.1, delay: 0.8, ease: "easeOut" }}
+        style={{ pathLength: b6 }}
       />
       {[85, 100, 115, 130, 145, 160].map((y, i) => (
-        <motion.g key={`b6-w-${i}`}>
+        <motion.g key={`b6-w-${i}`} style={{ opacity: windows }}>
           {[235, 245, 255].map((x, j) => (
-            <motion.rect key={`b6-w-${i}-${j}`} x={x} y={y} width="4" height="5" fill="rgba(255,255,255,0.05)"
-              initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-              transition={{ duration: 0.2, delay: 1.8 + i * 0.05 + j * 0.02 }} />
+            <rect key={`b6-w-${i}-${j}`} x={x} y={y} width="4" height="5" fill="rgba(255,255,255,0.05)" />
           ))}
         </motion.g>
       ))}
@@ -930,15 +895,11 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.09)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.9, delay: 0.95, ease: "easeOut" }}
+        style={{ pathLength: b7 }}
       />
       {[80, 100, 120, 140, 160].map((y, i) => (
         <motion.rect key={`b7-w-${i}`} x="281" y={y} width="4" height="6" fill="rgba(255,255,255,0.05)"
-          initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-          transition={{ duration: 0.2, delay: 1.7 + i * 0.05 }} />
+          style={{ opacity: windows }} />
       ))}
 
       {/* Building 8 - Low rise */}
@@ -947,46 +908,45 @@ function SkylineGraphic() {
         fill="none"
         stroke="rgba(255,255,255,0.07)"
         strokeWidth="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 1.05, ease: "easeOut" }}
+        style={{ pathLength: b8 }}
       />
       {[130, 145, 160].map((y, i) => (
-        <motion.g key={`b8-w-${i}`}>
-          <motion.rect x="298" y={y} width="4" height="5" fill="rgba(255,255,255,0.04)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.2, delay: 1.6 + i * 0.05 }} />
-          <motion.rect x="305" y={y} width="4" height="5" fill="rgba(255,255,255,0.04)"
-            initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
-            transition={{ duration: 0.2, delay: 1.65 + i * 0.05 }} />
+        <motion.g key={`b8-w-${i}`} style={{ opacity: windows }}>
+          <rect x="298" y={y} width="4" height="5" fill="rgba(255,255,255,0.04)" />
+          <rect x="305" y={y} width="4" height="5" fill="rgba(255,255,255,0.04)" />
         </motion.g>
       ))}
 
       {/* Beacon lights */}
       <motion.circle cx="27" cy="55" r="1.5" fill="rgba(255,255,255,0.35)"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: [0, 1, 0.3, 1] }}
-        viewport={{ once: true }}
-        transition={{ duration: 2, delay: 2.5, repeat: Infinity, repeatDelay: 1 }}
+        style={{ opacity: lights }}
       />
       <motion.circle cx="112" cy="12" r="2" fill="rgba(255,255,255,0.5)"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: [0, 1, 0.3, 1] }}
-        viewport={{ once: true }}
-        transition={{ duration: 2, delay: 2.8, repeat: Infinity, repeatDelay: 1.5 }}
+        style={{ opacity: lights }}
       />
       <motion.circle cx="206" cy="18" r="1.5" fill="rgba(255,255,255,0.35)"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: [0, 1, 0.3, 1] }}
-        viewport={{ once: true }}
-        transition={{ duration: 2, delay: 3.1, repeat: Infinity, repeatDelay: 2 }}
+        style={{ opacity: lights }}
       />
       <motion.circle cx="283" cy="60" r="1" fill="rgba(255,255,255,0.25)"
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: [0, 1, 0.3, 1] }}
-        viewport={{ once: true }}
-        transition={{ duration: 2, delay: 3.3, repeat: Infinity, repeatDelay: 1.8 }}
+        style={{ opacity: lights }}
+      />
+
+      {/* Exit connecting line - straight down */}
+      <motion.path
+        d="M 160 180 Q 160 210, 160 240"
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
+      />
+      <motion.path
+        d="M 165 180 Q 165 210, 165 240"
+        fill="none"
+        stroke="rgba(255,255,255,0.06)"
+        strokeWidth="0.5"
+        strokeLinecap="round"
+        style={{ pathLength: exitLine }}
       />
     </motion.svg>
   );
