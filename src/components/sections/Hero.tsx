@@ -1,6 +1,9 @@
 import { motion } from "framer-motion";
+import { siteContent } from "../../content/siteContent";
 
 export function Hero() {
+  const { company } = siteContent;
+
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
       {/* Animated geometric background */}
@@ -46,11 +49,18 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="text-display mb-6">
-            Investment Partners
+          {/* ME | Asset Management logo treatment */}
+          <h1 className="mb-6">
+            <span className="text-5xl md:text-6xl lg:text-7xl font-semibold text-white tracking-wide">
+              {company.prefix}
+            </span>
+            <span className="text-3xl md:text-4xl lg:text-5xl text-white/30 mx-3 font-light">|</span>
+            <span className="text-2xl md:text-3xl lg:text-4xl text-white/70 tracking-[0.1em] uppercase font-light">
+              {company.name}
+            </span>
           </h1>
-          <p className="text-lg md:text-xl text-white/40 font-light tracking-wide">
-            Long-term value creation
+          <p className="text-base md:text-lg text-white/40 font-light tracking-wide max-w-md mx-auto">
+            Strategic property investment and asset management
           </p>
         </motion.div>
       </div>
