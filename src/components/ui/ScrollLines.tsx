@@ -58,10 +58,12 @@ export function ScrollLines() {
               L 720 4000
               L 720 4500
             `}
-            stroke="rgba(255,255,255,0.08)"
+            stroke="rgba(255,255,255,0.12)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: mainLineProgress }}
           />
 
@@ -94,10 +96,12 @@ export function ScrollLines() {
               L 700 3620
               L 700 4020
             `}
-            stroke="rgba(255,255,255,0.04)"
+            stroke="rgba(255,255,255,0.06)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: secondaryLineProgress }}
           />
 
@@ -126,10 +130,12 @@ export function ScrollLines() {
               L 670 2380
               L 740 2480
             `}
-            stroke="rgba(255,255,255,0.03)"
+            stroke="rgba(255,255,255,0.04)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: tertiaryLineProgress }}
           />
 
@@ -144,10 +150,12 @@ export function ScrollLines() {
               L 1050 520
               L 1050 560
             `}
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(255,255,255,0.08)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch1Progress }}
           />
 
@@ -162,10 +170,12 @@ export function ScrollLines() {
               L 370 920
               L 370 960
             `}
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(255,255,255,0.08)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch2Progress }}
           />
 
@@ -180,10 +190,12 @@ export function ScrollLines() {
               L 1080 1420
               L 1080 1460
             `}
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(255,255,255,0.08)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch3Progress }}
           />
 
@@ -194,31 +206,84 @@ export function ScrollLines() {
               L 720 2150
               L 400 2200
               L 400 2250
+            `}
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
+            style={{ pathLength: branch4Progress }}
+          />
+          <motion.path
+            d={`
               M 720 2150
               L 1040 2200
               L 1040 2250
             `}
-            stroke="rgba(255,255,255,0.06)"
+            stroke="rgba(255,255,255,0.08)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch4Progress }}
           />
 
           {/* Extra architectural detail lines */}
           <motion.path
-            d={`
-              M 750 380 L 780 380
-              M 750 400 L 770 400
-              M 480 900 L 450 900
-              M 480 920 L 460 920
-              M 980 1400 L 1010 1400
-              M 980 1420 L 1000 1420
-            `}
-            stroke="rgba(255,255,255,0.04)"
+            d="M 750 380 L 780 380"
+            stroke="rgba(255,255,255,0.05)"
             strokeWidth="0.5"
             strokeLinecap="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: mainLineProgress }}
+          />
+          <motion.path
+            d="M 750 400 L 770 400"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            fill="none"
+            pathLength="1"
+            style={{ pathLength: mainLineProgress }}
+          />
+          <motion.path
+            d="M 480 900 L 450 900"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            fill="none"
+            pathLength="1"
+            style={{ pathLength: secondaryLineProgress }}
+          />
+          <motion.path
+            d="M 480 920 L 460 920"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            fill="none"
+            pathLength="1"
+            style={{ pathLength: secondaryLineProgress }}
+          />
+          <motion.path
+            d="M 980 1400 L 1010 1400"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            fill="none"
+            pathLength="1"
+            style={{ pathLength: tertiaryLineProgress }}
+          />
+          <motion.path
+            d="M 980 1420 L 1000 1420"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="0.5"
+            strokeLinecap="round"
+            fill="none"
+            pathLength="1"
+            style={{ pathLength: tertiaryLineProgress }}
           />
         </svg>
       </div>
@@ -261,10 +326,12 @@ export function ScrollLines() {
               L 195 3300
               L 195 3600
             `}
-            stroke="rgba(255,255,255,0.07)"
+            stroke="rgba(255,255,255,0.1)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: mainLineProgress }}
           />
 
@@ -288,55 +355,67 @@ export function ScrollLines() {
               L 185 1340
               L 185 1520
             `}
-            stroke="rgba(255,255,255,0.03)"
+            stroke="rgba(255,255,255,0.04)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: secondaryLineProgress }}
           />
 
           {/* Mobile branch lines - shorter */}
           <motion.path
-            d={`
-              M 280 400 L 310 400 L 310 440
-            `}
-            stroke="rgba(255,255,255,0.05)"
+            d="M 280 400 L 310 400 L 310 440"
+            stroke="rgba(255,255,255,0.07)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch1Progress }}
           />
 
           <motion.path
-            d={`
-              M 120 780 L 90 780 L 90 820
-            `}
-            stroke="rgba(255,255,255,0.05)"
+            d="M 120 780 L 90 780 L 90 820"
+            stroke="rgba(255,255,255,0.07)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch2Progress }}
           />
 
           <motion.path
-            d={`
-              M 270 1180 L 300 1180 L 300 1220
-            `}
-            stroke="rgba(255,255,255,0.05)"
+            d="M 270 1180 L 300 1180 L 300 1220"
+            stroke="rgba(255,255,255,0.07)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch3Progress }}
           />
 
           <motion.path
-            d={`
-              M 195 1900 L 100 1940 M 195 1900 L 290 1940
-            `}
-            stroke="rgba(255,255,255,0.05)"
+            d="M 195 1900 L 100 1940"
+            stroke="rgba(255,255,255,0.07)"
             strokeWidth="1"
             strokeLinecap="round"
             strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
+            style={{ pathLength: branch4Progress }}
+          />
+          <motion.path
+            d="M 195 1900 L 290 1940"
+            stroke="rgba(255,255,255,0.07)"
+            strokeWidth="1"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            fill="none"
+            pathLength="1"
             style={{ pathLength: branch4Progress }}
           />
         </svg>
