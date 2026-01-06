@@ -10,7 +10,7 @@ export function Hero() {
       <div className="absolute inset-0 flex items-center justify-center">
         <motion.svg
           viewBox="0 0 400 400"
-          className="w-[300px] h-[300px] md:w-[500px] md:h-[500px] lg:w-[600px] lg:h-[600px]"
+          className="w-[300px] h-[300px] md:w-[500px] md:h-[500px] lg:w-[650px] lg:h-[650px] xl:w-[750px] xl:h-[750px] 2xl:w-[850px] 2xl:h-[850px]"
           initial={{ opacity: 0, rotate: -10 }}
           animate={{ opacity: 1, rotate: 0 }}
           transition={{ duration: 2, ease: [0.22, 1, 0.36, 1] }}
@@ -43,23 +43,23 @@ export function Hero() {
       </div>
 
       {/* Content */}
-      <div className="container-editorial relative z-10 text-center">
+      <div className="container-wide relative z-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* ME | Asset Management logo treatment */}
-          <h1 className="mb-6">
-            <span className="text-5xl md:text-6xl lg:text-7xl font-semibold text-white tracking-wide">
+          <h1 className="mb-6 lg:mb-8">
+            <span className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white tracking-wide">
               {company.prefix}
             </span>
-            <span className="text-3xl md:text-4xl lg:text-5xl text-white/30 mx-3 font-light">|</span>
-            <span className="text-2xl md:text-3xl lg:text-4xl text-white/70 tracking-[0.1em] uppercase font-light">
+            <span className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/30 mx-3 lg:mx-4 font-light">|</span>
+            <span className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.1em] uppercase font-light">
               {company.name}
             </span>
           </h1>
-          <p className="text-base md:text-lg text-white/40 font-light tracking-wide max-w-md mx-auto">
+          <p className="text-base md:text-lg lg:text-xl xl:text-2xl text-white/40 font-light tracking-wide max-w-md lg:max-w-lg xl:max-w-xl mx-auto">
             Strategic property investment and asset management
           </p>
         </motion.div>
