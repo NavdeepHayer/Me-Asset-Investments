@@ -103,24 +103,32 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
   const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
   const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  // Main graphic elements - synced to animate within flow line window
-  const ground = useScrollTransform(scrollProgress, 0.12, 0.20);
-  const foundation = useScrollTransform(scrollProgress, 0.15, 0.23);
-  const towerLeft = useScrollTransform(scrollProgress, 0.18, 0.35);
-  const towerRight = useScrollTransform(scrollProgress, 0.20, 0.37);
-  const lattice = useScrollTransform(scrollProgress, 0.25, 0.45);
-  const slewing = useScrollTransform(scrollProgress, 0.35, 0.43);
-  const cabin = useScrollTransform(scrollProgress, 0.38, 0.46);
-  const jibTop = useScrollTransform(scrollProgress, 0.42, 0.52);
-  const jibBottom = useScrollTransform(scrollProgress, 0.44, 0.54);
-  const jibLattice = useScrollTransform(scrollProgress, 0.48, 0.58);
-  const counterJib = useScrollTransform(scrollProgress, 0.46, 0.54);
-  const peak = useScrollTransform(scrollProgress, 0.50, 0.58);
-  const pendant = useScrollTransform(scrollProgress, 0.54, 0.62);
-  const trolley = useScrollTransform(scrollProgress, 0.58, 0.68);
-  const hook = useScrollTransform(scrollProgress, 0.62, 0.72);
-  const load = useScrollTransform(scrollProgress, 0.68, 0.78);
-  const building = useScrollTransform(scrollProgress, 0.28, 0.40);
+  // Animation builds TOP to BOTTOM (following the flow line direction)
+  // Peak and warning light first (very top)
+  const peak = useScrollTransform(scrollProgress, 0.12, 0.22);
+  // Pendant lines from peak
+  const pendant = useScrollTransform(scrollProgress, 0.16, 0.26);
+  // Jib extends outward from top
+  const jibTop = useScrollTransform(scrollProgress, 0.18, 0.30);
+  const jibBottom = useScrollTransform(scrollProgress, 0.20, 0.32);
+  const jibLattice = useScrollTransform(scrollProgress, 0.24, 0.36);
+  const counterJib = useScrollTransform(scrollProgress, 0.22, 0.34);
+  // Trolley and hook descend
+  const trolley = useScrollTransform(scrollProgress, 0.30, 0.40);
+  const hook = useScrollTransform(scrollProgress, 0.34, 0.48);
+  const load = useScrollTransform(scrollProgress, 0.42, 0.54);
+  // Cabin and slewing unit
+  const cabin = useScrollTransform(scrollProgress, 0.28, 0.38);
+  const slewing = useScrollTransform(scrollProgress, 0.32, 0.42);
+  // Tower builds downward from top
+  const towerLeft = useScrollTransform(scrollProgress, 0.36, 0.56);
+  const towerRight = useScrollTransform(scrollProgress, 0.38, 0.58);
+  const lattice = useScrollTransform(scrollProgress, 0.40, 0.60);
+  // Building in background
+  const building = useScrollTransform(scrollProgress, 0.50, 0.65);
+  // Foundation and ground last (bottom)
+  const foundation = useScrollTransform(scrollProgress, 0.60, 0.72);
+  const ground = useScrollTransform(scrollProgress, 0.68, 0.78);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
@@ -167,26 +175,26 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
         style={{ pathLength: foundation }}
       />
 
-      {/* Main tower - left rail */}
+      {/* Main tower - left rail (draws top to bottom) */}
       <motion.line
-        x1="92" y1="170" x2="92" y2="38"
+        x1="92" y1="38" x2="92" y2="170"
         stroke="rgba(255,255,255,0.18)"
         strokeWidth="1.5"
         style={{ pathLength: towerLeft }}
       />
-      {/* Main tower - right rail */}
+      {/* Main tower - right rail (draws top to bottom) */}
       <motion.line
-        x1="108" y1="170" x2="108" y2="38"
+        x1="108" y1="38" x2="108" y2="170"
         stroke="rgba(255,255,255,0.18)"
         strokeWidth="1.5"
         style={{ pathLength: towerRight }}
       />
 
-      {/* Tower lattice cross-bracing */}
-      {[165, 150, 135, 120, 105, 90, 75, 60, 45].map((y, i) => (
+      {/* Tower lattice cross-bracing (top to bottom) */}
+      {[45, 60, 75, 90, 105, 120, 135, 150, 165].map((y, i) => (
         <motion.path
           key={`lattice-${i}`}
-          d={`M 92 ${y} L 108 ${y - 12} M 108 ${y} L 92 ${y - 12} M 92 ${y - 6} L 108 ${y - 6}`}
+          d={`M 92 ${y} L 108 ${y + 12} M 108 ${y} L 92 ${y + 12} M 92 ${y + 6} L 108 ${y + 6}`}
           fill="none"
           stroke="rgba(255,255,255,0.1)"
           strokeWidth="0.5"
@@ -315,12 +323,12 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
         <line x1="159" y1="105" x2="152" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
       </motion.g>
 
-      {/* Building under construction (background) */}
+      {/* Building under construction (background - draws top to bottom) */}
       <motion.g style={{ opacity: building }}>
-        <line x1="25" y1="185" x2="25" y2="140" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        <line x1="55" y1="185" x2="55" y2="140" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
-        <line x1="25" y1="160" x2="55" y2="160" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+        <line x1="25" y1="140" x2="25" y2="185" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+        <line x1="55" y1="140" x2="55" y2="185" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
         <line x1="25" y1="140" x2="55" y2="140" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+        <line x1="25" y1="160" x2="55" y2="160" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
       </motion.g>
 
       {/* Warning light */}
@@ -341,19 +349,22 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
   const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
   const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  // Main graphic elements - synced to animate within flow line window
+  // Animation builds TOP to BOTTOM (following the flow line direction)
   const grid = useScrollTransform(scrollProgress, 0.12, 0.22);
-  const outline = useScrollTransform(scrollProgress, 0.18, 0.32);
-  const walls = useScrollTransform(scrollProgress, 0.28, 0.42);
-  const doors = useScrollTransform(scrollProgress, 0.38, 0.48);
-  const windows = useScrollTransform(scrollProgress, 0.44, 0.54);
-  const stairs = useScrollTransform(scrollProgress, 0.50, 0.58);
-  const kitchen = useScrollTransform(scrollProgress, 0.54, 0.62);
-  const bathroom = useScrollTransform(scrollProgress, 0.58, 0.66);
-  const dimensions = useScrollTransform(scrollProgress, 0.62, 0.70);
-  const labels = useScrollTransform(scrollProgress, 0.66, 0.74);
-  const northArrow = useScrollTransform(scrollProgress, 0.70, 0.76);
-  const scale = useScrollTransform(scrollProgress, 0.74, 0.80);
+  const outline = useScrollTransform(scrollProgress, 0.16, 0.32);
+  // Top elements first
+  const northArrow = useScrollTransform(scrollProgress, 0.20, 0.30);
+  const kitchen = useScrollTransform(scrollProgress, 0.24, 0.36);
+  const windows = useScrollTransform(scrollProgress, 0.28, 0.42);
+  // Middle elements
+  const walls = useScrollTransform(scrollProgress, 0.34, 0.50);
+  const doors = useScrollTransform(scrollProgress, 0.40, 0.54);
+  const labels = useScrollTransform(scrollProgress, 0.44, 0.56);
+  const bathroom = useScrollTransform(scrollProgress, 0.48, 0.60);
+  // Bottom elements last
+  const stairs = useScrollTransform(scrollProgress, 0.54, 0.66);
+  const dimensions = useScrollTransform(scrollProgress, 0.60, 0.72);
+  const scale = useScrollTransform(scrollProgress, 0.68, 0.78);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
@@ -517,19 +528,25 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
   const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
   const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  // Main graphic elements - synced to animate within flow line window
-  const ground = useScrollTransform(scrollProgress, 0.12, 0.20);
-  const foundation = useScrollTransform(scrollProgress, 0.16, 0.24);
-  const columns = useScrollTransform(scrollProgress, 0.20, 0.45);
-  const flanges = useScrollTransform(scrollProgress, 0.35, 0.50);
-  const floors = useScrollTransform(scrollProgress, 0.40, 0.55);
-  const stiffeners = useScrollTransform(scrollProgress, 0.45, 0.58);
-  const bracing = useScrollTransform(scrollProgress, 0.50, 0.62);
-  const plates = useScrollTransform(scrollProgress, 0.55, 0.66);
-  const bolts = useScrollTransform(scrollProgress, 0.60, 0.70);
-  const scaffolding = useScrollTransform(scrollProgress, 0.58, 0.72);
-  const craneCable = useScrollTransform(scrollProgress, 0.66, 0.74);
-  const beam = useScrollTransform(scrollProgress, 0.70, 0.80);
+  // Animation builds TOP to BOTTOM (following the flow line direction)
+  // Crane and lifted beam first (very top)
+  const craneCable = useScrollTransform(scrollProgress, 0.12, 0.22);
+  const beam = useScrollTransform(scrollProgress, 0.16, 0.28);
+  // Top floor first, then build downward
+  const floors = useScrollTransform(scrollProgress, 0.22, 0.50);
+  const flanges = useScrollTransform(scrollProgress, 0.28, 0.52);
+  const stiffeners = useScrollTransform(scrollProgress, 0.32, 0.54);
+  // Columns draw downward
+  const columns = useScrollTransform(scrollProgress, 0.26, 0.58);
+  // Cross bracing and connections
+  const bracing = useScrollTransform(scrollProgress, 0.38, 0.56);
+  const plates = useScrollTransform(scrollProgress, 0.44, 0.60);
+  const bolts = useScrollTransform(scrollProgress, 0.48, 0.62);
+  // Scaffolding alongside
+  const scaffolding = useScrollTransform(scrollProgress, 0.50, 0.66);
+  // Foundation and ground last (bottom)
+  const foundation = useScrollTransform(scrollProgress, 0.60, 0.72);
+  const ground = useScrollTransform(scrollProgress, 0.68, 0.78);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
@@ -576,16 +593,16 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
         style={{ pathLength: foundation }}
       />
 
-      {/* Main columns */}
+      {/* Main columns (draw top to bottom) */}
       {[40, 80, 120, 160].map((x, i) => (
         <motion.g key={`col-${i}`}>
           <motion.line
-            x1={x} y1="172" x2={x} y2="22"
+            x1={x} y1="22" x2={x} y2="172"
             stroke="rgba(255,255,255,0.2)"
             strokeWidth="3"
             style={{ pathLength: columns }}
           />
-          {[172, 142, 112, 82, 52, 22].map((y, j) => (
+          {[22, 52, 82, 112, 142, 172].map((y, j) => (
             <motion.line
               key={`flange-${i}-${j}`}
               x1={x - 4} y1={y} x2={x + 4} y2={y}
@@ -597,8 +614,8 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
         </motion.g>
       ))}
 
-      {/* Floor beams */}
-      {[142, 112, 82, 52, 22].map((y, i) => (
+      {/* Floor beams (top to bottom) */}
+      {[22, 52, 82, 112, 142].map((y, i) => (
         <motion.g key={`floor-${i}`}>
           <motion.line
             x1="40" y1={y} x2="160" y2={y}
@@ -677,9 +694,9 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
         </motion.g>
       ))}
 
-      {/* Scaffolding */}
+      {/* Scaffolding (draws top to bottom) */}
       <motion.path
-        d="M 25 172 L 25 52 M 25 172 L 40 172 M 25 142 L 40 142 M 25 112 L 40 112 M 25 82 L 40 82 M 25 52 L 40 52"
+        d="M 25 52 L 25 172 M 25 52 L 40 52 M 25 82 L 40 82 M 25 112 L 40 112 M 25 142 L 40 142 M 25 172 L 40 172"
         fill="none"
         stroke="rgba(255,255,255,0.06)"
         strokeWidth="1"
@@ -716,19 +733,23 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
   const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
   const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  // Main graphic elements - synced to animate within flow line window
-  const ground = useScrollTransform(scrollProgress, 0.12, 0.20);
-  const b1 = useScrollTransform(scrollProgress, 0.14, 0.32);
-  const b2 = useScrollTransform(scrollProgress, 0.16, 0.34);
-  const b3 = useScrollTransform(scrollProgress, 0.18, 0.40);
-  const b4 = useScrollTransform(scrollProgress, 0.22, 0.38);
-  const b5 = useScrollTransform(scrollProgress, 0.26, 0.44);
-  const b6 = useScrollTransform(scrollProgress, 0.30, 0.42);
-  const b7 = useScrollTransform(scrollProgress, 0.34, 0.40);
-  const b8 = useScrollTransform(scrollProgress, 0.38, 0.44);
-  const windows = useScrollTransform(scrollProgress, 0.42, 0.62);
-  const details = useScrollTransform(scrollProgress, 0.52, 0.68);
-  const lights = useScrollTransform(scrollProgress, 0.64, 0.78);
+  // Animation builds TOP to BOTTOM (following the flow line direction)
+  // Beacon lights first (very top of buildings)
+  const lights = useScrollTransform(scrollProgress, 0.12, 0.24);
+  // Buildings draw from peaks down - tallest first
+  const b3 = useScrollTransform(scrollProgress, 0.14, 0.40); // Tallest (center)
+  const b5 = useScrollTransform(scrollProgress, 0.18, 0.42); // Tower with antenna
+  const b1 = useScrollTransform(scrollProgress, 0.22, 0.44); // Art deco
+  const b7 = useScrollTransform(scrollProgress, 0.26, 0.46); // Narrow tower
+  const b6 = useScrollTransform(scrollProgress, 0.30, 0.48); // Modern cantilever
+  const b2 = useScrollTransform(scrollProgress, 0.34, 0.50); // Glass tower
+  const b4 = useScrollTransform(scrollProgress, 0.38, 0.52); // Wide commercial
+  const b8 = useScrollTransform(scrollProgress, 0.42, 0.54); // Low rise
+  // Windows appear after structure
+  const windows = useScrollTransform(scrollProgress, 0.48, 0.64);
+  const details = useScrollTransform(scrollProgress, 0.56, 0.70);
+  // Ground line last (bottom)
+  const ground = useScrollTransform(scrollProgress, 0.66, 0.78);
 
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full">
@@ -766,9 +787,9 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
         style={{ pathLength: ground }}
       />
 
-      {/* Building 1 - Art Deco tower */}
+      {/* Building 1 - Art Deco tower (draws from peak down) */}
       <motion.path
-        d="M 12 180 L 12 70 L 17 65 L 22 60 L 27 55 L 32 60 L 37 65 L 42 70 L 42 180"
+        d="M 27 55 L 22 60 L 17 65 L 12 70 L 12 180 M 27 55 L 32 60 L 37 65 L 42 70 L 42 180"
         fill="none"
         stroke="rgba(255,255,255,0.14)"
         strokeWidth="1"
@@ -784,9 +805,9 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
         </motion.g>
       ))}
 
-      {/* Building 2 - Modern glass tower */}
+      {/* Building 2 - Modern glass tower (draws from top down) */}
       <motion.path
-        d="M 50 180 L 50 85 L 55 80 L 80 80 L 85 85 L 85 180"
+        d="M 55 80 L 50 85 L 50 180 M 80 80 L 85 85 L 85 180 M 55 80 L 80 80"
         fill="none"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="1"
@@ -795,27 +816,27 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
       {[95, 110, 125, 140, 155, 170].map((y, i) => (
         <motion.line key={`b2-h-${i}`} x1="52" y1={y} x2="83" y2={y}
           stroke="rgba(255,255,255,0.05)" strokeWidth="0.5"
-          style={{ pathLength: details }} />
+          style={{ opacity: details }} />
       ))}
       {[58, 67, 76].map((x, i) => (
         <motion.line key={`b2-v-${i}`} x1={x} y1="85" x2={x} y2="180"
           stroke="rgba(255,255,255,0.04)" strokeWidth="0.5"
-          style={{ pathLength: details }} />
+          style={{ opacity: details }} />
       ))}
 
-      {/* Building 3 - Landmark skyscraper (tallest) */}
+      {/* Building 3 - Landmark skyscraper (tallest, draws from peak down) */}
       <motion.path
-        d="M 95 180 L 95 30 L 102 30 L 102 22 L 112 12 L 122 22 L 122 30 L 129 30 L 129 180"
+        d="M 112 12 L 102 22 L 102 30 L 95 30 L 95 180 M 112 12 L 122 22 L 122 30 L 129 30 L 129 180"
         fill="none"
         stroke="rgba(255,255,255,0.22)"
         strokeWidth="1.5"
         style={{ pathLength: b3 }}
       />
-      <motion.line x1="112" y1="30" x2="112" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
+      <motion.line x1="112" y1="12" x2="112" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
         style={{ pathLength: b3 }}
       />
-      <motion.path d="M 98 60 L 98 30 M 126 60 L 126 30" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        style={{ pathLength: details }}
+      <motion.path d="M 98 30 L 98 60 M 126 30 L 126 60" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
+        style={{ opacity: details }}
       />
       {[40, 55, 70, 85, 100, 115, 130, 145, 160].map((y, i) => (
         <motion.g key={`b3-w-${i}`} style={{ opacity: windows }}>
@@ -825,17 +846,17 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
         </motion.g>
       ))}
 
-      {/* Building 4 - Wide commercial */}
+      {/* Building 4 - Wide commercial (draws from top down) */}
       <motion.path
-        d="M 138 180 L 138 95 L 143 88 L 177 88 L 182 95 L 182 180"
+        d="M 143 88 L 138 95 L 138 180 M 177 88 L 182 95 L 182 180 M 143 88 L 177 88"
         fill="none"
         stroke="rgba(255,255,255,0.11)"
         strokeWidth="1"
         style={{ pathLength: b4 }}
       />
-      <motion.path d="M 150 88 L 150 82 L 158 82 L 158 88 M 165 88 L 165 85 L 170 85 L 170 88"
+      <motion.path d="M 150 82 L 150 88 M 158 82 L 158 88 M 150 82 L 158 82 M 165 85 L 165 88 M 170 85 L 170 88 M 165 85 L 170 85"
         fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        style={{ pathLength: details }}
+        style={{ opacity: details }}
       />
       {[105, 120, 135, 150, 165].map((y, i) => (
         <motion.g key={`b4-w-${i}`} style={{ opacity: windows }}>
@@ -845,9 +866,9 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
         </motion.g>
       ))}
 
-      {/* Building 5 - Tower with antenna */}
+      {/* Building 5 - Tower with antenna (draws from antenna down) */}
       <motion.path
-        d="M 192 180 L 192 55 L 200 55 L 200 48 L 205 48 L 205 18 L 207 18 L 207 48 L 212 48 L 212 55 L 220 55 L 220 180"
+        d="M 205 18 L 205 48 L 200 48 L 200 55 L 192 55 L 192 180 M 207 18 L 207 48 L 212 48 L 212 55 L 220 55 L 220 180 M 205 18 L 207 18"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
@@ -860,9 +881,9 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
         </motion.g>
       ))}
 
-      {/* Building 6 - Modern with cantilever */}
+      {/* Building 6 - Modern with cantilever (draws from top down) */}
       <motion.path
-        d="M 230 180 L 230 75 L 235 75 L 235 70 L 260 70 L 265 75 L 268 75 L 268 105 L 265 105 L 265 180"
+        d="M 235 70 L 235 75 L 230 75 L 230 180 M 260 70 L 265 75 L 268 75 L 268 105 L 265 105 L 265 180 M 235 70 L 260 70"
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
@@ -876,9 +897,9 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
         </motion.g>
       ))}
 
-      {/* Building 7 - Narrow tower */}
+      {/* Building 7 - Narrow tower (draws from peak down) */}
       <motion.path
-        d="M 278 180 L 278 65 L 283 60 L 288 65 L 288 180"
+        d="M 283 60 L 278 65 L 278 180 M 283 60 L 288 65 L 288 180"
         fill="none"
         stroke="rgba(255,255,255,0.09)"
         strokeWidth="1"
@@ -889,9 +910,9 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
           style={{ opacity: windows }} />
       ))}
 
-      {/* Building 8 - Low rise */}
+      {/* Building 8 - Low rise (draws from top down) */}
       <motion.path
-        d="M 295 180 L 295 120 L 312 120 L 312 180"
+        d="M 295 120 L 295 180 M 312 120 L 312 180 M 295 120 L 312 120"
         fill="none"
         stroke="rgba(255,255,255,0.07)"
         strokeWidth="1"
