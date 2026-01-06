@@ -7,12 +7,13 @@ type FormStatus = "idle" | "loading" | "success" | "error";
 
 export function MailingList() {
   const { mailingList } = siteContent;
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<FormStatus>("idle");
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!email || !name) return;
 
     setStatus("loading");
 
@@ -22,43 +23,53 @@ export function MailingList() {
     // For now, always succeed
     setStatus("success");
     setEmail("");
+    setName("");
 
     // Reset after a few seconds
     setTimeout(() => setStatus("idle"), 5000);
   };
 
   return (
-    <section className="section-spacing-sm border-t border-white/10">
-      <div className="container-editorial text-center">
+    <section className="section-spacing">
+      <div className="container-editorial">
         <ScrollReveal>
-          <h2 className="text-headline mb-4">{mailingList.headline}</h2>
+          <h2 className="text-headline mb-12 text-center uppercase tracking-wider">
+            {mailingList.headline}
+          </h2>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
-          <p className="text-body mb-10 max-w-xl mx-auto">
-            {mailingList.description}
-          </p>
-        </ScrollReveal>
-        <ScrollReveal delay={0.2}>
-          <form
-            onSubmit={handleSubmit}
-            className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
-          >
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={mailingList.placeholder}
-              required
-              disabled={status === "loading" || status === "success"}
-              className="flex-1 px-4 py-3 border border-white/20 bg-transparent text-white placeholder-white/40 focus:outline-none focus:border-white/50 transition-colors disabled:opacity-50"
-            />
-            <button
-              type="submit"
-              disabled={status === "loading" || status === "success"}
-              className="px-8 py-3 bg-white text-black hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {status === "loading" ? "..." : mailingList.buttonText}
-            </button>
+          <form onSubmit={handleSubmit} className="max-w-lg mx-auto space-y-8">
+            <div>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder={mailingList.namePlaceholder}
+                required
+                disabled={status === "loading" || status === "success"}
+                className="w-full bg-transparent border-b border-white/40 py-3 text-white placeholder-white/50 focus:outline-none focus:border-white transition-colors disabled:opacity-50 font-serif"
+              />
+            </div>
+            <div>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder={mailingList.emailPlaceholder}
+                required
+                disabled={status === "loading" || status === "success"}
+                className="w-full bg-transparent border-b border-white/40 py-3 text-white placeholder-white/50 focus:outline-none focus:border-white transition-colors disabled:opacity-50 font-serif"
+              />
+            </div>
+            <div className="pt-4">
+              <button
+                type="submit"
+                disabled={status === "loading" || status === "success"}
+                className="w-full py-4 bg-white/20 text-white hover:bg-white/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-serif tracking-wider"
+              >
+                {status === "loading" ? "..." : mailingList.buttonText}
+              </button>
+            </div>
           </form>
         </ScrollReveal>
         <AnimatePresence mode="wait">
@@ -67,7 +78,7 @@ export function MailingList() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="text-caption mt-4"
+              className="text-center text-caption mt-6"
             >
               {mailingList.successMessage}
             </motion.p>
@@ -77,7 +88,7 @@ export function MailingList() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="text-sm text-red-400 mt-4"
+              className="text-center text-sm text-red-300 mt-6"
             >
               {mailingList.errorMessage}
             </motion.p>

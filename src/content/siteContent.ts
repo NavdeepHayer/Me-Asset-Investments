@@ -5,87 +5,35 @@ export const siteContent = {
       "A private investment firm focused on building enduring value through patient capital and partnership.",
   },
 
-  hero: {
-    headline: "Building enduring value through patient capital",
-    subheadline:
-      "We partner with exceptional founders and management teams to create lasting enterprises.",
-  },
-
+  // Main intro text block - like Apeiron's opening statement
   intro: {
-    text: "We are a private investment firm with a long-term orientation. Our approach is grounded in patience, partnership, and a deep commitment to the businesses and people we work with. We believe that sustainable value is created over decades, not quarters, and we structure our investments to reflect that conviction.",
+    text: "As entrepreneurs at heart, we pride ourselves on being hands-on, reliable, and long-term partners – committed to supporting exceptional founders of companies as well as emerging asset managers in pushing the boundaries of imagination and shaping the future we aspire to live in.",
   },
 
-  missionStatement: {
-    line: "Patient capital. Enduring partnerships. Lasting value.",
-  },
-
-  // Full-bleed image sections featuring classical sculpture
-  imageFeatures: [
-    {
-      id: "feature-1",
-      src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80",
-      alt: "Classical marble sculpture",
-      caption: "Timeless principles guide our approach",
-    },
-    {
-      id: "feature-2",
-      src: "https://images.unsplash.com/photo-1584285405429-136bf988919c?w=1400&q=80",
-      alt: "Ancient Greek statue",
-      caption: "Building for generations",
-    },
-    {
-      id: "feature-3",
-      src: "https://images.unsplash.com/photo-1577720643272-265f09367456?w=1400&q=80",
-      alt: "Classical sculpture detail",
-      caption: "Excellence endures",
-    },
-  ],
-
+  // Global presence section
   globalPresence: {
-    headline: "Active across markets",
-    locations: "New York · London · Singapore · Sydney · Toronto",
+    text: "With teams in New York, London, Singapore, Sydney, and Toronto, we apply a global, multi-strategy investment approach, with a primary focus on building lasting enterprises.",
   },
 
-  strategy: {
-    headline: "What we do",
-    paragraphs: [
-      "We make long-term investments in established businesses with strong fundamentals and clear paths to sustainable growth. Our capital is patient, allowing management teams to focus on building lasting value rather than meeting arbitrary timelines.",
-      "Our investment approach emphasizes partnership over transaction. We seek businesses where we can add meaningful value beyond capital, whether through strategic insight, operational expertise, or access to our broader network of relationships.",
-      "We are sector-agnostic but disciplined. We invest where we have conviction, where we understand the business deeply, and where we see an opportunity to support exceptional people in building something meaningful.",
-    ],
+  // Core philosophy
+  philosophy: {
+    text: "At our core, we are driven by a bold optimism for a future where technology empowers people to live longer, healthier, and more fulfilling lives.",
   },
 
-  focusAreas: {
-    headline: "Areas of focus",
-    areas: [
-      {
-        title: "Life Sciences",
-        description: "Advancing human health and longevity.",
-      },
-      {
-        title: "Technology",
-        description: "Software and platforms shaping the future.",
-      },
-      {
-        title: "Financial Services",
-        description: "Innovation in finance and capital markets.",
-      },
-      {
-        title: "Consumer",
-        description: "Brands that earn lasting trust.",
-      },
-    ],
+  // Investment approach
+  approach: {
+    text: "Through our proprietary balance sheet, our direct investment approach encompasses the entire company lifecycle – from incubating and accelerating breakthrough ideas to scaling growth-stage businesses as well as making impactful investments in established companies.",
   },
 
-  closingStatement: {
-    text: "We believe that the best investments are not transactions but relationships. Our commitment is to the long term, to the people we work with, and to building enterprises that will endure for generations.",
+  // Mission/values
+  mission: {
+    text: "We believe in advancing progress to help usher in an era of physical and mental abundance. Our commitment is to the long term, to the people we work with, and to building enterprises that will endure for generations.",
   },
 
   mailingList: {
-    headline: "Stay informed",
-    description:
-      "Receive occasional updates on our thinking and perspective.",
-    placeholder: "Enter your email",
+    headline: "GET REGULAR UPDATES BY JOINING OUR MAILING LIST.",
+    namePlaceholder: "Name",
+    emailPlaceholder: "Email",
     buttonText: "Subscribe",
     successMessage: "Thank you for subscribing.",
     errorMessage: "Something went wrong. Please try again.",
@@ -94,16 +42,16 @@ export const siteContent = {
   footer: {
     copyright: "Investment Partners",
     socialLinks: [
-      { name: "LinkedIn", url: "#" },
-      { name: "X", url: "#" },
+      { name: "Substack", url: "#", icon: "substack" },
+      { name: "X", url: "#", icon: "x" },
+      { name: "LinkedIn", url: "#", icon: "linkedin" },
     ],
     legalLinks: [
       { name: "Privacy", url: "#" },
       { name: "Terms", url: "#" },
+      { name: "Imprint", url: "#" },
     ],
   },
 };
 
 export type SiteContent = typeof siteContent;
-export type ImageFeature = (typeof siteContent.imageFeatures)[0];
-export type FocusArea = (typeof siteContent.focusAreas.areas)[0];

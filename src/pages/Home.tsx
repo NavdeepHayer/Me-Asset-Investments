@@ -1,57 +1,37 @@
-import {
-  Hero,
-  Intro,
-  MissionStatement,
-  ImageFeature,
-  GlobalPresence,
-  Strategy,
-  FocusAreas,
-  ClosingStatement,
-  MailingList,
-  Footer,
-} from "../components/sections";
+import { TextSection, MailingList, Footer } from "../components/sections";
+import { FloatingSocial } from "../components/ui/FloatingSocial";
 import { siteContent } from "../content/siteContent";
 
 export function Home() {
-  const { imageFeatures } = siteContent;
+  const { intro, globalPresence, philosophy, approach, mission } = siteContent;
 
   return (
-    <main>
-      {/* Hero Section */}
-      <Hero />
+    <>
+      {/* Floating Social Links */}
+      <FloatingSocial />
 
-      {/* First Image Feature */}
-      {imageFeatures[0] && <ImageFeature feature={imageFeatures[0]} />}
+      <main>
+        {/* Intro - Main opening statement */}
+        <TextSection text={intro.text} className="pt-32 md:pt-40" />
 
-      {/* Intro Section */}
-      <Intro />
+        {/* Global Presence */}
+        <TextSection text={globalPresence.text} />
 
-      {/* Mission Statement */}
-      <MissionStatement />
+        {/* Philosophy */}
+        <TextSection text={philosophy.text} />
 
-      {/* Second Image Feature */}
-      {imageFeatures[1] && <ImageFeature feature={imageFeatures[1]} />}
+        {/* Investment Approach */}
+        <TextSection text={approach.text} />
 
-      {/* Global Presence */}
-      <GlobalPresence />
+        {/* Mission */}
+        <TextSection text={mission.text} />
 
-      {/* Strategy / What We Do */}
-      <Strategy />
+        {/* Mailing List */}
+        <MailingList />
 
-      {/* Third Image Feature */}
-      {imageFeatures[2] && <ImageFeature feature={imageFeatures[2]} />}
-
-      {/* Focus Areas */}
-      <FocusAreas />
-
-      {/* Closing Statement */}
-      <ClosingStatement />
-
-      {/* Mailing List */}
-      <MailingList />
-
-      {/* Footer */}
-      <Footer />
-    </main>
+        {/* Footer */}
+        <Footer />
+      </main>
+    </>
   );
 }

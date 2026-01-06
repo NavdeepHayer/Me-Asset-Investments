@@ -5,39 +5,28 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-12 md:py-16 border-t border-white/10">
+    <footer className="py-8 md:py-12 bg-[#2C3E50]">
       <div className="container-editorial">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-sm text-white/60">
           {/* Copyright */}
-          <div className="text-caption">
+          <div>
             &copy; {currentYear} {footer.copyright}
           </div>
 
-          {/* Social Links */}
-          <div className="flex items-center gap-6">
-            {footer.socialLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.url}
-                className="text-caption hover:text-white transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {link.name}
-              </a>
-            ))}
-          </div>
-
           {/* Legal Links */}
-          <div className="flex items-center gap-6">
-            {footer.legalLinks.map((link) => (
-              <a
-                key={link.name}
-                href={link.url}
-                className="text-caption hover:text-white transition-colors"
-              >
-                {link.name}
-              </a>
+          <div className="flex items-center gap-4">
+            {footer.legalLinks.map((link, index) => (
+              <span key={link.name} className="flex items-center gap-4">
+                <a
+                  href={link.url}
+                  className="hover:text-white transition-colors"
+                >
+                  {link.name}
+                </a>
+                {index < footer.legalLinks.length - 1 && (
+                  <span className="text-white/30">|</span>
+                )}
+              </span>
             ))}
           </div>
         </div>
