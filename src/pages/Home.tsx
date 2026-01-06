@@ -1,7 +1,6 @@
 import { Hero, ContentBlock, TextSection, Team, MailingList, Footer } from "../components/sections";
 import { FloatingSocial } from "../components/ui/FloatingSocial";
 import { Header } from "../components/ui/Header";
-import { PageFlowLine } from "../components/ui/PageFlowLine";
 import { siteContent } from "../content/siteContent";
 
 export function Home() {
@@ -11,7 +10,6 @@ export function Home() {
     <>
       <Header />
       <FloatingSocial />
-      <PageFlowLine />
 
       <main>
         {/* Hero with ME branding */}
