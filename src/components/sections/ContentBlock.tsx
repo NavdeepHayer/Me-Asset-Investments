@@ -122,12 +122,20 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* FLOW LINE - straight down center */}
-      <motion.line
-        x1="100" y1="0" x2="100" y2="200"
-        stroke="rgba(255,255,255,0.15)"
+      {/* FLOW LINE - follows crane geometry: down to peak, along A-frame, down tower */}
+      <motion.path
+        d="M 100 0
+           L 100 18
+           L 92 38
+           L 92 100
+           L 108 100
+           L 108 170
+           L 100 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.18)"
         strokeWidth="1"
         strokeLinecap="round"
+        strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
       />
 
@@ -336,12 +344,21 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* FLOW LINE - straight down center */}
-      <motion.line
-        x1="100" y1="0" x2="100" y2="200"
-        stroke="rgba(255,255,255,0.15)"
+      {/* FLOW LINE - follows blueprint walls: enters, follows interior walls geometrically */}
+      <motion.path
+        d="M 100 0
+           L 100 30
+           L 90 30
+           L 90 85
+           L 30 85
+           L 30 170
+           L 100 170
+           L 100 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.18)"
         strokeWidth="1"
         strokeLinecap="round"
+        strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
       />
 
@@ -496,12 +513,22 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* FLOW LINE - straight down center */}
-      <motion.line
-        x1="100" y1="0" x2="100" y2="200"
-        stroke="rgba(255,255,255,0.15)"
+      {/* FLOW LINE - follows steel frame: down column, across beam, down column */}
+      <motion.path
+        d="M 100 0
+           L 100 22
+           L 80 22
+           L 80 82
+           L 120 82
+           L 120 142
+           L 80 142
+           L 80 180
+           L 100 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.18)"
         strokeWidth="1"
         strokeLinecap="round"
+        strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
       />
 
@@ -656,9 +683,8 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
 
 // City skyline with refined architecture - tallest building centered
 function SkylineGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - enters center, follows tallest building straight down, STOPS at ground
-  const flowIn = useScrollTransform(scrollProgress, 0.08, 0.18);
-  const flowThrough = useScrollTransform(scrollProgress, 0.16, 0.78);
+  // Flow line - follows building geometry artistically
+  const flowThrough = useScrollTransform(scrollProgress, 0.08, 0.78);
 
   // Animation builds from CENTER outward and TOP to BOTTOM
   const lights = useScrollTransform(scrollProgress, 0.12, 0.24);
@@ -675,21 +701,20 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full">
-      {/* FLOW LINE - straight down center through tallest building */}
+      {/* FLOW LINE - follows building geometry: enters, follows tallest peak,
+          goes down edge, across roofline, down another building to ground */}
       <motion.path
-        d="M 160 0 L 160 15"
+        d="M 160 0
+           L 160 15
+           L 148 28
+           L 148 65
+           L 112 65
+           L 112 180"
         fill="none"
-        stroke="rgba(255,255,255,0.2)"
+        stroke="rgba(255,255,255,0.18)"
         strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: flowIn }}
-      />
-      <motion.path
-        d="M 160 15 L 160 180"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
+        strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
       />
 
