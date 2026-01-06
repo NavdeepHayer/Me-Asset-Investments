@@ -1,40 +1,69 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+
+interface GraphicPosition {
+  id: string;
+  centerX: number;
+  top: number;
+  bottom: number;
+}
 
 export function PageFlowLine() {
-  const [lineStyle, setLineStyle] = useState<{ top: number; height: number } | null>(null);
+  const [positions, setPositions] = useState<{
+    heroBottom: number;
+    pageCenter: number;
+    documentHeight: number;
+    graphics: GraphicPosition[];
+  } | null>(null);
 
   const { scrollYProgress } = useScroll();
 
-  // Calculate line dimensions
-  useEffect(() => {
-    const calculate = () => {
-      const heroEl = document.querySelector('[data-hero]') as HTMLElement;
-      const skylineEl = document.querySelector('[data-graphic="skyline"]') as HTMLElement;
+  // Calculate positions of all graphics
+  const calculate = useCallback(() => {
+    const heroEl = document.querySelector('[data-hero]') as HTMLElement;
+    if (!heroEl) return;
 
-      if (!heroEl || !skylineEl) {
-        console.log('Missing elements:', { heroEl: !!heroEl, skylineEl: !!skylineEl });
-        return;
+    const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
+    const pageCenter = window.innerWidth / 2;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    // Find all graphics in order
+    const graphicIds = ['crane', 'blueprint', 'framework', 'skyline'];
+    const graphics: GraphicPosition[] = [];
+
+    graphicIds.forEach(id => {
+      const el = document.querySelector(`[data-graphic="${id}"]`) as HTMLElement;
+      if (!el) return;
+
+      // Get true vertical position by walking up the DOM
+      let offsetTop = 0;
+      let current: HTMLElement | null = el;
+      while (current) {
+        offsetTop += current.offsetTop;
+        current = current.offsetParent as HTMLElement;
       }
 
-      // Get positions relative to document
-      const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
+      // Get horizontal center - rect gives viewport coords, add scrollX to get document coords
+      const rect = el.getBoundingClientRect();
+      const elCenterX = rect.left + rect.width / 2 + window.scrollX;
 
-      // Walk up the DOM to get true offset for skyline
-      let skylineTop = 0;
-      let el: HTMLElement | null = skylineEl;
-      while (el) {
-        skylineTop += el.offsetTop;
-        el = el.offsetParent as HTMLElement;
-      }
-      const skylineBottom = skylineTop + skylineEl.offsetHeight;
-
-      setLineStyle({
-        top: heroBottom,
-        height: skylineBottom - heroBottom
+      graphics.push({
+        id,
+        centerX: elCenterX,
+        top: offsetTop,
+        bottom: offsetTop + el.offsetHeight
       });
-    };
+    });
 
+    setPositions({
+      heroBottom,
+      pageCenter,
+      documentHeight,
+      graphics
+    });
+  }, []);
+
+  useEffect(() => {
     // Multiple attempts to ensure DOM is fully rendered
     calculate();
     const t1 = setTimeout(calculate, 200);
@@ -49,62 +78,124 @@ export function PageFlowLine() {
       clearTimeout(t3);
       window.removeEventListener('resize', calculate);
     };
-  }, []);
+  }, [calculate]);
 
-  // Animated line draws as you scroll
-  const pathLength = useTransform(scrollYProgress, [0.08, 0.72], [0, 1]);
+  // Animated segments for each connection
+  const heroToCrane = useTransform(scrollYProgress, [0.02, 0.10], [0, 1]);
+  const craneToBlueprint = useTransform(scrollYProgress, [0.15, 0.28], [0, 1]);
+  const blueprintToFramework = useTransform(scrollYProgress, [0.32, 0.45], [0, 1]);
+  const frameworkToSkyline = useTransform(scrollYProgress, [0.50, 0.62], [0, 1]);
 
-  if (!lineStyle || lineStyle.height <= 0) return null;
+  if (!positions || positions.graphics.length < 4) return null;
+
+  const { heroBottom, pageCenter, documentHeight, graphics } = positions;
+  const [crane, blueprint, framework, skyline] = graphics;
 
   return (
     <>
-      {/* Static background line - ALWAYS visible, never breaks */}
-      <div
-        className="pointer-events-none"
+      {/* SVG overlay for connecting paths - BEHIND text content (z-index: 0) */}
+      <svg
+        className="pointer-events-none absolute left-0 top-0"
         style={{
-          position: 'fixed',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          top: 0,
-          bottom: 0,
-          width: '1px',
-          backgroundColor: 'rgba(255, 255, 255, 0.12)',
-          zIndex: 2
+          width: '100%',
+          height: documentHeight,
+          zIndex: 0
         }}
-      />
-
-      {/* Animated portion that draws as you scroll */}
-      <motion.div
-        className="pointer-events-none"
-        style={{
-          position: 'fixed',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          top: 0,
-          height: '100vh',
-          width: '2px',
-          zIndex: 2
-        }}
+        preserveAspectRatio="none"
       >
-        <svg
-          className="w-full h-full"
-          preserveAspectRatio="none"
-          viewBox="0 0 2 100"
-          style={{ overflow: 'visible' }}
-        >
-          <motion.line
-            x1="1"
-            y1="0"
-            x2="1"
-            y2="100"
-            stroke="rgba(255,255,255,0.2)"
-            strokeWidth="2"
-            vectorEffect="non-scaling-stroke"
-            strokeLinecap="round"
-            style={{ pathLength }}
-          />
-        </svg>
-      </motion.div>
+        {/* Static faint connecting lines for visual continuity - drawn first (behind) */}
+        <path
+          d={`M ${pageCenter} ${heroBottom}
+              Q ${pageCenter + (crane.centerX - pageCenter) * 0.5} ${heroBottom + (crane.top - heroBottom) * 0.5}
+                ${crane.centerX} ${crane.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth="1"
+          strokeDasharray="4,8"
+        />
+        <path
+          d={`M ${crane.centerX} ${crane.bottom}
+              C ${crane.centerX} ${crane.bottom + 80}
+                ${blueprint.centerX} ${blueprint.top - 80}
+                ${blueprint.centerX} ${blueprint.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth="1"
+          strokeDasharray="4,8"
+        />
+        <path
+          d={`M ${blueprint.centerX} ${blueprint.bottom}
+              C ${blueprint.centerX} ${blueprint.bottom + 80}
+                ${framework.centerX} ${framework.top - 80}
+                ${framework.centerX} ${framework.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth="1"
+          strokeDasharray="4,8"
+        />
+        <path
+          d={`M ${framework.centerX} ${framework.bottom}
+              C ${framework.centerX} ${framework.bottom + 80}
+                ${skyline.centerX} ${skyline.top - 80}
+                ${skyline.centerX} ${skyline.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth="1"
+          strokeDasharray="4,8"
+        />
+
+        {/* Animated paths - draw on scroll */}
+        {/* Hero to Crane - diagonal from center to graphic */}
+        <motion.path
+          d={`M ${pageCenter} ${heroBottom}
+              Q ${pageCenter + (crane.centerX - pageCenter) * 0.5} ${heroBottom + (crane.top - heroBottom) * 0.5}
+                ${crane.centerX} ${crane.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.2)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          style={{ pathLength: heroToCrane }}
+        />
+
+        {/* Crane to Blueprint - curves across */}
+        <motion.path
+          d={`M ${crane.centerX} ${crane.bottom}
+              C ${crane.centerX} ${crane.bottom + 80}
+                ${blueprint.centerX} ${blueprint.top - 80}
+                ${blueprint.centerX} ${blueprint.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.2)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          style={{ pathLength: craneToBlueprint }}
+        />
+
+        {/* Blueprint to Framework - curves across */}
+        <motion.path
+          d={`M ${blueprint.centerX} ${blueprint.bottom}
+              C ${blueprint.centerX} ${blueprint.bottom + 80}
+                ${framework.centerX} ${framework.top - 80}
+                ${framework.centerX} ${framework.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.2)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          style={{ pathLength: blueprintToFramework }}
+        />
+
+        {/* Framework to Skyline */}
+        <motion.path
+          d={`M ${framework.centerX} ${framework.bottom}
+              C ${framework.centerX} ${framework.bottom + 80}
+                ${skyline.centerX} ${skyline.top - 80}
+                ${skyline.centerX} ${skyline.top}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.2)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          style={{ pathLength: frameworkToSkyline }}
+        />
+      </svg>
     </>
   );
 }
