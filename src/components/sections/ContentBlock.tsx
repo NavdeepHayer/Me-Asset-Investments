@@ -122,6 +122,17 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+      {/* Glow filter for flow line */}
+      <defs>
+        <filter id="glow-crane" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
       {/* FLOW LINE - follows crane geometry: down to peak, along A-frame, down tower */}
       <motion.path
         d="M 100 0
@@ -132,10 +143,11 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
            L 108 170
            L 100 200"
         fill="none"
-        stroke="rgba(255,255,255,0.35)"
-        strokeWidth="1.5"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        filter="url(#glow-crane)"
         style={{ pathLength: flowThrough }}
       />
 
@@ -344,6 +356,17 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+      {/* Glow filter for flow line */}
+      <defs>
+        <filter id="glow-blueprint" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
       {/* FLOW LINE - follows blueprint walls: enters, follows interior walls geometrically */}
       <motion.path
         d="M 100 0
@@ -355,10 +378,11 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
            L 100 170
            L 100 200"
         fill="none"
-        stroke="rgba(255,255,255,0.35)"
-        strokeWidth="1.5"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        filter="url(#glow-blueprint)"
         style={{ pathLength: flowThrough }}
       />
 
@@ -513,6 +537,17 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+      {/* Glow filter for flow line */}
+      <defs>
+        <filter id="glow-framework" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
       {/* FLOW LINE - follows steel frame: down column, across beam, down column */}
       <motion.path
         d="M 100 0
@@ -525,10 +560,11 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
            L 80 180
            L 100 200"
         fill="none"
-        stroke="rgba(255,255,255,0.35)"
-        strokeWidth="1.5"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        filter="url(#glow-framework)"
         style={{ pathLength: flowThrough }}
       />
 
@@ -701,20 +737,34 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full">
+      {/* Glow filter for flow line */}
+      <defs>
+        <filter id="glow-skyline" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
       {/* FLOW LINE - follows building geometry: enters, follows tallest peak,
-          goes down edge, across roofline, down another building to ground */}
+          cascades through buildings to ground */}
       <motion.path
         d="M 160 0
            L 160 15
            L 148 28
            L 148 65
-           L 112 65
-           L 112 180"
+           L 105 65
+           L 105 100
+           L 68 100
+           L 68 180"
         fill="none"
-        stroke="rgba(255,255,255,0.35)"
-        strokeWidth="1.5"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
+        filter="url(#glow-skyline)"
         style={{ pathLength: flowThrough }}
       />
 

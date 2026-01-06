@@ -95,7 +95,7 @@ export function PageFlowLine() {
 
   return (
     <>
-      {/* SVG overlay for connecting paths - MORE VISIBLE */}
+      {/* SVG overlay for connecting paths */}
       <svg
         className="pointer-events-none absolute left-0 top-0"
         style={{
@@ -105,107 +105,112 @@ export function PageFlowLine() {
         }}
         preserveAspectRatio="none"
       >
-        {/* Hero to Crane - 3 lines converging */}
-        <motion.line
-          x1={pageCenter - spread} y1={heroBottom}
-          x2={crane.centerX} y2={crane.top}
-          stroke="rgba(255,255,255,0.25)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          style={{ pathLength: heroToCrane }}
-        />
+        {/* Glow filter for flow lines */}
+        <defs>
+          <filter id="glow-flow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+
+        {/* Hero to Crane - single line (first transition is short) */}
         <motion.line
           x1={pageCenter} y1={heroBottom}
           x2={crane.centerX} y2={crane.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="2"
           strokeLinecap="round"
-          style={{ pathLength: heroToCrane }}
-        />
-        <motion.line
-          x1={pageCenter + spread} y1={heroBottom}
-          x2={crane.centerX} y2={crane.top}
-          stroke="rgba(255,255,255,0.25)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: heroToCrane }}
         />
 
-        {/* Crane to Blueprint - diverge then converge */}
+        {/* Crane to Blueprint - diverge then converge (3 lines) */}
         <motion.line
           x1={crane.centerX} y1={crane.bottom}
           x2={blueprint.centerX - spread} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.25)"
+          stroke="rgba(255,255,255,0.35)"
           strokeWidth="1.5"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: craneToBlueprint }}
         />
         <motion.line
           x1={crane.centerX} y1={crane.bottom}
           x2={blueprint.centerX} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="2"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: craneToBlueprint }}
         />
         <motion.line
           x1={crane.centerX} y1={crane.bottom}
           x2={blueprint.centerX + spread} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.25)"
+          stroke="rgba(255,255,255,0.35)"
           strokeWidth="1.5"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: craneToBlueprint }}
         />
 
-        {/* Blueprint to Framework - converge */}
+        {/* Blueprint to Framework - converge (3 lines) */}
         <motion.line
           x1={blueprint.centerX - spread} y1={blueprint.bottom}
           x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.25)"
+          stroke="rgba(255,255,255,0.35)"
           strokeWidth="1.5"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: blueprintToFramework }}
         />
         <motion.line
           x1={blueprint.centerX} y1={blueprint.bottom}
           x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="2"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: blueprintToFramework }}
         />
         <motion.line
           x1={blueprint.centerX + spread} y1={blueprint.bottom}
           x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.25)"
+          stroke="rgba(255,255,255,0.35)"
           strokeWidth="1.5"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: blueprintToFramework }}
         />
 
-        {/* Framework to Skyline - converge to center */}
+        {/* Framework to Skyline - diverge (3 lines) */}
         <motion.line
           x1={framework.centerX} y1={framework.bottom}
           x2={skyline.centerX - spread} y2={skyline.top}
-          stroke="rgba(255,255,255,0.25)"
+          stroke="rgba(255,255,255,0.35)"
           strokeWidth="1.5"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: frameworkToSkyline }}
         />
         <motion.line
           x1={framework.centerX} y1={framework.bottom}
           x2={skyline.centerX} y2={skyline.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="2"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: frameworkToSkyline }}
         />
         <motion.line
           x1={framework.centerX} y1={framework.bottom}
           x2={skyline.centerX + spread} y2={skyline.top}
-          stroke="rgba(255,255,255,0.25)"
+          stroke="rgba(255,255,255,0.35)"
           strokeWidth="1.5"
           strokeLinecap="round"
+          filter="url(#glow-flow)"
           style={{ pathLength: frameworkToSkyline }}
         />
       </svg>
