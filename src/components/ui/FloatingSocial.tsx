@@ -4,14 +4,14 @@ export function FloatingSocial() {
   const { footer } = siteContent;
 
   return (
-    <div className="fixed right-4 md:right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4">
+    <div className="fixed right-6 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-3">
       {footer.socialLinks.map((link) => (
         <a
           key={link.name}
           href={link.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-10 h-10 flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors text-white"
+          className="w-11 h-11 flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all text-white/70 hover:text-white"
           aria-label={link.name}
         >
           {link.icon === "substack" && (

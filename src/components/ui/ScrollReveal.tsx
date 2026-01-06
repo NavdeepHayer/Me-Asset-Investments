@@ -39,9 +39,9 @@ export function ScrollReveal({
   children,
   className = "",
   delay = 0,
-  duration = 0.6,
+  duration = 0.8,
   direction = "up",
-  distance = 30,
+  distance = 40,
 }: ScrollRevealProps) {
   const variants = getVariants(direction, distance);
 
@@ -49,12 +49,12 @@ export function ScrollReveal({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-50px" }}
+      viewport={{ once: true, margin: "-100px" }}
       variants={variants}
       transition={{
         duration,
         delay,
-        ease: [0.25, 0.1, 0.25, 1],
+        ease: [0.22, 1, 0.36, 1],
       }}
       className={className}
     >
