@@ -8,3 +8,4 @@ export { FocusAreas } from "./FocusAreas";
 export { ClosingStatement } from "./ClosingStatement";
 export { MailingList } from "./MailingList";
 export { Footer } from "./Footer";
+export { ImageBreak } from "./ImageBreak";

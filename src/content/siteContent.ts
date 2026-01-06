@@ -9,10 +9,14 @@ export const siteContent = {
     headline: "Building enduring value through patient capital",
     subheadline:
       "We partner with exceptional founders and management teams to create lasting enterprises.",
+    backgroundImage:
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80",
   },
 
   intro: {
     text: "We are a private investment firm with a long-term orientation. Our approach is grounded in patience, partnership, and a deep commitment to the businesses and people we work with. We believe that sustainable value is created over decades, not quarters, and we structure our investments to reflect that conviction.",
+    backgroundImage:
+      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80",
   },
 
   missionStatement: {
@@ -72,6 +76,8 @@ export const siteContent = {
   globalPresence: {
     headline: "Active across markets",
     locations: "New York, London, Singapore, Sydney, Toronto",
+    backgroundImage:
+      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80",
   },
 
   strategy: {
@@ -81,6 +87,8 @@ export const siteContent = {
       "Our investment approach emphasizes partnership over transaction. We seek businesses where we can add meaningful value beyond capital, whether through strategic insight, operational expertise, or access to our broader network of relationships.",
       "We are sector-agnostic but disciplined. We invest where we have conviction, where we understand the business deeply, and where we see an opportunity to support exceptional people in building something meaningful.",
     ],
+    backgroundImage:
+      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80",
   },
 
   focusAreas: {
@@ -121,6 +129,8 @@ export const siteContent = {
 
   closingStatement: {
     text: "We believe that the best investments are not transactions but relationships. Our commitment is to the long term, to the people we work with, and to building enterprises that will endure for generations.",
+    backgroundImage:
+      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80",
   },
 
   mailingList: {
@@ -144,8 +154,23 @@ export const siteContent = {
       { name: "Terms of Use", url: "#" },
     ],
   },
+
+  // Full-bleed image sections for visual rhythm
+  imageBreaks: [
+    {
+      id: "break-1",
+      src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80",
+      alt: "Mountain landscape at dawn",
+    },
+    {
+      id: "break-2",
+      src: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1920&q=80",
+      alt: "Ocean horizon",
+    },
+  ],
 };
 
 export type SiteContent = typeof siteContent;
 export type GalleryStory = (typeof siteContent.galleryStories)[0];
 export type FocusArea = (typeof siteContent.focusAreas.areas)[0];
+export type ImageBreak = (typeof siteContent.imageBreaks)[0];

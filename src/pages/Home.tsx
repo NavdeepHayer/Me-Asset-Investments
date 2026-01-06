@@ -9,15 +9,16 @@ import {
   ClosingStatement,
   MailingList,
   Footer,
+  ImageBreak,
 } from "../components/sections";
 import { siteContent } from "../content/siteContent";
 
 export function Home() {
-  const { galleryStories } = siteContent;
+  const { galleryStories, imageBreaks } = siteContent;
 
   return (
     <main>
-      {/* Hero Section */}
+      {/* Hero Section - Full bleed background image */}
       <Hero />
 
       {/* Intro Section */}
@@ -26,25 +27,37 @@ export function Home() {
       {/* Mission Statement */}
       <MissionStatement />
 
-      {/* Gallery Story Sections */}
-      {galleryStories.map((story, index) => (
-        <GalleryStory
-          key={story.id}
-          story={story}
-          layout={index % 2 === 0 ? "left" : "right"}
-        />
-      ))}
+      {/* First Gallery Story */}
+      {galleryStories[0] && (
+        <GalleryStory story={galleryStories[0]} layout="left" />
+      )}
 
-      {/* Global Presence */}
+      {/* Image Break - Visual pause */}
+      {imageBreaks[0] && <ImageBreak image={imageBreaks[0]} />}
+
+      {/* Second Gallery Story */}
+      {galleryStories[1] && (
+        <GalleryStory story={galleryStories[1]} layout="right" />
+      )}
+
+      {/* Third Gallery Story */}
+      {galleryStories[2] && (
+        <GalleryStory story={galleryStories[2]} layout="left" />
+      )}
+
+      {/* Global Presence - Dark section with background */}
       <GlobalPresence />
 
       {/* Strategy / What We Do */}
       <Strategy />
 
+      {/* Image Break - Visual pause */}
+      {imageBreaks[1] && <ImageBreak image={imageBreaks[1]} />}
+
       {/* Focus Areas */}
       <FocusAreas />
 
-      {/* Closing Statement */}
+      {/* Closing Statement - Full bleed background */}
       <ClosingStatement />
 
       {/* Mailing List */}
