@@ -19,7 +19,7 @@ export function ContentBlock({
 
   if (hasGraphic && !hasText) {
     return (
-      <section className={`py-16 md:py-24 lg:py-32 ${className}`}>
+      <section className={`py-12 sm:py-16 md:py-24 lg:py-32 ${className}`}>
         <div className="container-wide flex justify-center">
           <GraphicElement variant={graphic} />
         </div>
@@ -31,7 +31,7 @@ export function ContentBlock({
     <section className={`section-spacing ${className}`}>
       <div className="container-wide">
         {hasGraphic ? (
-          <div className={`flex flex-col ${graphicPosition === "left" ? "lg:flex-row-reverse" : "lg:flex-row"} gap-12 lg:gap-16 xl:gap-24 2xl:gap-32 items-center`}>
+          <div className={`flex flex-col ${graphicPosition === "left" ? "lg:flex-row-reverse" : "lg:flex-row"} gap-8 sm:gap-10 md:gap-12 lg:gap-16 xl:gap-24 2xl:gap-32 items-center`}>
             <div className="flex-1 lg:max-w-[50%] xl:max-w-[45%]">
               <ScrollReveal duration={1} distance={50}>
                 <p className="text-body-large">{text}</p>
@@ -63,8 +63,8 @@ function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framewo
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 1.5, ease: "easeOut" }}
       className={isWide
-        ? "w-[320px] h-[200px] md:w-[480px] md:h-[300px] lg:w-[600px] lg:h-[380px] xl:w-[700px] xl:h-[440px] 2xl:w-[800px] 2xl:h-[500px]"
-        : "w-[280px] h-[280px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] xl:w-[500px] xl:h-[500px] 2xl:w-[580px] 2xl:h-[580px]"
+        ? "w-[300px] h-[188px] sm:w-[360px] sm:h-[225px] md:w-[480px] md:h-[300px] lg:w-[600px] lg:h-[380px] xl:w-[700px] xl:h-[440px] 2xl:w-[800px] 2xl:h-[500px]"
+        : "w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] xl:w-[500px] xl:h-[500px] 2xl:w-[580px] 2xl:h-[580px]"
       }
     >
       {variant === "crane" && <CraneGraphic />}
