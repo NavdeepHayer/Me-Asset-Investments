@@ -30,6 +30,11 @@ export const siteContent = {
     text: "We believe in advancing progress to help usher in an era of physical and mental abundance. Our commitment is to the long term, to the people we work with, and to building enterprises that will endure for generations.",
   },
 
+  // Featured quote for visual interest
+  pullQuote: {
+    text: "Building enterprises that will endure for generations.",
+  },
+
   mailingList: {
     headline: "GET REGULAR UPDATES BY JOINING OUR MAILING LIST.",
     namePlaceholder: "Name",
