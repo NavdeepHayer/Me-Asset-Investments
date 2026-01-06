@@ -15,23 +15,23 @@ export function Home() {
         {/* Hero with ME branding */}
         <Hero />
 
-        {/* Intro - with grid graphic on right (desktop) */}
-        <ContentBlock text={intro.text} graphic="grid" graphicPosition="right" />
+        {/* Intro - with construction crane graphic */}
+        <ContentBlock text={intro.text} graphic="crane" graphicPosition="right" />
 
         {/* Investment Focus */}
         <TextSection text={investmentFocus.text} />
 
-        {/* SAVE Philosophy - with lines graphic on left (desktop) */}
-        <ContentBlock text={savePhilosophy.text} graphic="lines" graphicPosition="left" />
+        {/* SAVE Philosophy - with blueprint graphic */}
+        <ContentBlock text={savePhilosophy.text} graphic="blueprint" graphicPosition="left" />
 
-        {/* Investment Approach - with dots graphic on right */}
-        <ContentBlock text={approach.text} graphic="dots" graphicPosition="right" />
+        {/* Investment Approach - with framework graphic */}
+        <ContentBlock text={approach.text} graphic="framework" graphicPosition="right" />
 
         {/* Mission/ESG */}
         <TextSection text={mission.text} />
 
         {/* City skyline - full width */}
-        <ContentBlock text="" graphic="towers" graphicPosition="right" />
+        <ContentBlock text="" graphic="skyline" graphicPosition="right" />
 
         {/* Team Section */}
         <Team />
