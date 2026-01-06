@@ -90,9 +90,6 @@ export function PageFlowLine() {
   const { heroBottom, pageCenter, documentHeight, graphics } = positions;
   const [crane, blueprint, framework, skyline] = graphics;
 
-  // Spread amount for diverging/converging lines
-  const spread = 80;
-
   return (
     <>
       {/* SVG overlay for connecting paths */}
@@ -116,7 +113,7 @@ export function PageFlowLine() {
           </filter>
         </defs>
 
-        {/* Hero to Crane - single line (first transition is short) */}
+        {/* Hero to Crane */}
         <motion.line
           x1={pageCenter} y1={heroBottom}
           x2={crane.centerX} y2={crane.top}
@@ -127,16 +124,7 @@ export function PageFlowLine() {
           style={{ pathLength: heroToCrane }}
         />
 
-        {/* Crane to Blueprint - diverge then converge (3 lines) */}
-        <motion.line
-          x1={crane.centerX} y1={crane.bottom}
-          x2={blueprint.centerX - spread} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: craneToBlueprint }}
-        />
+        {/* Crane to Blueprint */}
         <motion.line
           x1={crane.centerX} y1={crane.bottom}
           x2={blueprint.centerX} y2={blueprint.top}
@@ -146,26 +134,8 @@ export function PageFlowLine() {
           filter="url(#glow-flow)"
           style={{ pathLength: craneToBlueprint }}
         />
-        <motion.line
-          x1={crane.centerX} y1={crane.bottom}
-          x2={blueprint.centerX + spread} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: craneToBlueprint }}
-        />
 
-        {/* Blueprint to Framework - converge (3 lines) */}
-        <motion.line
-          x1={blueprint.centerX - spread} y1={blueprint.bottom}
-          x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: blueprintToFramework }}
-        />
+        {/* Blueprint to Framework */}
         <motion.line
           x1={blueprint.centerX} y1={blueprint.bottom}
           x2={framework.centerX} y2={framework.top}
@@ -175,40 +145,13 @@ export function PageFlowLine() {
           filter="url(#glow-flow)"
           style={{ pathLength: blueprintToFramework }}
         />
-        <motion.line
-          x1={blueprint.centerX + spread} y1={blueprint.bottom}
-          x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: blueprintToFramework }}
-        />
 
-        {/* Framework to Skyline - diverge (3 lines) */}
-        <motion.line
-          x1={framework.centerX} y1={framework.bottom}
-          x2={skyline.centerX - spread} y2={skyline.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: frameworkToSkyline }}
-        />
+        {/* Framework to Skyline */}
         <motion.line
           x1={framework.centerX} y1={framework.bottom}
           x2={skyline.centerX} y2={skyline.top}
           stroke="rgba(255,255,255,0.5)"
           strokeWidth="2"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: frameworkToSkyline }}
-        />
-        <motion.line
-          x1={framework.centerX} y1={framework.bottom}
-          x2={skyline.centerX + spread} y2={skyline.top}
-          stroke="rgba(255,255,255,0.35)"
-          strokeWidth="1.5"
           strokeLinecap="round"
           filter="url(#glow-flow)"
           style={{ pathLength: frameworkToSkyline }}
