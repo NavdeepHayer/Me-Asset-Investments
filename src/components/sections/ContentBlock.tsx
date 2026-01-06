@@ -78,58 +78,7 @@ function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framewo
 // Tower crane with detailed lattice structure
 function CraneGraphic() {
   return (
-    <motion.svg viewBox="-50 -60 300 320" className="w-full h-full overflow-visible">
-      {/* CONNECTING LINES - Entry from top-left, exit to bottom-left */}
-      <motion.path
-        d="M -50 -60 L 0 -20 L 50 0 L 100 18"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M -45 -60 L 5 -20 L 55 0 L 100 16"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.1, ease: "easeOut" }}
-      />
-      {/* Exit lines to bottom */}
-      <motion.path
-        d="M 100 185 L 50 210 L 0 230 L -50 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 3.5, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M 100 187 L 55 212 L 5 232 L -45 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 3.6, ease: "easeOut" }}
-      />
-
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
       {/* Ground and construction site base */}
       <motion.line
         x1="10" y1="185" x2="190" y2="185"
@@ -384,58 +333,7 @@ function CraneGraphic() {
 // Architectural blueprint with grid and details
 function BlueprintGraphic() {
   return (
-    <motion.svg viewBox="-50 -60 300 320" className="w-full h-full overflow-visible">
-      {/* CONNECTING LINES - Entry from top-right (coming from crane), exit to bottom-right */}
-      <motion.path
-        d="M 250 -60 L 200 -20 L 150 0 L 100 18"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M 245 -60 L 195 -20 L 145 0 L 100 16"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.1, ease: "easeOut" }}
-      />
-      {/* Exit lines to bottom-right (toward framework) */}
-      <motion.path
-        d="M 100 185 L 150 210 L 200 230 L 250 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 3.5, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M 100 187 L 145 212 L 195 232 L 245 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 3.6, ease: "easeOut" }}
-      />
-
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
       {/* Background grid */}
       <motion.g
         initial={{ opacity: 0 }}
@@ -634,58 +532,7 @@ function BlueprintGraphic() {
 // Steel frame structure with detailed I-beams
 function FrameworkGraphic() {
   return (
-    <motion.svg viewBox="-50 -60 300 320" className="w-full h-full overflow-visible">
-      {/* CONNECTING LINES - Entry from top-left (coming from blueprint), exit to bottom-left */}
-      <motion.path
-        d="M -50 -60 L 0 -20 L 50 0 L 100 18"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M -45 -60 L 5 -20 L 55 0 L 100 16"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.1, ease: "easeOut" }}
-      />
-      {/* Exit lines to bottom-left (toward skyline center) */}
-      <motion.path
-        d="M 100 185 L 50 210 L 0 230 L -50 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 4, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M 100 187 L 55 212 L 5 232 L -45 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 4.1, ease: "easeOut" }}
-      />
-
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
       {/* Ground */}
       <motion.line
         x1="15" y1="180" x2="185" y2="180"
@@ -906,58 +753,7 @@ function FrameworkGraphic() {
 // City skyline with refined architecture
 function SkylineGraphic() {
   return (
-    <motion.svg viewBox="-40 -60 400 320" className="w-full h-full overflow-visible">
-      {/* CONNECTING LINES - Entry from top (coming from framework on right) */}
-      <motion.path
-        d="M 360 -60 L 280 -30 L 200 -10 L 160 12"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M 355 -60 L 275 -30 L 195 -10 L 160 10"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1.2, delay: 0.1, ease: "easeOut" }}
-      />
-      {/* Exit lines extending down from skyline */}
-      <motion.path
-        d="M 160 185 L 160 220 L 160 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 2.5, ease: "easeOut" }}
-      />
-      <motion.path
-        d="M 165 185 L 165 220 L 165 260"
-        fill="none"
-        stroke="rgba(255,255,255,0.08)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        pathLength="1"
-        initial={{ pathLength: 0 }}
-        whileInView={{ pathLength: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 2.6, ease: "easeOut" }}
-      />
-
+    <motion.svg viewBox="0 0 320 200" className="w-full h-full">
       {/* Ground line */}
       <motion.line
         x1="5" y1="180" x2="315" y2="180"
