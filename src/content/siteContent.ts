@@ -9,75 +9,41 @@ export const siteContent = {
     headline: "Building enduring value through patient capital",
     subheadline:
       "We partner with exceptional founders and management teams to create lasting enterprises.",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80",
   },
 
   intro: {
     text: "We are a private investment firm with a long-term orientation. Our approach is grounded in patience, partnership, and a deep commitment to the businesses and people we work with. We believe that sustainable value is created over decades, not quarters, and we structure our investments to reflect that conviction.",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=1920&q=80",
   },
 
   missionStatement: {
     line: "Patient capital. Enduring partnerships. Lasting value.",
   },
 
-  galleryStories: [
+  // Full-bleed image sections featuring classical sculpture
+  imageFeatures: [
     {
-      id: "story-1",
-      images: [
-        {
-          src: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop",
-          alt: "Modern architecture with clean lines",
-        },
-        {
-          src: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop",
-          alt: "Minimalist office space",
-        },
-      ],
-      caption: {
-        title: "Thoughtful stewardship",
-        text: "We approach each investment as a long-term partnership. Our role extends beyond capital to include strategic guidance, operational support, and access to a network built over decades of careful relationship building.",
-      },
+      id: "feature-1",
+      src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1400&q=80",
+      alt: "Classical marble sculpture",
+      caption: "Timeless principles guide our approach",
     },
     {
-      id: "story-2",
-      images: [
-        {
-          src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&h=600&fit=crop",
-          alt: "Team collaboration",
-        },
-      ],
-      caption: {
-        title: "Partnership in practice",
-        text: "We work alongside the leaders of our portfolio companies as true partners. This means being available when needed, providing perspective without imposing, and always prioritizing the long-term health of the enterprise over short-term metrics.",
-      },
+      id: "feature-2",
+      src: "https://images.unsplash.com/photo-1584285405429-136bf988919c?w=1400&q=80",
+      alt: "Ancient Greek statue",
+      caption: "Building for generations",
     },
     {
-      id: "story-3",
-      images: [
-        {
-          src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
-          alt: "Data and analytics",
-        },
-        {
-          src: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=600&fit=crop",
-          alt: "Strategic planning",
-        },
-      ],
-      caption: {
-        title: "Measured growth",
-        text: "Sustainable growth requires patience and discipline. We favor steady progress over rapid expansion, understanding that the most valuable enterprises are built through consistent execution over time.",
-      },
+      id: "feature-3",
+      src: "https://images.unsplash.com/photo-1577720643272-265f09367456?w=1400&q=80",
+      alt: "Classical sculpture detail",
+      caption: "Excellence endures",
     },
   ],
 
   globalPresence: {
     headline: "Active across markets",
-    locations: "New York, London, Singapore, Sydney, Toronto",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80",
+    locations: "New York · London · Singapore · Sydney · Toronto",
   },
 
   strategy: {
@@ -87,56 +53,38 @@ export const siteContent = {
       "Our investment approach emphasizes partnership over transaction. We seek businesses where we can add meaningful value beyond capital, whether through strategic insight, operational expertise, or access to our broader network of relationships.",
       "We are sector-agnostic but disciplined. We invest where we have conviction, where we understand the business deeply, and where we see an opportunity to support exceptional people in building something meaningful.",
     ],
-    backgroundImage:
-      "https://images.unsplash.com/photo-1519681393784-d120267933ba?w=1920&q=80",
   },
 
   focusAreas: {
     headline: "Areas of focus",
     areas: [
       {
-        title: "Business Services",
-        description:
-          "Essential services that form the infrastructure of modern commerce.",
-      },
-      {
-        title: "Healthcare",
-        description:
-          "Companies improving access, quality, and efficiency in healthcare delivery.",
+        title: "Life Sciences",
+        description: "Advancing human health and longevity.",
       },
       {
         title: "Technology",
-        description:
-          "Software and technology-enabled businesses with sustainable competitive advantages.",
-      },
-      {
-        title: "Consumer",
-        description:
-          "Brands and businesses that have earned lasting consumer trust.",
-      },
-      {
-        title: "Industrial",
-        description:
-          "Manufacturing and industrial businesses with strong market positions.",
+        description: "Software and platforms shaping the future.",
       },
       {
         title: "Financial Services",
-        description:
-          "Specialty finance and services businesses with disciplined underwriting.",
+        description: "Innovation in finance and capital markets.",
+      },
+      {
+        title: "Consumer",
+        description: "Brands that earn lasting trust.",
       },
     ],
   },
 
   closingStatement: {
     text: "We believe that the best investments are not transactions but relationships. Our commitment is to the long term, to the people we work with, and to building enterprises that will endure for generations.",
-    backgroundImage:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1920&q=80",
   },
 
   mailingList: {
     headline: "Stay informed",
     description:
-      "Receive occasional updates on our thinking and perspective on long-term value creation.",
+      "Receive occasional updates on our thinking and perspective.",
     placeholder: "Enter your email",
     buttonText: "Subscribe",
     successMessage: "Thank you for subscribing.",
@@ -147,30 +95,15 @@ export const siteContent = {
     copyright: "Investment Partners",
     socialLinks: [
       { name: "LinkedIn", url: "#" },
-      { name: "Twitter", url: "#" },
+      { name: "X", url: "#" },
     ],
     legalLinks: [
-      { name: "Privacy Policy", url: "#" },
-      { name: "Terms of Use", url: "#" },
+      { name: "Privacy", url: "#" },
+      { name: "Terms", url: "#" },
     ],
   },
-
-  // Full-bleed image sections for visual rhythm
-  imageBreaks: [
-    {
-      id: "break-1",
-      src: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1920&q=80",
-      alt: "Mountain landscape at dawn",
-    },
-    {
-      id: "break-2",
-      src: "https://images.unsplash.com/photo-1505142468610-359e7d316be0?w=1920&q=80",
-      alt: "Ocean horizon",
-    },
-  ],
 };
 
 export type SiteContent = typeof siteContent;
-export type GalleryStory = (typeof siteContent.galleryStories)[0];
+export type ImageFeature = (typeof siteContent.imageFeatures)[0];
 export type FocusArea = (typeof siteContent.focusAreas.areas)[0];
-export type ImageBreak = (typeof siteContent.imageBreaks)[0];

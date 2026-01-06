@@ -5,15 +5,15 @@ export function GlobalPresence() {
   const { globalPresence } = siteContent;
 
   return (
-    <section className="py-32 md:py-40 lg:py-48 bg-white/5 backdrop-blur-sm">
+    <section className="section-spacing">
       <div className="container-editorial text-center">
         <ScrollReveal>
-          <h2 className="text-xl md:text-2xl text-white/60 mb-6 tracking-wide uppercase">
+          <p className="text-caption uppercase tracking-widest mb-6">
             {globalPresence.headline}
-          </h2>
+          </p>
         </ScrollReveal>
-        <ScrollReveal delay={0.15}>
-          <p className="text-headline text-white">{globalPresence.locations}</p>
+        <ScrollReveal delay={0.1}>
+          <p className="text-headline">{globalPresence.locations}</p>
         </ScrollReveal>
       </div>
     </section>

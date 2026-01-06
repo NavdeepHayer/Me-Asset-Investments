@@ -8,7 +8,7 @@ export function Intro() {
     <section className="section-spacing">
       <div className="container-editorial">
         <ScrollReveal>
-          <p className="text-body-large max-w-3xl leading-relaxed text-white/90">
+          <p className="text-body-large max-w-3xl">
             {intro.text}
           </p>
         </ScrollReveal>

@@ -28,13 +28,13 @@ export function MailingList() {
   };
 
   return (
-    <section className="section-spacing-sm bg-white/5 backdrop-blur-sm">
+    <section className="section-spacing-sm border-t border-white/10">
       <div className="container-editorial text-center">
         <ScrollReveal>
-          <h2 className="text-headline mb-4 text-white">{mailingList.headline}</h2>
+          <h2 className="text-headline mb-4">{mailingList.headline}</h2>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
-          <p className="text-body text-white/70 mb-8 max-w-xl mx-auto">
+          <p className="text-body mb-10 max-w-xl mx-auto">
             {mailingList.description}
           </p>
         </ScrollReveal>
@@ -50,12 +50,12 @@ export function MailingList() {
               placeholder={mailingList.placeholder}
               required
               disabled={status === "loading" || status === "success"}
-              className="flex-1 px-4 py-3 border border-white/30 bg-white/10 text-white placeholder-white/50 focus:outline-none focus:border-white/60 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-3 border border-white/20 bg-transparent text-white placeholder-white/40 focus:outline-none focus:border-white/50 transition-colors disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={status === "loading" || status === "success"}
-              className="px-8 py-3 bg-white text-neutral-900 hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3 bg-white text-black hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {status === "loading" ? "..." : mailingList.buttonText}
             </button>
@@ -67,7 +67,7 @@ export function MailingList() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="text-sm text-white/70 mt-4"
+              className="text-caption mt-4"
             >
               {mailingList.successMessage}
             </motion.p>

@@ -5,10 +5,10 @@ export function ClosingStatement() {
   const { closingStatement } = siteContent;
 
   return (
-    <section className="py-32 md:py-40 lg:py-48 bg-white/5 backdrop-blur-sm">
+    <section className="section-spacing">
       <div className="container-editorial text-center">
         <ScrollReveal>
-          <p className="text-subheadline max-w-3xl mx-auto text-white leading-relaxed">
+          <p className="text-subheadline max-w-3xl mx-auto leading-relaxed">
             {closingStatement.text}
           </p>
         </ScrollReveal>

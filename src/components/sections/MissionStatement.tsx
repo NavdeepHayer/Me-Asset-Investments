@@ -5,10 +5,10 @@ export function MissionStatement() {
   const { missionStatement } = siteContent;
 
   return (
-    <section className="section-spacing-sm bg-white/5 backdrop-blur-sm">
+    <section className="section-spacing-sm">
       <div className="container-editorial text-center">
         <ScrollReveal>
-          <p className="text-subheadline text-white/90 italic">
+          <p className="text-subheadline italic text-white/70">
             {missionStatement.line}
           </p>
         </ScrollReveal>
