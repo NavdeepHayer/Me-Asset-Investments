@@ -98,10 +98,8 @@ interface GraphicProps {
 
 // Tower crane with detailed lattice structure
 function CraneGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - enters top, follows crane structure, exits bottom
-  const flowIn = useScrollTransform(scrollProgress, 0.08, 0.18);
-  const flowThrough = useScrollTransform(scrollProgress, 0.16, 0.70);
-  const flowOut = useScrollTransform(scrollProgress, 0.68, 0.78);
+  // Flow line - straight through
+  const flowThrough = useScrollTransform(scrollProgress, 0.10, 0.75);
 
   // Animation builds TOP to BOTTOM
   const peak = useScrollTransform(scrollProgress, 0.12, 0.22);
@@ -124,32 +122,13 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* FLOW LINE - enters center, down through crane tower, exits center */}
-      <motion.path
-        d="M 100 0 L 100 18"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        style={{ pathLength: flowIn }}
-      />
-      <motion.path
-        d="M 100 18 L 92 38 L 92 170"
-        fill="none"
+      {/* FLOW LINE - straight down center */}
+      <motion.line
+        x1="100" y1="0" x2="100" y2="200"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
-        strokeLinejoin="round"
         style={{ pathLength: flowThrough }}
-      />
-      <motion.path
-        d="M 92 170 L 92 185 L 100 200"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ pathLength: flowOut }}
       />
 
       {/* Ground and construction site base */}
@@ -337,10 +316,8 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
 
 // Architectural blueprint with grid and details
 function BlueprintGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - enters top, follows interior wall, exits bottom
-  const flowIn = useScrollTransform(scrollProgress, 0.08, 0.18);
-  const flowThrough = useScrollTransform(scrollProgress, 0.16, 0.70);
-  const flowOut = useScrollTransform(scrollProgress, 0.68, 0.78);
+  // Flow line - straight through
+  const flowThrough = useScrollTransform(scrollProgress, 0.10, 0.75);
 
   // Animation builds TOP to BOTTOM
   const grid = useScrollTransform(scrollProgress, 0.12, 0.22);
@@ -359,32 +336,13 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* FLOW LINE - enters center, follows interior wall, exits center */}
-      <motion.path
-        d="M 100 0 L 100 30 L 90 35"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ pathLength: flowIn }}
-      />
-      <motion.path
-        d="M 90 35 L 90 165"
-        fill="none"
+      {/* FLOW LINE - straight down center */}
+      <motion.line
+        x1="100" y1="0" x2="100" y2="200"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
         style={{ pathLength: flowThrough }}
-      />
-      <motion.path
-        d="M 90 165 L 100 170 L 100 200"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ pathLength: flowOut }}
       />
 
       {/* Background grid */}
@@ -515,10 +473,8 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
 
 // Steel frame structure with detailed I-beams
 function FrameworkGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - enters top, follows column, exits bottom
-  const flowIn = useScrollTransform(scrollProgress, 0.08, 0.18);
-  const flowThrough = useScrollTransform(scrollProgress, 0.16, 0.70);
-  const flowOut = useScrollTransform(scrollProgress, 0.68, 0.78);
+  // Flow line - straight through
+  const flowThrough = useScrollTransform(scrollProgress, 0.10, 0.75);
 
   // Animation builds TOP to BOTTOM
   const craneCable = useScrollTransform(scrollProgress, 0.12, 0.22);
@@ -540,32 +496,13 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* FLOW LINE - enters center, follows column at x=80, exits center */}
-      <motion.path
-        d="M 100 0 L 100 20 L 80 22"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ pathLength: flowIn }}
-      />
-      <motion.path
-        d="M 80 22 L 80 172"
-        fill="none"
+      {/* FLOW LINE - straight down center */}
+      <motion.line
+        x1="100" y1="0" x2="100" y2="200"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
         style={{ pathLength: flowThrough }}
-      />
-      <motion.path
-        d="M 80 172 L 80 180 L 100 200"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        style={{ pathLength: flowOut }}
       />
 
       {/* Ground */}

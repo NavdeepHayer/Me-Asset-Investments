@@ -79,19 +79,19 @@ export function PageFlowLine() {
     };
   }, [calculate]);
 
-  // Animated segments - smoother timing
+  // Animated segments - draw as you scroll
   const heroToCrane = useTransform(scrollYProgress, [0.02, 0.08], [0, 1]);
-  const craneToBlueprint = useTransform(scrollYProgress, [0.14, 0.24], [0, 1]);
-  const blueprintToFramework = useTransform(scrollYProgress, [0.30, 0.42], [0, 1]);
-  const frameworkToSkyline = useTransform(scrollYProgress, [0.48, 0.58], [0, 1]);
+  const craneToBlueprint = useTransform(scrollYProgress, [0.14, 0.22], [0, 1]);
+  const blueprintToFramework = useTransform(scrollYProgress, [0.30, 0.38], [0, 1]);
+  const frameworkToSkyline = useTransform(scrollYProgress, [0.48, 0.56], [0, 1]);
 
   if (!positions || positions.graphics.length < 4) return null;
 
   const { heroBottom, pageCenter, documentHeight, graphics } = positions;
   const [crane, blueprint, framework, skyline] = graphics;
 
-  // Calculate smooth curve control points - more elegant sweeping curves
-  const curveStrength = 120; // How much the curve bends
+  // Spread amount for diverging/converging lines
+  const spread = 60;
 
   return (
     <>
@@ -105,88 +105,105 @@ export function PageFlowLine() {
         }}
         preserveAspectRatio="none"
       >
-        {/* Faint guide lines */}
-        <path
-          d={`M ${pageCenter} ${heroBottom}
-              C ${pageCenter} ${heroBottom + curveStrength}
-                ${crane.centerX} ${crane.top - curveStrength}
-                ${crane.centerX} ${crane.top}`}
-          fill="none"
-          stroke="rgba(255,255,255,0.04)"
+        {/* Hero to Crane - 3 lines converging */}
+        <motion.line
+          x1={pageCenter - spread} y1={heroBottom}
+          x2={crane.centerX} y2={crane.top}
+          stroke="rgba(255,255,255,0.12)"
           strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: heroToCrane }}
         />
-        <path
-          d={`M ${crane.centerX} ${crane.bottom}
-              C ${crane.centerX} ${crane.bottom + curveStrength}
-                ${blueprint.centerX} ${blueprint.top - curveStrength}
-                ${blueprint.centerX} ${blueprint.top}`}
-          fill="none"
-          stroke="rgba(255,255,255,0.04)"
-          strokeWidth="1"
-        />
-        <path
-          d={`M ${blueprint.centerX} ${blueprint.bottom}
-              C ${blueprint.centerX} ${blueprint.bottom + curveStrength}
-                ${framework.centerX} ${framework.top - curveStrength}
-                ${framework.centerX} ${framework.top}`}
-          fill="none"
-          stroke="rgba(255,255,255,0.04)"
-          strokeWidth="1"
-        />
-        <path
-          d={`M ${framework.centerX} ${framework.bottom}
-              C ${framework.centerX} ${framework.bottom + curveStrength}
-                ${skyline.centerX} ${skyline.top - curveStrength}
-                ${skyline.centerX} ${skyline.top}`}
-          fill="none"
-          stroke="rgba(255,255,255,0.04)"
-          strokeWidth="1"
-        />
-
-        {/* Animated paths */}
-        <motion.path
-          d={`M ${pageCenter} ${heroBottom}
-              C ${pageCenter} ${heroBottom + curveStrength}
-                ${crane.centerX} ${crane.top - curveStrength}
-                ${crane.centerX} ${crane.top}`}
-          fill="none"
+        <motion.line
+          x1={pageCenter} y1={heroBottom}
+          x2={crane.centerX} y2={crane.top}
           stroke="rgba(255,255,255,0.18)"
           strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: heroToCrane }}
         />
+        <motion.line
+          x1={pageCenter + spread} y1={heroBottom}
+          x2={crane.centerX} y2={crane.top}
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: heroToCrane }}
+        />
 
-        <motion.path
-          d={`M ${crane.centerX} ${crane.bottom}
-              C ${crane.centerX} ${crane.bottom + curveStrength}
-                ${blueprint.centerX} ${blueprint.top - curveStrength}
-                ${blueprint.centerX} ${blueprint.top}`}
-          fill="none"
+        {/* Crane to Blueprint - diverge then converge */}
+        <motion.line
+          x1={crane.centerX} y1={crane.bottom}
+          x2={blueprint.centerX - spread} y2={blueprint.top}
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: craneToBlueprint }}
+        />
+        <motion.line
+          x1={crane.centerX} y1={crane.bottom}
+          x2={blueprint.centerX} y2={blueprint.top}
           stroke="rgba(255,255,255,0.18)"
           strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: craneToBlueprint }}
         />
+        <motion.line
+          x1={crane.centerX} y1={crane.bottom}
+          x2={blueprint.centerX + spread} y2={blueprint.top}
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: craneToBlueprint }}
+        />
 
-        <motion.path
-          d={`M ${blueprint.centerX} ${blueprint.bottom}
-              C ${blueprint.centerX} ${blueprint.bottom + curveStrength}
-                ${framework.centerX} ${framework.top - curveStrength}
-                ${framework.centerX} ${framework.top}`}
-          fill="none"
+        {/* Blueprint to Framework - converge */}
+        <motion.line
+          x1={blueprint.centerX - spread} y1={blueprint.bottom}
+          x2={framework.centerX} y2={framework.top}
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: blueprintToFramework }}
+        />
+        <motion.line
+          x1={blueprint.centerX} y1={blueprint.bottom}
+          x2={framework.centerX} y2={framework.top}
           stroke="rgba(255,255,255,0.18)"
           strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: blueprintToFramework }}
         />
+        <motion.line
+          x1={blueprint.centerX + spread} y1={blueprint.bottom}
+          x2={framework.centerX} y2={framework.top}
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: blueprintToFramework }}
+        />
 
-        <motion.path
-          d={`M ${framework.centerX} ${framework.bottom}
-              C ${framework.centerX} ${framework.bottom + curveStrength}
-                ${skyline.centerX} ${skyline.top - curveStrength}
-                ${skyline.centerX} ${skyline.top}`}
-          fill="none"
+        {/* Framework to Skyline - converge to center */}
+        <motion.line
+          x1={framework.centerX} y1={framework.bottom}
+          x2={skyline.centerX - spread} y2={skyline.top}
+          stroke="rgba(255,255,255,0.12)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: frameworkToSkyline }}
+        />
+        <motion.line
+          x1={framework.centerX} y1={framework.bottom}
+          x2={skyline.centerX} y2={skyline.top}
           stroke="rgba(255,255,255,0.18)"
+          strokeWidth="1"
+          strokeLinecap="round"
+          style={{ pathLength: frameworkToSkyline }}
+        />
+        <motion.line
+          x1={framework.centerX} y1={framework.bottom}
+          x2={skyline.centerX + spread} y2={skyline.top}
+          stroke="rgba(255,255,255,0.12)"
           strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: frameworkToSkyline }}
