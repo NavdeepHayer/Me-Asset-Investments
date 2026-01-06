@@ -22,7 +22,7 @@ export function ContentBlock({
     return (
       <section className={`py-12 sm:py-16 md:py-24 lg:py-32 ${className}`}>
         <div className="container-wide flex justify-center">
-          <GraphicElement variant={graphic} position="center" />
+          <GraphicElement variant={graphic} />
         </div>
       </section>
     );
@@ -39,7 +39,7 @@ export function ContentBlock({
               </ScrollReveal>
             </div>
             <div className="flex-1 flex justify-center">
-              <GraphicElement variant={graphic} position={graphicPosition} />
+              <GraphicElement variant={graphic} />
             </div>
           </div>
         ) : (
@@ -54,14 +54,14 @@ export function ContentBlock({
   );
 }
 
-function GraphicElement({ variant, position }: { variant: "crane" | "blueprint" | "framework" | "skyline"; position: "left" | "right" | "center" }) {
+function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framework" | "skyline" }) {
   const isWide = variant === "skyline";
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Track scroll progress of this element
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"] // Start when top enters bottom, end when bottom exits top
+    offset: ["start end", "end start"]
   });
 
   return (
@@ -72,9 +72,9 @@ function GraphicElement({ variant, position }: { variant: "crane" | "blueprint" 
         : "w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] xl:w-[500px] xl:h-[500px] 2xl:w-[580px] 2xl:h-[580px]"
       }
     >
-      {variant === "crane" && <CraneGraphic scrollProgress={scrollYProgress} position={position} />}
-      {variant === "blueprint" && <BlueprintGraphic scrollProgress={scrollYProgress} position={position} />}
-      {variant === "framework" && <FrameworkGraphic scrollProgress={scrollYProgress} position={position} />}
+      {variant === "crane" && <CraneGraphic scrollProgress={scrollYProgress} />}
+      {variant === "blueprint" && <BlueprintGraphic scrollProgress={scrollYProgress} />}
+      {variant === "framework" && <FrameworkGraphic scrollProgress={scrollYProgress} />}
       {variant === "skyline" && <SkylineGraphic scrollProgress={scrollYProgress} />}
     </motion.div>
   );
@@ -93,14 +93,16 @@ function useScrollTransform(
 
 interface GraphicProps {
   scrollProgress: MotionValue<number>;
-  position?: "left" | "right" | "center";
 }
 
 // Tower crane with detailed lattice structure
-function CraneGraphic({ scrollProgress, position }: GraphicProps) {
-  // Entry line: 0.05 - 0.2
-  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
-  // Main graphic elements: staggered from 0.15 - 0.7
+function CraneGraphic({ scrollProgress }: GraphicProps) {
+  // Flow line: enters from top, flows through graphic, exits bottom
+  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
+  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
+  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+
+  // Main graphic elements
   const ground = useScrollTransform(scrollProgress, 0.15, 0.25);
   const foundation = useScrollTransform(scrollProgress, 0.18, 0.28);
   const towerLeft = useScrollTransform(scrollProgress, 0.2, 0.4);
@@ -118,30 +120,33 @@ function CraneGraphic({ scrollProgress, position }: GraphicProps) {
   const hook = useScrollTransform(scrollProgress, 0.65, 0.78);
   const load = useScrollTransform(scrollProgress, 0.7, 0.85);
   const building = useScrollTransform(scrollProgress, 0.3, 0.45);
-  // Exit line: 0.75 - 0.9
-  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
-
-  // Determine entry/exit directions based on position
-  const isRight = position === "right";
 
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
-      {/* Entry connecting line */}
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+      {/* Flowing line - enters top, goes through crane tower, exits bottom */}
       <motion.path
-        d={isRight ? "M -20 -20 Q 30 20, 100 100" : "M 220 -20 Q 170 20, 100 100"}
+        d="M 100 0 L 100 18"
         fill="none"
-        stroke="rgba(255,255,255,0.12)"
+        stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowIn }}
       />
       <motion.path
-        d={isRight ? "M -15 -25 Q 35 15, 100 95" : "M 215 -25 Q 165 15, 100 95"}
+        d="M 100 18 L 100 170"
         fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
+        stroke="rgba(255,255,255,0.1)"
+        strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowThrough }}
+      />
+      <motion.path
+        d="M 100 170 L 100 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: flowOut }}
       />
 
       {/* Ground and construction site base */}
@@ -323,31 +328,17 @@ function CraneGraphic({ scrollProgress, position }: GraphicProps) {
         fill="rgba(255,255,255,0.5)"
         style={{ opacity: peak }}
       />
-
-      {/* Exit connecting line */}
-      <motion.path
-        d={isRight ? "M 100 100 Q 30 180, -20 220" : "M 100 100 Q 170 180, 220 220"}
-        fill="none"
-        stroke="rgba(255,255,255,0.12)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
-      />
-      <motion.path
-        d={isRight ? "M 100 105 Q 35 185, -15 225" : "M 100 105 Q 165 185, 215 225"}
-        fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
-      />
     </motion.svg>
   );
 }
 
 // Architectural blueprint with grid and details
-function BlueprintGraphic({ scrollProgress, position }: GraphicProps) {
-  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
+function BlueprintGraphic({ scrollProgress }: GraphicProps) {
+  // Flow line - vertical through center
+  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
+  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
+  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+
   const grid = useScrollTransform(scrollProgress, 0.1, 0.25);
   const outline = useScrollTransform(scrollProgress, 0.15, 0.35);
   const walls = useScrollTransform(scrollProgress, 0.25, 0.45);
@@ -360,28 +351,33 @@ function BlueprintGraphic({ scrollProgress, position }: GraphicProps) {
   const labels = useScrollTransform(scrollProgress, 0.6, 0.72);
   const northArrow = useScrollTransform(scrollProgress, 0.65, 0.75);
   const scale = useScrollTransform(scrollProgress, 0.68, 0.78);
-  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
-
-  const isLeft = position === "left";
 
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
-      {/* Entry connecting line */}
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+      {/* Flowing line - vertical through center of blueprint */}
       <motion.path
-        d={isLeft ? "M 220 -20 Q 170 20, 100 100" : "M -20 -20 Q 30 20, 100 100"}
+        d="M 100 0 L 100 30"
         fill="none"
-        stroke="rgba(255,255,255,0.12)"
+        stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowIn }}
       />
       <motion.path
-        d={isLeft ? "M 215 -25 Q 165 15, 100 95" : "M -15 -25 Q 35 15, 100 95"}
+        d="M 100 30 L 100 170"
         fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
+        stroke="rgba(255,255,255,0.08)"
+        strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowThrough }}
+      />
+      <motion.path
+        d="M 100 170 L 100 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: flowOut }}
       />
 
       {/* Background grid */}
@@ -506,31 +502,17 @@ function BlueprintGraphic({ scrollProgress, position }: GraphicProps) {
         <rect x="35" y="180" width="30" height="2" fill="rgba(255,255,255,0.1)" />
         <rect x="35" y="180" width="15" height="2" fill="rgba(255,255,255,0.15)" />
       </motion.g>
-
-      {/* Exit connecting line */}
-      <motion.path
-        d={isLeft ? "M 100 100 Q 170 180, 220 220" : "M 100 100 Q 30 180, -20 220"}
-        fill="none"
-        stroke="rgba(255,255,255,0.12)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
-      />
-      <motion.path
-        d={isLeft ? "M 100 105 Q 165 185, 215 225" : "M 100 105 Q 35 185, -15 225"}
-        fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
-      />
     </motion.svg>
   );
 }
 
 // Steel frame structure with detailed I-beams
-function FrameworkGraphic({ scrollProgress, position }: GraphicProps) {
-  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
+function FrameworkGraphic({ scrollProgress }: GraphicProps) {
+  // Flow line - vertical through center
+  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
+  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
+  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+
   const ground = useScrollTransform(scrollProgress, 0.1, 0.2);
   const foundation = useScrollTransform(scrollProgress, 0.15, 0.25);
   const columns = useScrollTransform(scrollProgress, 0.2, 0.5);
@@ -543,28 +525,33 @@ function FrameworkGraphic({ scrollProgress, position }: GraphicProps) {
   const scaffolding = useScrollTransform(scrollProgress, 0.55, 0.75);
   const craneCable = useScrollTransform(scrollProgress, 0.65, 0.78);
   const beam = useScrollTransform(scrollProgress, 0.7, 0.85);
-  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
-
-  const isRight = position === "right";
 
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full overflow-visible">
-      {/* Entry connecting line */}
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+      {/* Flowing line - vertical through center of framework */}
       <motion.path
-        d={isRight ? "M -20 -20 Q 30 20, 100 100" : "M 220 -20 Q 170 20, 100 100"}
+        d="M 100 0 L 100 22"
         fill="none"
-        stroke="rgba(255,255,255,0.12)"
+        stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowIn }}
       />
       <motion.path
-        d={isRight ? "M -15 -25 Q 35 15, 100 95" : "M 215 -25 Q 165 15, 100 95"}
+        d="M 100 22 L 100 172"
         fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
+        stroke="rgba(255,255,255,0.08)"
+        strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowThrough }}
+      />
+      <motion.path
+        d="M 100 172 L 100 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: flowOut }}
       />
 
       {/* Ground */}
@@ -712,31 +699,17 @@ function FrameworkGraphic({ scrollProgress, position }: GraphicProps) {
         <line x1="93" y1="25" x2="100" y2="20" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
         <line x1="107" y1="25" x2="100" y2="20" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
       </motion.g>
-
-      {/* Exit connecting line */}
-      <motion.path
-        d={isRight ? "M 100 100 Q 30 180, -20 220" : "M 100 100 Q 170 180, 220 220"}
-        fill="none"
-        stroke="rgba(255,255,255,0.12)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
-      />
-      <motion.path
-        d={isRight ? "M 100 105 Q 35 185, -15 225" : "M 100 105 Q 165 185, 215 225"}
-        fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
-      />
     </motion.svg>
   );
 }
 
 // City skyline with refined architecture
-function SkylineGraphic({ scrollProgress }: { scrollProgress: MotionValue<number> }) {
-  const entryLine = useScrollTransform(scrollProgress, 0.05, 0.2);
+function SkylineGraphic({ scrollProgress }: GraphicProps) {
+  // Flow line - vertical through center
+  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
+  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
+  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+
   const ground = useScrollTransform(scrollProgress, 0.1, 0.2);
   const b1 = useScrollTransform(scrollProgress, 0.12, 0.35);
   const b2 = useScrollTransform(scrollProgress, 0.15, 0.38);
@@ -749,26 +722,33 @@ function SkylineGraphic({ scrollProgress }: { scrollProgress: MotionValue<number
   const windows = useScrollTransform(scrollProgress, 0.4, 0.7);
   const details = useScrollTransform(scrollProgress, 0.5, 0.75);
   const lights = useScrollTransform(scrollProgress, 0.65, 0.8);
-  const exitLine = useScrollTransform(scrollProgress, 0.75, 0.9);
 
   return (
-    <motion.svg viewBox="0 0 320 200" className="w-full h-full overflow-visible">
-      {/* Entry connecting line - from top center */}
+    <motion.svg viewBox="0 0 320 200" className="w-full h-full">
+      {/* Flowing line - vertical through tallest building */}
       <motion.path
-        d="M 160 -40 Q 160 20, 160 100"
+        d="M 112 0 L 112 12"
         fill="none"
-        stroke="rgba(255,255,255,0.12)"
+        stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowIn }}
       />
       <motion.path
-        d="M 165 -40 Q 165 20, 165 100"
+        d="M 112 12 L 112 180"
         fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
+        stroke="rgba(255,255,255,0.08)"
+        strokeWidth="1"
         strokeLinecap="round"
-        style={{ pathLength: entryLine }}
+        style={{ pathLength: flowThrough }}
+      />
+      <motion.path
+        d="M 112 180 L 112 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="1"
+        strokeLinecap="round"
+        style={{ pathLength: flowOut }}
       />
 
       {/* Ground line */}
@@ -929,24 +909,6 @@ function SkylineGraphic({ scrollProgress }: { scrollProgress: MotionValue<number
       />
       <motion.circle cx="283" cy="60" r="1" fill="rgba(255,255,255,0.25)"
         style={{ opacity: lights }}
-      />
-
-      {/* Exit connecting line - straight down */}
-      <motion.path
-        d="M 160 180 Q 160 210, 160 240"
-        fill="none"
-        stroke="rgba(255,255,255,0.12)"
-        strokeWidth="1"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
-      />
-      <motion.path
-        d="M 165 180 Q 165 210, 165 240"
-        fill="none"
-        stroke="rgba(255,255,255,0.06)"
-        strokeWidth="0.5"
-        strokeLinecap="round"
-        style={{ pathLength: exitLine }}
       />
     </motion.svg>
   );
