@@ -371,17 +371,18 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
-      {/* Flowing line - follows interior wall at x=90, then along bottom edge */}
+      {/* Flowing line - enters center, follows interior wall, exits center */}
       <motion.path
-        d="M 90 0 L 90 30"
+        d="M 100 0 L 100 30 L 90 35"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
+        strokeLinejoin="round"
         style={{ pathLength: flowIn }}
       />
       <motion.path
-        d="M 90 30 L 90 110 L 90 170"
+        d="M 90 35 L 90 165"
         fill="none"
         stroke="rgba(255,255,255,0.1)"
         strokeWidth="1"
@@ -389,11 +390,12 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
         style={{ pathLength: flowThrough }}
       />
       <motion.path
-        d="M 90 170 L 90 200"
+        d="M 90 165 L 100 170 L 100 200"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
+        strokeLinejoin="round"
         style={{ pathLength: flowOut }}
       />
 
@@ -758,13 +760,14 @@ function SkylineGraphic({ scrollProgress }: GraphicProps) {
 
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full">
-      {/* Flowing line - follows tallest building down to ground, then STOPS */}
+      {/* Flowing line - enters center, follows tallest building to ground, STOPS */}
       <motion.path
-        d="M 112 0 L 112 12"
+        d="M 160 0 L 160 5 L 112 12"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
+        strokeLinejoin="round"
         style={{ pathLength: flowIn }}
       />
       <motion.path

@@ -39,6 +39,17 @@ export function Hero() {
           <circle cx="200" cy="380" r="3" fill="rgba(255,255,255,0.15)" />
           <circle cx="20" cy="200" r="3" fill="rgba(255,255,255,0.15)" />
           <circle cx="380" cy="200" r="3" fill="rgba(255,255,255,0.15)" />
+
+          {/* Flow line - builds from center down on page load */}
+          <motion.line
+            x1="200" y1="200" x2="200" y2="400"
+            stroke="rgba(255,255,255,0.12)"
+            strokeWidth="1"
+            strokeLinecap="round"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.5, delay: 1.5, ease: "easeOut" }}
+          />
         </motion.svg>
       </div>
 
@@ -65,18 +76,17 @@ export function Hero() {
         </motion.div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Flow line continues from hero graphic to bottom of section */}
       <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 1, delay: 2 }}
-        className="absolute bottom-12 left-1/2 -translate-x-1/2"
+        initial={{ opacity: 0, scaleY: 0 }}
+        animate={{ opacity: 1, scaleY: 1 }}
+        transition={{ duration: 1, delay: 2.5, ease: "easeOut" }}
+        style={{ transformOrigin: "top" }}
+        className="absolute left-1/2 -translate-x-1/2 w-px bg-white/12"
+        data-hero-line="true"
       >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-          className="w-px h-16 bg-gradient-to-b from-white/20 to-transparent"
-        />
+        {/* This extends from where the SVG line ends to the bottom of the hero */}
+        <div className="w-full h-[20vh] bg-gradient-to-b from-white/12 to-white/8" />
       </motion.div>
     </section>
   );
