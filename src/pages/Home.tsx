@@ -35,8 +35,8 @@ export function Home() {
         {/* Mission */}
         <TextSection text={mission.text} />
 
-        {/* Geometric visual - orbital rings */}
-        <GeometricShape variant="rings" align="center" />
+        {/* Geometric visual - abstract towers/buildings */}
+        <GeometricShape variant="towers" align="center" />
 
         {/* Mailing List */}
         <MailingList />
