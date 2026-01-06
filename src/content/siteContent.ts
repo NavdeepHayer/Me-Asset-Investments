@@ -36,7 +36,7 @@ export const siteContent = {
   },
 
   mailingList: {
-    headline: "GET REGULAR UPDATES BY JOINING OUR MAILING LIST.",
+    headline: "Stay informed. Join our mailing list for occasional updates.",
     namePlaceholder: "Name",
     emailPlaceholder: "Email",
     buttonText: "Subscribe",
