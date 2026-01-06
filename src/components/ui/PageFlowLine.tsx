@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 export function PageFlowLine() {
   const [lineHeight, setLineHeight] = useState(0);
   const [heroBottom, setHeroBottom] = useState(0);
-  const [isReady, setIsReady] = useState(false);
 
   const { scrollYProgress } = useScroll();
 
@@ -43,28 +42,14 @@ export function PageFlowLine() {
     };
   }, []);
 
-  // Delay showing the line until after hero animation completes (2.5s)
-  useEffect(() => {
-    const timer = setTimeout(() => setIsReady(true), 2500);
-    return () => clearTimeout(timer);
-  }, []);
-
   // Line draws based on scroll progress
-  // Start drawing after hero and complete by skyline
   const pathLength = useTransform(
     scrollYProgress,
     [0.02, 0.85],
     [0, 1]
   );
 
-  // Line is always visible at consistent opacity - never breaks
-  const opacity = useTransform(
-    scrollYProgress,
-    [0, 0.02, 0.85, 0.95],
-    [0.12, 0.12, 0.12, 0.08]
-  );
-
-  if (lineHeight <= 0 || !isReady) return null;
+  if (lineHeight <= 0) return null;
 
   return (
     <motion.div
@@ -72,38 +57,34 @@ export function PageFlowLine() {
       style={{
         top: heroBottom,
         height: lineHeight,
-        width: '1px'
+        width: '2px'
       }}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
+      transition={{ duration: 1, delay: 3.2 }}
     >
+      {/* Background line - always visible, provides continuity */}
+      <div
+        className="absolute inset-0 bg-white/10"
+        style={{ width: '1px', left: '50%', transform: 'translateX(-50%)' }}
+      />
+
+      {/* Animated line overlay - draws as you scroll */}
       <svg
-        className="w-full h-full"
+        className="absolute inset-0 w-full h-full"
         preserveAspectRatio="none"
-        viewBox="0 0 1 100"
+        viewBox="0 0 2 100"
       >
-        {/* Background line - always visible, provides continuity */}
-        <line
-          x1="0.5"
-          y1="0"
-          x2="0.5"
-          y2="100"
-          stroke="rgba(255,255,255,0.06)"
-          strokeWidth="1"
-          vectorEffect="non-scaling-stroke"
-        />
-        {/* Animated line - draws as you scroll */}
         <motion.line
-          x1="0.5"
+          x1="1"
           y1="0"
-          x2="0.5"
+          x2="1"
           y2="100"
-          stroke="rgba(255,255,255,1)"
+          stroke="rgba(255,255,255,0.15)"
           strokeWidth="1"
           vectorEffect="non-scaling-stroke"
           strokeLinecap="round"
-          style={{ pathLength, opacity }}
+          style={{ pathLength }}
         />
       </svg>
     </motion.div>
