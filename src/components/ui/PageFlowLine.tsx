@@ -43,7 +43,7 @@ export function PageFlowLine() {
         current = current.offsetParent as HTMLElement;
       }
 
-      // Get horizontal center - rect gives viewport coords, add scrollX to get document coords
+      // Get horizontal center
       const rect = el.getBoundingClientRect();
       const elCenterX = rect.left + rect.width / 2 + window.scrollX;
 
@@ -64,7 +64,6 @@ export function PageFlowLine() {
   }, []);
 
   useEffect(() => {
-    // Multiple attempts to ensure DOM is fully rendered
     calculate();
     const t1 = setTimeout(calculate, 200);
     const t2 = setTimeout(calculate, 600);
@@ -80,20 +79,23 @@ export function PageFlowLine() {
     };
   }, [calculate]);
 
-  // Animated segments for each connection
-  const heroToCrane = useTransform(scrollYProgress, [0.02, 0.10], [0, 1]);
-  const craneToBlueprint = useTransform(scrollYProgress, [0.15, 0.28], [0, 1]);
-  const blueprintToFramework = useTransform(scrollYProgress, [0.32, 0.45], [0, 1]);
-  const frameworkToSkyline = useTransform(scrollYProgress, [0.50, 0.62], [0, 1]);
+  // Animated segments - smoother timing
+  const heroToCrane = useTransform(scrollYProgress, [0.02, 0.08], [0, 1]);
+  const craneToBlueprint = useTransform(scrollYProgress, [0.14, 0.24], [0, 1]);
+  const blueprintToFramework = useTransform(scrollYProgress, [0.30, 0.42], [0, 1]);
+  const frameworkToSkyline = useTransform(scrollYProgress, [0.48, 0.58], [0, 1]);
 
   if (!positions || positions.graphics.length < 4) return null;
 
   const { heroBottom, pageCenter, documentHeight, graphics } = positions;
   const [crane, blueprint, framework, skyline] = graphics;
 
+  // Calculate smooth curve control points - more elegant sweeping curves
+  const curveStrength = 120; // How much the curve bends
+
   return (
     <>
-      {/* SVG overlay for connecting paths - BEHIND text content (z-index: 0) */}
+      {/* SVG overlay for connecting paths */}
       <svg
         className="pointer-events-none absolute left-0 top-0"
         style={{
@@ -103,95 +105,89 @@ export function PageFlowLine() {
         }}
         preserveAspectRatio="none"
       >
-        {/* Static faint connecting lines for visual continuity - drawn first (behind) */}
+        {/* Faint guide lines */}
         <path
           d={`M ${pageCenter} ${heroBottom}
-              Q ${pageCenter + (crane.centerX - pageCenter) * 0.5} ${heroBottom + (crane.top - heroBottom) * 0.5}
+              C ${pageCenter} ${heroBottom + curveStrength}
+                ${crane.centerX} ${crane.top - curveStrength}
                 ${crane.centerX} ${crane.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.04)"
           strokeWidth="1"
-          strokeDasharray="4,8"
         />
         <path
           d={`M ${crane.centerX} ${crane.bottom}
-              C ${crane.centerX} ${crane.bottom + 80}
-                ${blueprint.centerX} ${blueprint.top - 80}
+              C ${crane.centerX} ${crane.bottom + curveStrength}
+                ${blueprint.centerX} ${blueprint.top - curveStrength}
                 ${blueprint.centerX} ${blueprint.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.04)"
           strokeWidth="1"
-          strokeDasharray="4,8"
         />
         <path
           d={`M ${blueprint.centerX} ${blueprint.bottom}
-              C ${blueprint.centerX} ${blueprint.bottom + 80}
-                ${framework.centerX} ${framework.top - 80}
+              C ${blueprint.centerX} ${blueprint.bottom + curveStrength}
+                ${framework.centerX} ${framework.top - curveStrength}
                 ${framework.centerX} ${framework.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.04)"
           strokeWidth="1"
-          strokeDasharray="4,8"
         />
         <path
           d={`M ${framework.centerX} ${framework.bottom}
-              C ${framework.centerX} ${framework.bottom + 80}
-                ${skyline.centerX} ${skyline.top - 80}
+              C ${framework.centerX} ${framework.bottom + curveStrength}
+                ${skyline.centerX} ${skyline.top - curveStrength}
                 ${skyline.centerX} ${skyline.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.04)"
           strokeWidth="1"
-          strokeDasharray="4,8"
         />
 
-        {/* Animated paths - draw on scroll */}
-        {/* Hero to Crane - diagonal from center to graphic */}
+        {/* Animated paths */}
         <motion.path
           d={`M ${pageCenter} ${heroBottom}
-              Q ${pageCenter + (crane.centerX - pageCenter) * 0.5} ${heroBottom + (crane.top - heroBottom) * 0.5}
+              C ${pageCenter} ${heroBottom + curveStrength}
+                ${crane.centerX} ${crane.top - curveStrength}
                 ${crane.centerX} ${crane.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.2)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.18)"
+          strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: heroToCrane }}
         />
 
-        {/* Crane to Blueprint - curves across */}
         <motion.path
           d={`M ${crane.centerX} ${crane.bottom}
-              C ${crane.centerX} ${crane.bottom + 80}
-                ${blueprint.centerX} ${blueprint.top - 80}
+              C ${crane.centerX} ${crane.bottom + curveStrength}
+                ${blueprint.centerX} ${blueprint.top - curveStrength}
                 ${blueprint.centerX} ${blueprint.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.2)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.18)"
+          strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: craneToBlueprint }}
         />
 
-        {/* Blueprint to Framework - curves across */}
         <motion.path
           d={`M ${blueprint.centerX} ${blueprint.bottom}
-              C ${blueprint.centerX} ${blueprint.bottom + 80}
-                ${framework.centerX} ${framework.top - 80}
+              C ${blueprint.centerX} ${blueprint.bottom + curveStrength}
+                ${framework.centerX} ${framework.top - curveStrength}
                 ${framework.centerX} ${framework.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.2)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.18)"
+          strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: blueprintToFramework }}
         />
 
-        {/* Framework to Skyline */}
         <motion.path
           d={`M ${framework.centerX} ${framework.bottom}
-              C ${framework.centerX} ${framework.bottom + 80}
-                ${skyline.centerX} ${skyline.top - 80}
+              C ${framework.centerX} ${framework.bottom + curveStrength}
+                ${skyline.centerX} ${skyline.top - curveStrength}
                 ${skyline.centerX} ${skyline.top}`}
           fill="none"
-          stroke="rgba(255,255,255,0.2)"
-          strokeWidth="1.5"
+          stroke="rgba(255,255,255,0.18)"
+          strokeWidth="1"
           strokeLinecap="round"
           style={{ pathLength: frameworkToSkyline }}
         />

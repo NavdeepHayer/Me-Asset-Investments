@@ -717,208 +717,190 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
   );
 }
 
-// City skyline with refined architecture
+// City skyline with refined architecture - tallest building centered
 function SkylineGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - enters top, follows tallest building, STOPS at ground (end of line)
+  // Flow line - enters center, follows tallest building straight down, STOPS at ground
   const flowIn = useScrollTransform(scrollProgress, 0.08, 0.18);
   const flowThrough = useScrollTransform(scrollProgress, 0.16, 0.78);
-  // No flowOut - line terminates at skyline ground
 
-  // Animation builds TOP to BOTTOM
+  // Animation builds from CENTER outward and TOP to BOTTOM
   const lights = useScrollTransform(scrollProgress, 0.12, 0.24);
-  const b3 = useScrollTransform(scrollProgress, 0.14, 0.40); // Tallest (center)
-  const b5 = useScrollTransform(scrollProgress, 0.18, 0.42); // Tower with antenna
-  const b1 = useScrollTransform(scrollProgress, 0.22, 0.44); // Art deco
-  const b7 = useScrollTransform(scrollProgress, 0.26, 0.46); // Narrow tower
-  const b6 = useScrollTransform(scrollProgress, 0.30, 0.48); // Modern cantilever
-  const b2 = useScrollTransform(scrollProgress, 0.34, 0.50); // Glass tower
-  const b4 = useScrollTransform(scrollProgress, 0.38, 0.52); // Wide commercial
-  const b8 = useScrollTransform(scrollProgress, 0.42, 0.54); // Low rise
-  // Windows appear after structure
+  const center = useScrollTransform(scrollProgress, 0.14, 0.40); // Tallest (center)
+  const innerLeft = useScrollTransform(scrollProgress, 0.18, 0.44);
+  const innerRight = useScrollTransform(scrollProgress, 0.20, 0.46);
+  const midLeft = useScrollTransform(scrollProgress, 0.24, 0.48);
+  const midRight = useScrollTransform(scrollProgress, 0.26, 0.50);
+  const outerLeft = useScrollTransform(scrollProgress, 0.30, 0.52);
+  const outerRight = useScrollTransform(scrollProgress, 0.32, 0.54);
   const windows = useScrollTransform(scrollProgress, 0.48, 0.64);
   const details = useScrollTransform(scrollProgress, 0.56, 0.70);
-  // Ground line last (bottom)
   const ground = useScrollTransform(scrollProgress, 0.66, 0.78);
 
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full">
-      {/* FLOW LINE - enters center, follows tallest building to ground, STOPS */}
+      {/* FLOW LINE - straight down center through tallest building */}
       <motion.path
-        d="M 160 0 L 160 5 L 112 12"
+        d="M 160 0 L 160 15"
         fill="none"
         stroke="rgba(255,255,255,0.2)"
         strokeWidth="1"
         strokeLinecap="round"
-        strokeLinejoin="round"
         style={{ pathLength: flowIn }}
       />
       <motion.path
-        d="M 112 12 L 112 180"
+        d="M 160 15 L 160 180"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
         strokeLinecap="round"
         style={{ pathLength: flowThrough }}
       />
-      {/* Line terminates at ground - no exit path */}
 
       {/* Ground line */}
       <motion.line
-        x1="5" y1="180" x2="315" y2="180"
+        x1="10" y1="180" x2="310" y2="180"
         stroke="rgba(255,255,255,0.12)"
         strokeWidth="1"
         style={{ pathLength: ground }}
       />
 
-      {/* Building 1 - Art Deco tower (draws from peak down) */}
+      {/* CENTER - Landmark skyscraper (tallest, at x=160) */}
       <motion.path
-        d="M 27 55 L 22 60 L 17 65 L 12 70 L 12 180 M 27 55 L 32 60 L 37 65 L 42 70 L 42 180"
+        d="M 160 15 L 148 28 L 148 38 L 142 38 L 142 180 M 160 15 L 172 28 L 172 38 L 178 38 L 178 180"
         fill="none"
-        stroke="rgba(255,255,255,0.14)"
-        strokeWidth="1"
-        style={{ pathLength: b1 }}
+        stroke="rgba(255,255,255,0.25)"
+        strokeWidth="1.5"
+        style={{ pathLength: center }}
       />
-      <motion.line x1="27" y1="55" x2="27" y2="180" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"
-        style={{ pathLength: b1 }}
+      <motion.line x1="160" y1="15" x2="160" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
+        style={{ pathLength: center }}
       />
-      {[85, 100, 115, 130, 145, 160].map((y, i) => (
-        <motion.g key={`b1-w-${i}`} style={{ opacity: windows }}>
-          <rect x="17" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)" />
-          <rect x="34" y={y} width="3" height="5" fill="rgba(255,255,255,0.08)" />
+      {[45, 60, 75, 90, 105, 120, 135, 150, 165].map((y, i) => (
+        <motion.g key={`center-w-${i}`} style={{ opacity: windows }}>
+          <rect x="147" y={y} width="5" height="6" fill="rgba(255,255,255,0.12)" />
+          <rect x="156" y={y} width="8" height="6" fill="rgba(255,255,255,0.1)" />
+          <rect x="168" y={y} width="5" height="6" fill="rgba(255,255,255,0.12)" />
         </motion.g>
       ))}
 
-      {/* Building 2 - Modern glass tower (draws from top down) */}
+      {/* INNER LEFT - Tower with spire */}
       <motion.path
-        d="M 55 80 L 50 85 L 50 180 M 80 80 L 85 85 L 85 180 M 55 80 L 80 80"
+        d="M 105 35 L 105 40 L 98 40 L 98 180 M 105 35 L 105 40 L 112 40 L 112 180"
         fill="none"
-        stroke="rgba(255,255,255,0.12)"
+        stroke="rgba(255,255,255,0.18)"
         strokeWidth="1"
-        style={{ pathLength: b2 }}
+        style={{ pathLength: innerLeft }}
       />
-      {[95, 110, 125, 140, 155, 170].map((y, i) => (
-        <motion.line key={`b2-h-${i}`} x1="52" y1={y} x2="83" y2={y}
+      <motion.line x1="105" y1="35" x2="105" y2="180" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"
+        style={{ pathLength: innerLeft }}
+      />
+      {[55, 75, 95, 115, 135, 155].map((y, i) => (
+        <motion.g key={`il-w-${i}`} style={{ opacity: windows }}>
+          <rect x="100" y={y} width="4" height="5" fill="rgba(255,255,255,0.08)" />
+          <rect x="106" y={y} width="4" height="5" fill="rgba(255,255,255,0.08)" />
+        </motion.g>
+      ))}
+
+      {/* INNER RIGHT - Tower with spire (mirror) */}
+      <motion.path
+        d="M 215 35 L 215 40 L 208 40 L 208 180 M 215 35 L 215 40 L 222 40 L 222 180"
+        fill="none"
+        stroke="rgba(255,255,255,0.18)"
+        strokeWidth="1"
+        style={{ pathLength: innerRight }}
+      />
+      <motion.line x1="215" y1="35" x2="215" y2="180" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5"
+        style={{ pathLength: innerRight }}
+      />
+      {[55, 75, 95, 115, 135, 155].map((y, i) => (
+        <motion.g key={`ir-w-${i}`} style={{ opacity: windows }}>
+          <rect x="210" y={y} width="4" height="5" fill="rgba(255,255,255,0.08)" />
+          <rect x="216" y={y} width="4" height="5" fill="rgba(255,255,255,0.08)" />
+        </motion.g>
+      ))}
+
+      {/* MID LEFT - Modern glass tower */}
+      <motion.path
+        d="M 58 65 L 52 70 L 52 180 M 78 65 L 84 70 L 84 180 M 58 65 L 78 65"
+        fill="none"
+        stroke="rgba(255,255,255,0.14)"
+        strokeWidth="1"
+        style={{ pathLength: midLeft }}
+      />
+      {[80, 100, 120, 140, 160].map((y, i) => (
+        <motion.line key={`ml-h-${i}`} x1="54" y1={y} x2="82" y2={y}
           stroke="rgba(255,255,255,0.05)" strokeWidth="0.5"
           style={{ opacity: details }} />
       ))}
-      {[58, 67, 76].map((x, i) => (
-        <motion.line key={`b2-v-${i}`} x1={x} y1="85" x2={x} y2="180"
+      {[60, 68, 76].map((x, i) => (
+        <motion.line key={`ml-v-${i}`} x1={x} y1="70" x2={x} y2="180"
           stroke="rgba(255,255,255,0.04)" strokeWidth="0.5"
           style={{ opacity: details }} />
       ))}
 
-      {/* Building 3 - Landmark skyscraper (tallest, draws from peak down) */}
+      {/* MID RIGHT - Modern glass tower (mirror) */}
       <motion.path
-        d="M 112 12 L 102 22 L 102 30 L 95 30 L 95 180 M 112 12 L 122 22 L 122 30 L 129 30 L 129 180"
+        d="M 242 65 L 236 70 L 236 180 M 262 65 L 268 70 L 268 180 M 242 65 L 262 65"
         fill="none"
-        stroke="rgba(255,255,255,0.22)"
-        strokeWidth="1.5"
-        style={{ pathLength: b3 }}
+        stroke="rgba(255,255,255,0.14)"
+        strokeWidth="1"
+        style={{ pathLength: midRight }}
       />
-      <motion.line x1="112" y1="12" x2="112" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        style={{ pathLength: b3 }}
-      />
-      <motion.path d="M 98 30 L 98 60 M 126 30 L 126 60" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        style={{ opacity: details }}
-      />
-      {[40, 55, 70, 85, 100, 115, 130, 145, 160].map((y, i) => (
-        <motion.g key={`b3-w-${i}`} style={{ opacity: windows }}>
-          <rect x="100" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)" />
-          <rect x="108" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)" />
-          <rect x="120" y={y} width="4" height="5" fill="rgba(255,255,255,0.1)" />
-        </motion.g>
+      {[80, 100, 120, 140, 160].map((y, i) => (
+        <motion.line key={`mr-h-${i}`} x1="238" y1={y} x2="266" y2={y}
+          stroke="rgba(255,255,255,0.05)" strokeWidth="0.5"
+          style={{ opacity: details }} />
+      ))}
+      {[244, 252, 260].map((x, i) => (
+        <motion.line key={`mr-v-${i}`} x1={x} y1="70" x2={x} y2="180"
+          stroke="rgba(255,255,255,0.04)" strokeWidth="0.5"
+          style={{ opacity: details }} />
       ))}
 
-      {/* Building 4 - Wide commercial (draws from top down) */}
+      {/* OUTER LEFT - Art deco stepped tower */}
       <motion.path
-        d="M 143 88 L 138 95 L 138 180 M 177 88 L 182 95 L 182 180 M 143 88 L 177 88"
+        d="M 32 85 L 28 90 L 24 95 L 20 100 L 20 180 M 32 85 L 36 90 L 40 95 L 44 100 L 44 180"
         fill="none"
         stroke="rgba(255,255,255,0.11)"
         strokeWidth="1"
-        style={{ pathLength: b4 }}
+        style={{ pathLength: outerLeft }}
       />
-      <motion.path d="M 150 82 L 150 88 M 158 82 L 158 88 M 150 82 L 158 82 M 165 85 L 165 88 M 170 85 L 170 88 M 165 85 L 170 85"
-        fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"
-        style={{ opacity: details }}
-      />
-      {[105, 120, 135, 150, 165].map((y, i) => (
-        <motion.g key={`b4-w-${i}`} style={{ opacity: windows }}>
-          {[143, 152, 161, 170].map((x, j) => (
-            <rect key={`b4-w-${i}-${j}`} x={x} y={y} width="5" height="6" fill="rgba(255,255,255,0.06)" />
-          ))}
+      {[110, 130, 150, 170].map((y, i) => (
+        <motion.g key={`ol-w-${i}`} style={{ opacity: windows }}>
+          <rect x="24" y={y} width="4" height="5" fill="rgba(255,255,255,0.06)" />
+          <rect x="36" y={y} width="4" height="5" fill="rgba(255,255,255,0.06)" />
         </motion.g>
       ))}
 
-      {/* Building 5 - Tower with antenna (draws from antenna down) */}
+      {/* OUTER RIGHT - Art deco stepped tower (mirror) */}
       <motion.path
-        d="M 205 18 L 205 48 L 200 48 L 200 55 L 192 55 L 192 180 M 207 18 L 207 48 L 212 48 L 212 55 L 220 55 L 220 180 M 205 18 L 207 18"
+        d="M 288 85 L 284 90 L 280 95 L 276 100 L 276 180 M 288 85 L 292 90 L 296 95 L 300 100 L 300 180"
         fill="none"
-        stroke="rgba(255,255,255,0.15)"
+        stroke="rgba(255,255,255,0.11)"
         strokeWidth="1"
-        style={{ pathLength: b5 }}
+        style={{ pathLength: outerRight }}
       />
-      {[70, 88, 106, 124, 142, 160].map((y, i) => (
-        <motion.g key={`b5-w-${i}`} style={{ opacity: windows }}>
-          <rect x="197" y={y} width="4" height="6" fill="rgba(255,255,255,0.07)" />
-          <rect x="211" y={y} width="4" height="6" fill="rgba(255,255,255,0.07)" />
+      {[110, 130, 150, 170].map((y, i) => (
+        <motion.g key={`or-w-${i}`} style={{ opacity: windows }}>
+          <rect x="280" y={y} width="4" height="5" fill="rgba(255,255,255,0.06)" />
+          <rect x="292" y={y} width="4" height="5" fill="rgba(255,255,255,0.06)" />
         </motion.g>
       ))}
 
-      {/* Building 6 - Modern with cantilever (draws from top down) */}
-      <motion.path
-        d="M 235 70 L 235 75 L 230 75 L 230 180 M 260 70 L 265 75 L 268 75 L 268 105 L 265 105 L 265 180 M 235 70 L 260 70"
-        fill="none"
-        stroke="rgba(255,255,255,0.1)"
-        strokeWidth="1"
-        style={{ pathLength: b6 }}
-      />
-      {[85, 100, 115, 130, 145, 160].map((y, i) => (
-        <motion.g key={`b6-w-${i}`} style={{ opacity: windows }}>
-          {[235, 245, 255].map((x, j) => (
-            <rect key={`b6-w-${i}-${j}`} x={x} y={y} width="4" height="5" fill="rgba(255,255,255,0.05)" />
-          ))}
-        </motion.g>
-      ))}
-
-      {/* Building 7 - Narrow tower (draws from peak down) */}
-      <motion.path
-        d="M 283 60 L 278 65 L 278 180 M 283 60 L 288 65 L 288 180"
-        fill="none"
-        stroke="rgba(255,255,255,0.09)"
-        strokeWidth="1"
-        style={{ pathLength: b7 }}
-      />
-      {[80, 100, 120, 140, 160].map((y, i) => (
-        <motion.rect key={`b7-w-${i}`} x="281" y={y} width="4" height="6" fill="rgba(255,255,255,0.05)"
-          style={{ opacity: windows }} />
-      ))}
-
-      {/* Building 8 - Low rise (draws from top down) */}
-      <motion.path
-        d="M 295 120 L 295 180 M 312 120 L 312 180 M 295 120 L 312 120"
-        fill="none"
-        stroke="rgba(255,255,255,0.07)"
-        strokeWidth="1"
-        style={{ pathLength: b8 }}
-      />
-      {[130, 145, 160].map((y, i) => (
-        <motion.g key={`b8-w-${i}`} style={{ opacity: windows }}>
-          <rect x="298" y={y} width="4" height="5" fill="rgba(255,255,255,0.04)" />
-          <rect x="305" y={y} width="4" height="5" fill="rgba(255,255,255,0.04)" />
-        </motion.g>
-      ))}
-
-      {/* Beacon lights */}
-      <motion.circle cx="27" cy="55" r="1.5" fill="rgba(255,255,255,0.35)"
+      {/* Beacon lights on tallest buildings */}
+      <motion.circle cx="160" cy="15" r="2.5" fill="rgba(255,255,255,0.6)"
         style={{ opacity: lights }}
       />
-      <motion.circle cx="112" cy="12" r="2" fill="rgba(255,255,255,0.5)"
+      <motion.circle cx="105" cy="35" r="1.5" fill="rgba(255,255,255,0.35)"
         style={{ opacity: lights }}
       />
-      <motion.circle cx="206" cy="18" r="1.5" fill="rgba(255,255,255,0.35)"
+      <motion.circle cx="215" cy="35" r="1.5" fill="rgba(255,255,255,0.35)"
         style={{ opacity: lights }}
       />
-      <motion.circle cx="283" cy="60" r="1" fill="rgba(255,255,255,0.25)"
+      <motion.circle cx="32" cy="85" r="1" fill="rgba(255,255,255,0.25)"
+        style={{ opacity: lights }}
+      />
+      <motion.circle cx="288" cy="85" r="1" fill="rgba(255,255,255,0.25)"
         style={{ opacity: lights }}
       />
     </motion.svg>
