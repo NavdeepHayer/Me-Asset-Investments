@@ -5,11 +5,11 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="py-12 md:py-16 border-t border-neutral-200">
+    <footer className="py-12 md:py-16 border-t border-white/10">
       <div className="container-editorial">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
           {/* Copyright */}
-          <div className="text-sm text-neutral-500">
+          <div className="text-sm text-white/50">
             &copy; {currentYear} {footer.copyright}. All rights reserved.
           </div>
 
@@ -19,7 +19,7 @@ export function Footer() {
               <a
                 key={link.name}
                 href={link.url}
-                className="text-sm text-neutral-600 hover:text-neutral-900 transition-colors"
+                className="text-sm text-white/60 hover:text-white transition-colors"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -34,7 +34,7 @@ export function Footer() {
               <a
                 key={link.name}
                 href={link.url}
-                className="text-sm text-neutral-500 hover:text-neutral-900 transition-colors"
+                className="text-sm text-white/50 hover:text-white transition-colors"
               >
                 {link.name}
               </a>

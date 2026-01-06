@@ -5,18 +5,8 @@ export function GlobalPresence() {
   const { globalPresence } = siteContent;
 
   return (
-    <section className="relative py-32 md:py-40 lg:py-48 overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${globalPresence.backgroundImage})` }}
-      >
-        {/* Dark Overlay */}
-        <div className="absolute inset-0 bg-black/70" />
-      </div>
-
-      {/* Content */}
-      <div className="container-editorial relative z-10 text-center">
+    <section className="py-32 md:py-40 lg:py-48 bg-white/5 backdrop-blur-sm">
+      <div className="container-editorial text-center">
         <ScrollReveal>
           <h2 className="text-xl md:text-2xl text-white/60 mb-6 tracking-wide uppercase">
             {globalPresence.headline}

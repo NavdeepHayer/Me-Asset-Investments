@@ -5,10 +5,10 @@ export function FocusAreas() {
   const { focusAreas } = siteContent;
 
   return (
-    <section className="section-spacing bg-neutral-50">
+    <section className="section-spacing">
       <div className="container-editorial">
         <ScrollReveal>
-          <h2 className="text-headline mb-12 lg:mb-16">
+          <h2 className="text-headline mb-12 lg:mb-16 text-white">
             {focusAreas.headline}
           </h2>
         </ScrollReveal>
@@ -16,10 +16,12 @@ export function FocusAreas() {
           {focusAreas.areas.map((area, index) => (
             <ScrollReveal key={area.title} delay={index * 0.05}>
               <div className="group">
-                <h3 className="font-serif text-xl lg:text-2xl mb-3 group-hover:text-neutral-600 transition-colors">
+                <h3 className="font-serif text-xl lg:text-2xl mb-3 text-white group-hover:text-white/70 transition-colors">
                   {area.title}
                 </h3>
-                <p className="text-caption">{area.description}</p>
+                <p className="text-sm md:text-base text-white/60 leading-relaxed">
+                  {area.description}
+                </p>
               </div>
             </ScrollReveal>
           ))}

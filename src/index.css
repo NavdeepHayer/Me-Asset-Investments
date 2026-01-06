@@ -13,11 +13,11 @@
   }
 
   body {
-    @apply font-sans text-neutral-800 bg-white leading-relaxed;
+    @apply font-sans text-white bg-transparent leading-relaxed;
   }
 
   ::selection {
-    @apply bg-neutral-900 text-white;
+    @apply bg-white/30 text-white;
   }
 }
 
@@ -47,7 +47,7 @@
   }
 
   .text-caption {
-    @apply text-sm md:text-base text-neutral-600 leading-relaxed;
+    @apply text-sm md:text-base text-white/60 leading-relaxed;
   }
 
   .section-spacing {

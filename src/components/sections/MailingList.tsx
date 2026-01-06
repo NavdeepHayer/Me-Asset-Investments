@@ -28,13 +28,13 @@ export function MailingList() {
   };
 
   return (
-    <section className="section-spacing-sm bg-neutral-100">
+    <section className="section-spacing-sm bg-white/5 backdrop-blur-sm">
       <div className="container-editorial text-center">
         <ScrollReveal>
-          <h2 className="text-headline mb-4">{mailingList.headline}</h2>
+          <h2 className="text-headline mb-4 text-white">{mailingList.headline}</h2>
         </ScrollReveal>
         <ScrollReveal delay={0.1}>
-          <p className="text-body text-neutral-600 mb-8 max-w-xl mx-auto">
+          <p className="text-body text-white/70 mb-8 max-w-xl mx-auto">
             {mailingList.description}
           </p>
         </ScrollReveal>
@@ -50,12 +50,12 @@ export function MailingList() {
               placeholder={mailingList.placeholder}
               required
               disabled={status === "loading" || status === "success"}
-              className="flex-1 px-4 py-3 border border-neutral-300 bg-white text-neutral-800 placeholder-neutral-500 focus:outline-none focus:border-neutral-900 transition-colors disabled:opacity-50"
+              className="flex-1 px-4 py-3 border border-white/30 bg-white/10 text-white placeholder-white/50 focus:outline-none focus:border-white/60 transition-colors disabled:opacity-50"
             />
             <button
               type="submit"
               disabled={status === "loading" || status === "success"}
-              className="px-8 py-3 bg-neutral-900 text-white hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-8 py-3 bg-white text-neutral-900 hover:bg-white/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {status === "loading" ? "..." : mailingList.buttonText}
             </button>
@@ -67,7 +67,7 @@ export function MailingList() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="text-sm text-neutral-600 mt-4"
+              className="text-sm text-white/70 mt-4"
             >
               {mailingList.successMessage}
             </motion.p>
@@ -77,7 +77,7 @@ export function MailingList() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="text-sm text-red-600 mt-4"
+              className="text-sm text-red-400 mt-4"
             >
               {mailingList.errorMessage}
             </motion.p>

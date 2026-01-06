@@ -5,16 +5,7 @@ export function Hero() {
   const { hero } = siteContent;
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${hero.backgroundImage})` }}
-      >
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
-      </div>
-
+    <section className="relative min-h-screen flex items-center justify-center">
       {/* Content */}
       <div className="container-editorial relative z-10 text-center py-20">
         <motion.h1

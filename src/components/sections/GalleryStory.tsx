@@ -26,11 +26,11 @@ export function GalleryStory({ story, layout = "left" }: GalleryStoryProps) {
             >
               {story.images.map((image, index) => (
                 <ScrollReveal key={index} delay={index * 0.1}>
-                  <div className="aspect-4/3 overflow-hidden bg-neutral-100">
+                  <div className="aspect-4/3 overflow-hidden bg-white/10">
                     <img
                       src={image.src}
                       alt={image.alt}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover opacity-90 hover:opacity-100 transition-opacity"
                       loading="lazy"
                     />
                   </div>
@@ -42,8 +42,8 @@ export function GalleryStory({ story, layout = "left" }: GalleryStoryProps) {
           {/* Caption */}
           <div className={`${!isLeft ? "lg:col-start-1" : ""}`}>
             <ScrollReveal delay={0.2}>
-              <h3 className="text-headline mb-6">{story.caption.title}</h3>
-              <p className="text-body text-neutral-600">{story.caption.text}</p>
+              <h3 className="text-headline mb-6 text-white">{story.caption.title}</h3>
+              <p className="text-body text-white/70">{story.caption.text}</p>
             </ScrollReveal>
           </div>
         </div>
