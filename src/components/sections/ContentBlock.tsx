@@ -97,29 +97,30 @@ interface GraphicProps {
 
 // Tower crane with detailed lattice structure
 function CraneGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line: enters from top, flows through graphic, exits bottom
-  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
-  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
-  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+  // Animation window: 0.10 (line enters) to 0.80 (line exits)
+  // Flow line
+  const flowIn = useScrollTransform(scrollProgress, 0.10, 0.20);
+  const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
+  const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  // Main graphic elements
-  const ground = useScrollTransform(scrollProgress, 0.15, 0.25);
-  const foundation = useScrollTransform(scrollProgress, 0.18, 0.28);
-  const towerLeft = useScrollTransform(scrollProgress, 0.2, 0.4);
-  const towerRight = useScrollTransform(scrollProgress, 0.22, 0.42);
-  const lattice = useScrollTransform(scrollProgress, 0.25, 0.5);
-  const slewing = useScrollTransform(scrollProgress, 0.4, 0.5);
-  const cabin = useScrollTransform(scrollProgress, 0.42, 0.52);
-  const jibTop = useScrollTransform(scrollProgress, 0.45, 0.6);
-  const jibBottom = useScrollTransform(scrollProgress, 0.47, 0.62);
-  const jibLattice = useScrollTransform(scrollProgress, 0.5, 0.65);
-  const counterJib = useScrollTransform(scrollProgress, 0.52, 0.62);
-  const peak = useScrollTransform(scrollProgress, 0.55, 0.65);
-  const pendant = useScrollTransform(scrollProgress, 0.58, 0.68);
-  const trolley = useScrollTransform(scrollProgress, 0.6, 0.75);
-  const hook = useScrollTransform(scrollProgress, 0.65, 0.78);
-  const load = useScrollTransform(scrollProgress, 0.7, 0.85);
-  const building = useScrollTransform(scrollProgress, 0.3, 0.45);
+  // Main graphic elements - synced to animate within flow line window
+  const ground = useScrollTransform(scrollProgress, 0.12, 0.20);
+  const foundation = useScrollTransform(scrollProgress, 0.15, 0.23);
+  const towerLeft = useScrollTransform(scrollProgress, 0.18, 0.35);
+  const towerRight = useScrollTransform(scrollProgress, 0.20, 0.37);
+  const lattice = useScrollTransform(scrollProgress, 0.25, 0.45);
+  const slewing = useScrollTransform(scrollProgress, 0.35, 0.43);
+  const cabin = useScrollTransform(scrollProgress, 0.38, 0.46);
+  const jibTop = useScrollTransform(scrollProgress, 0.42, 0.52);
+  const jibBottom = useScrollTransform(scrollProgress, 0.44, 0.54);
+  const jibLattice = useScrollTransform(scrollProgress, 0.48, 0.58);
+  const counterJib = useScrollTransform(scrollProgress, 0.46, 0.54);
+  const peak = useScrollTransform(scrollProgress, 0.50, 0.58);
+  const pendant = useScrollTransform(scrollProgress, 0.54, 0.62);
+  const trolley = useScrollTransform(scrollProgress, 0.58, 0.68);
+  const hook = useScrollTransform(scrollProgress, 0.62, 0.72);
+  const load = useScrollTransform(scrollProgress, 0.68, 0.78);
+  const building = useScrollTransform(scrollProgress, 0.28, 0.40);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
@@ -334,23 +335,25 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
 
 // Architectural blueprint with grid and details
 function BlueprintGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - vertical through center
-  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
-  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
-  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+  // Animation window: 0.10 (line enters) to 0.80 (line exits)
+  // Flow line
+  const flowIn = useScrollTransform(scrollProgress, 0.10, 0.20);
+  const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
+  const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  const grid = useScrollTransform(scrollProgress, 0.1, 0.25);
-  const outline = useScrollTransform(scrollProgress, 0.15, 0.35);
-  const walls = useScrollTransform(scrollProgress, 0.25, 0.45);
-  const doors = useScrollTransform(scrollProgress, 0.35, 0.5);
-  const windows = useScrollTransform(scrollProgress, 0.4, 0.55);
-  const stairs = useScrollTransform(scrollProgress, 0.45, 0.58);
-  const kitchen = useScrollTransform(scrollProgress, 0.5, 0.62);
-  const bathroom = useScrollTransform(scrollProgress, 0.52, 0.64);
-  const dimensions = useScrollTransform(scrollProgress, 0.55, 0.68);
-  const labels = useScrollTransform(scrollProgress, 0.6, 0.72);
-  const northArrow = useScrollTransform(scrollProgress, 0.65, 0.75);
-  const scale = useScrollTransform(scrollProgress, 0.68, 0.78);
+  // Main graphic elements - synced to animate within flow line window
+  const grid = useScrollTransform(scrollProgress, 0.12, 0.22);
+  const outline = useScrollTransform(scrollProgress, 0.18, 0.32);
+  const walls = useScrollTransform(scrollProgress, 0.28, 0.42);
+  const doors = useScrollTransform(scrollProgress, 0.38, 0.48);
+  const windows = useScrollTransform(scrollProgress, 0.44, 0.54);
+  const stairs = useScrollTransform(scrollProgress, 0.50, 0.58);
+  const kitchen = useScrollTransform(scrollProgress, 0.54, 0.62);
+  const bathroom = useScrollTransform(scrollProgress, 0.58, 0.66);
+  const dimensions = useScrollTransform(scrollProgress, 0.62, 0.70);
+  const labels = useScrollTransform(scrollProgress, 0.66, 0.74);
+  const northArrow = useScrollTransform(scrollProgress, 0.70, 0.76);
+  const scale = useScrollTransform(scrollProgress, 0.74, 0.80);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
@@ -508,23 +511,25 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
 
 // Steel frame structure with detailed I-beams
 function FrameworkGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - vertical through center
-  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
-  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
-  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+  // Animation window: 0.10 (line enters) to 0.80 (line exits)
+  // Flow line
+  const flowIn = useScrollTransform(scrollProgress, 0.10, 0.20);
+  const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
+  const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  const ground = useScrollTransform(scrollProgress, 0.1, 0.2);
-  const foundation = useScrollTransform(scrollProgress, 0.15, 0.25);
-  const columns = useScrollTransform(scrollProgress, 0.2, 0.5);
-  const flanges = useScrollTransform(scrollProgress, 0.35, 0.55);
-  const floors = useScrollTransform(scrollProgress, 0.4, 0.6);
-  const stiffeners = useScrollTransform(scrollProgress, 0.45, 0.62);
-  const bracing = useScrollTransform(scrollProgress, 0.5, 0.68);
-  const plates = useScrollTransform(scrollProgress, 0.55, 0.7);
-  const bolts = useScrollTransform(scrollProgress, 0.6, 0.72);
-  const scaffolding = useScrollTransform(scrollProgress, 0.55, 0.75);
-  const craneCable = useScrollTransform(scrollProgress, 0.65, 0.78);
-  const beam = useScrollTransform(scrollProgress, 0.7, 0.85);
+  // Main graphic elements - synced to animate within flow line window
+  const ground = useScrollTransform(scrollProgress, 0.12, 0.20);
+  const foundation = useScrollTransform(scrollProgress, 0.16, 0.24);
+  const columns = useScrollTransform(scrollProgress, 0.20, 0.45);
+  const flanges = useScrollTransform(scrollProgress, 0.35, 0.50);
+  const floors = useScrollTransform(scrollProgress, 0.40, 0.55);
+  const stiffeners = useScrollTransform(scrollProgress, 0.45, 0.58);
+  const bracing = useScrollTransform(scrollProgress, 0.50, 0.62);
+  const plates = useScrollTransform(scrollProgress, 0.55, 0.66);
+  const bolts = useScrollTransform(scrollProgress, 0.60, 0.70);
+  const scaffolding = useScrollTransform(scrollProgress, 0.58, 0.72);
+  const craneCable = useScrollTransform(scrollProgress, 0.66, 0.74);
+  const beam = useScrollTransform(scrollProgress, 0.70, 0.80);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
@@ -705,23 +710,25 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
 
 // City skyline with refined architecture
 function SkylineGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - vertical through center
-  const flowIn = useScrollTransform(scrollProgress, 0.05, 0.25);
-  const flowThrough = useScrollTransform(scrollProgress, 0.2, 0.7);
-  const flowOut = useScrollTransform(scrollProgress, 0.65, 0.85);
+  // Animation window: 0.10 (line enters) to 0.80 (line exits)
+  // Flow line
+  const flowIn = useScrollTransform(scrollProgress, 0.10, 0.20);
+  const flowThrough = useScrollTransform(scrollProgress, 0.18, 0.72);
+  const flowOut = useScrollTransform(scrollProgress, 0.70, 0.80);
 
-  const ground = useScrollTransform(scrollProgress, 0.1, 0.2);
-  const b1 = useScrollTransform(scrollProgress, 0.12, 0.35);
-  const b2 = useScrollTransform(scrollProgress, 0.15, 0.38);
-  const b3 = useScrollTransform(scrollProgress, 0.18, 0.45);
-  const b4 = useScrollTransform(scrollProgress, 0.22, 0.42);
-  const b5 = useScrollTransform(scrollProgress, 0.25, 0.48);
-  const b6 = useScrollTransform(scrollProgress, 0.28, 0.45);
-  const b7 = useScrollTransform(scrollProgress, 0.3, 0.42);
-  const b8 = useScrollTransform(scrollProgress, 0.32, 0.4);
-  const windows = useScrollTransform(scrollProgress, 0.4, 0.7);
-  const details = useScrollTransform(scrollProgress, 0.5, 0.75);
-  const lights = useScrollTransform(scrollProgress, 0.65, 0.8);
+  // Main graphic elements - synced to animate within flow line window
+  const ground = useScrollTransform(scrollProgress, 0.12, 0.20);
+  const b1 = useScrollTransform(scrollProgress, 0.14, 0.32);
+  const b2 = useScrollTransform(scrollProgress, 0.16, 0.34);
+  const b3 = useScrollTransform(scrollProgress, 0.18, 0.40);
+  const b4 = useScrollTransform(scrollProgress, 0.22, 0.38);
+  const b5 = useScrollTransform(scrollProgress, 0.26, 0.44);
+  const b6 = useScrollTransform(scrollProgress, 0.30, 0.42);
+  const b7 = useScrollTransform(scrollProgress, 0.34, 0.40);
+  const b8 = useScrollTransform(scrollProgress, 0.38, 0.44);
+  const windows = useScrollTransform(scrollProgress, 0.42, 0.62);
+  const details = useScrollTransform(scrollProgress, 0.52, 0.68);
+  const lights = useScrollTransform(scrollProgress, 0.64, 0.78);
 
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full">
