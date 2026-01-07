@@ -71,9 +71,10 @@ function TransitionBox({
   // Animation timing:
   // - Box fades in at start of animation
   // - ME is visible from start
-  // - Flip happens at 70-95% of animation range (slower flip)
-  const flipStart = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.7;
-  const flipEnd = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.95;
+  // - Flip happens AFTER the box lines connect (starts at 95%, continues past animation end)
+  const animationDuration = animationRange[1] - animationRange[0];
+  const flipStart = animationRange[1] - (animationDuration * 0.05); // Start flip at 95% (just as lines finish)
+  const flipEnd = animationRange[1] + (animationDuration * 0.15); // End flip after animation completes
   const flipMidpoint = (flipStart + flipEnd) / 2;
 
   // Rotate from 0 to 180 degrees (front to back) - only for ME/WE text
