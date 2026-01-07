@@ -173,7 +173,7 @@ function FlowLines({ positions }: { positions: Positions }) {
   // For mailing list box: line splits at top, goes around both sides, meets at bottom center
   const mailingCenterX = mailing ? mailing.centerX : heroCenter;
   const mailingTop = mailing ? mailing.sectionTop + 5 : 0; // Split 5px from top
-  const mailingBottom = mailing ? mailing.sectionBottom - 20 : 0;
+  const mailingBottom = mailing ? mailing.sectionBottom - (isDesktop ? 80 : 40) : 0; // End higher
   const mailingLeftX = mailing ? mailing.leftEdge : 40;
   const mailingRightX = mailing ? mailing.rightEdge : window.innerWidth - 40;
 
@@ -591,11 +591,11 @@ export function PageFlowLine() {
         current = current.offsetParent as HTMLElement;
       }
 
-      // Use content container for box width, with extra padding on mobile
+      // Use content container for box width
       const contentRect = mailingContent.getBoundingClientRect();
       const centerX = contentRect.left + contentRect.width / 2 + window.scrollX;
-      // On mobile, extend box 20px beyond content edges
-      const mobilePadding = isDesktop ? 0 : 20;
+      // On mobile, extend box slightly beyond content edges
+      const mobilePadding = isDesktop ? 0 : 10;
       const leftEdge = contentRect.left + window.scrollX - mobilePadding;
       const rightEdge = contentRect.right + window.scrollX + mobilePadding;
 
