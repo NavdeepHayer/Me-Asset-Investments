@@ -14,12 +14,12 @@ export function Header() {
           className="flex items-center justify-between"
         >
           {/* Logo */}
-          <a href="/" className="inline-flex items-baseline gap-1 group">
+          <a href="/" className="inline-flex items-baseline gap-1 group whitespace-nowrap">
             <span className="text-lg md:text-2xl lg:text-3xl font-semibold text-white tracking-wide">
               {company.prefix}
             </span>
             <span className="text-white/30 mx-1 md:mx-2">|</span>
-            <span className="text-xs md:text-base lg:text-lg tracking-[0.15em] uppercase text-white/50 group-hover:text-white/70 transition-colors duration-300">
+            <span className="hidden sm:inline text-xs md:text-base lg:text-lg tracking-[0.15em] uppercase text-white/50 group-hover:text-white/70 transition-colors duration-300">
               {company.name}
             </span>
           </a>
