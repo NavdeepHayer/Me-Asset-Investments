@@ -53,6 +53,12 @@ export function Hero() {
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden" data-hero>
+      {/* Marker for where hero line ends - PageFlowLine connects from here */}
+      <div
+        data-hero-line-end
+        className="absolute left-1/2 -translate-x-1/2 bottom-[15vh] sm:bottom-[12vh] md:bottom-[10vh] w-1 h-1"
+      />
+
       {/* UK City Skyline background */}
       <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[10vh]">
         <motion.svg
