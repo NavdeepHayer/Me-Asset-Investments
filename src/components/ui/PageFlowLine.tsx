@@ -68,10 +68,13 @@ function TransitionBox({
   const boxWidth = 220;
   const boxHeight = 50;
 
-  // Animation progress - show ME early, flip happens later in the animation
-  // ME is visible from start, flip starts at 50% and ends at 90% of animation
-  const flipStart = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.5;
-  const flipEnd = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.9;
+  // Animation timing:
+  // - Box fades in at start of animation
+  // - ME is visible from start
+  // - Flip happens at 60-80% of animation range
+  const flipStart = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.6;
+  const flipEnd = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.8;
+  const flipMidpoint = (flipStart + flipEnd) / 2;
 
   // Rotate from 0 to 180 degrees (front to back) - only for ME/WE text
   const rotateX = useTransform(
@@ -80,24 +83,24 @@ function TransitionBox({
     [0, 180]
   );
 
-  // Opacity for ME text (visible when rotation < 90)
+  // ME is visible from the very start until flip midpoint
   const meOpacity = useTransform(
     scrollYProgress,
-    [flipStart, (flipStart + flipEnd) / 2 - 0.02, (flipStart + flipEnd) / 2],
+    [animationRange[0], flipMidpoint - 0.01, flipMidpoint],
     [1, 1, 0]
   );
 
-  // Opacity for WE text (visible when rotation > 90)
+  // WE appears after flip midpoint and stays visible
   const weOpacity = useTransform(
     scrollYProgress,
-    [(flipStart + flipEnd) / 2, (flipStart + flipEnd) / 2 + 0.02, flipEnd],
+    [flipMidpoint, flipMidpoint + 0.01, 1],
     [0, 1, 1]
   );
 
   // Overall box opacity (fade in as box is drawn)
   const boxOpacity = useTransform(
     scrollYProgress,
-    [animationRange[0], animationRange[0] + 0.03],
+    [animationRange[0], animationRange[0] + 0.02],
     [0, 1]
   );
 
@@ -135,10 +138,11 @@ function TransitionBox({
             position: 'relative',
             width: '28px',
             height: '24px',
-            perspective: 200,
+            perspective: 400,
+            transformStyle: 'preserve-3d',
           }}
         >
-          {/* ME text (front side) */}
+          {/* ME text (front side) - visible from start, flips away */}
           <motion.span
             style={{
               position: 'absolute',
@@ -148,21 +152,23 @@ function TransitionBox({
               opacity: meOpacity,
               backfaceVisibility: 'hidden',
               transformStyle: 'preserve-3d',
+              display: 'block',
             }}
           >
             ME
           </motion.span>
 
-          {/* WE text (back side - pre-rotated 180deg on X axis) */}
+          {/* WE text (back side - starts rotated, flips into view) */}
           <motion.span
             style={{
               position: 'absolute',
               left: 0,
               top: 0,
-              rotateX: useTransform(rotateX, (r) => r - 180),
+              rotateX: useTransform(rotateX, (r) => r + 180),
               opacity: weOpacity,
               backfaceVisibility: 'hidden',
               transformStyle: 'preserve-3d',
+              display: 'block',
             }}
           >
             WE
