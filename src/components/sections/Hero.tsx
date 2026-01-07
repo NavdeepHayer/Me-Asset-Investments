@@ -17,7 +17,7 @@ export function Hero() {
         >
           {/* Rotating rings group - slow clockwise rotation */}
           <motion.g
-            style={{ originX: '200px', originY: '200px' }}
+            style={{ transformOrigin: "200px 200px" }}
             animate={{ rotate: 360 }}
             transition={{ duration: 120, ease: "linear", repeat: Infinity }}
           >
@@ -45,7 +45,7 @@ export function Hero() {
 
           {/* Inner rings - rotate counter-clockwise at different speed */}
           <motion.g
-            style={{ originX: '200px', originY: '200px' }}
+            style={{ transformOrigin: "200px 200px" }}
             animate={{ rotate: -360 }}
             transition={{ duration: 90, ease: "linear", repeat: Infinity }}
           >
@@ -82,7 +82,7 @@ export function Hero() {
 
           {/* Diagonal lines (X) - very slow rotation */}
           <motion.g
-            style={{ originX: '200px', originY: '200px' }}
+            style={{ transformOrigin: "200px 200px" }}
             animate={{ rotate: 360 }}
             transition={{ duration: 180, ease: "linear", repeat: Infinity }}
           >
