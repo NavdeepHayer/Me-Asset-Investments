@@ -16,7 +16,6 @@ export function Hero() {
   const gherkinComplete = 0.65;     // ~5.20s
   const modernComplete = 0.78;      // ~6.24s
   const artDecoComplete = 0.88;     // ~7.04s
-  const returnToCenter = 1.0;       // ~8.0s
 
   // Convert to actual delay times
   const bigBenDetailDelay = bigBenComplete * LINE_DURATION;
@@ -30,9 +29,6 @@ export function Hero() {
   // Logo appears when line reaches center (St Paul's area)
   const logoDelay = stPaulsComplete * LINE_DURATION;
   const taglineDelay = logoDelay + 0.5;
-
-  // Exit line appears after skyline is complete
-  const exitLineDelay = LINE_DURATION + 0.5;
 
   // Single continuous path that draws all buildings left to right
   // goes down at the right, then returns to center and continues down
