@@ -136,7 +136,7 @@ export function Hero() {
       </motion.div>
 
       {/* Content */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6">
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6" style={{ transform: 'translateZ(0)' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -144,11 +144,11 @@ export function Hero() {
         >
           {/* ME | Asset Management logo treatment - stacked on mobile */}
           <h1 className="mb-5 sm:mb-6 lg:mb-8">
-            <span className="block sm:inline text-6xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white tracking-wide">
+            <span className="block sm:inline text-6xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white tracking-normal sm:tracking-wide">
               {company.prefix}
             </span>
             <span className="hidden sm:inline text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/30 mx-3 lg:mx-4 font-light">|</span>
-            <span className="block sm:inline mt-2 sm:mt-0 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.15em] sm:tracking-[0.1em] uppercase font-light">
+            <span className="block sm:inline mt-2 sm:mt-0 text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.12em] sm:tracking-[0.1em] uppercase font-light">
               {company.name}
             </span>
           </h1>
