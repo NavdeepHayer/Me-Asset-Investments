@@ -8,19 +8,28 @@ interface GraphicPosition {
   bottom: number;
 }
 
+interface TeamPosition {
+  sectionTop: number;
+  sectionBottom: number;
+  headingTop: number;
+  headingBottom: number;
+  centerX: number;
+}
+
 interface Positions {
   heroBottom: number;
   heroCenter: number;
   documentHeight: number;
   viewportHeight: number;
   graphics: GraphicPosition[];
+  team: TeamPosition | null;
   isDesktop: boolean;
 }
 
 // Child component that handles the scroll-linked animations
 // This ensures hooks are always called consistently
 function FlowLines({ positions }: { positions: Positions }) {
-  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, isDesktop } = positions;
+  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, team, isDesktop } = positions;
   const [crane, blueprint, framework, skyline, completed] = graphics;
   const scrollableHeight = documentHeight - viewportHeight;
 
@@ -34,6 +43,15 @@ function FlowLines({ positions }: { positions: Positions }) {
     return Math.max(0, Math.min(1, scrollY / scrollableHeight));
   }, [viewportHeight, scrollableHeight]);
 
+  // Helper: convert team section scroll to global percentage
+  const teamToGlobal = useCallback((localScroll: number) => {
+    if (!team) return 0;
+    const sectionHeight = team.sectionBottom - team.sectionTop;
+    const scrollRange = sectionHeight + viewportHeight;
+    const scrollY = localScroll * scrollRange + (team.sectionTop - viewportHeight);
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  }, [team, viewportHeight, scrollableHeight]);
+
   // Calculate scroll ranges - line completes just before internal flow starts (local 0.10)
   const ranges = useMemo(() => ({
     heroToCrane: [localToGlobal(crane, -0.05), localToGlobal(crane, 0.08)] as [number, number],
@@ -42,7 +60,9 @@ function FlowLines({ positions }: { positions: Positions }) {
     frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
     // Start drawing when leaving skyline, complete when reaching completed (flows through Projects)
     skylineToCompleted: [localToGlobal(skyline, 0.6), localToGlobal(completed, 0.08)] as [number, number],
-  }), [localToGlobal, crane, blueprint, framework, skyline, completed]);
+    // Start after completed flow finishes, draw through Team section
+    completedToTeam: [localToGlobal(completed, 0.6), teamToGlobal(0.8)] as [number, number],
+  }), [localToGlobal, teamToGlobal, crane, blueprint, framework, skyline, completed]);
 
   // Animated segments - tied to destination graphic's scroll position
   const heroToCrane = useTransform(scrollYProgress, ranges.heroToCrane, [0, 1]);
@@ -50,6 +70,7 @@ function FlowLines({ positions }: { positions: Positions }) {
   const blueprintToFramework = useTransform(scrollYProgress, ranges.blueprintToFramework, [0, 1]);
   const frameworkToSkyline = useTransform(scrollYProgress, ranges.frameworkToSkyline, [0, 1]);
   const skylineToCompleted = useTransform(scrollYProgress, ranges.skylineToCompleted, [0, 1]);
+  const completedToTeam = useTransform(scrollYProgress, ranges.completedToTeam, [0, 1]);
 
   // Calculate turn points for 90° turns
   const heroToCraneTurnY = crane.top - 50;
@@ -61,6 +82,14 @@ function FlowLines({ positions }: { positions: Positions }) {
   const sideMarginX = window.innerWidth - 80; // Right edge of viewport
   const skylineToCompletedTurnY1 = skyline.bottom + 30; // First turn - go right
   const skylineToCompletedTurnY2 = completed.top - 50; // Second turn - go left toward completed
+
+  // For completed to team: route around the heading, then through the center
+  const leftMarginX = 80; // Left edge margin
+  const completedToTeamTurnY1 = completed.bottom + 30; // First turn - go left
+  const completedToTeamTurnY2 = team ? team.headingTop - 20 : 0; // Above heading
+  const completedToTeamTurnY3 = team ? team.headingBottom + 30 : 0; // Below heading
+  const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
+  const teamSectionBottom = team ? team.sectionBottom - 50 : 0; // End point in team section
 
   return (
     <svg
@@ -152,6 +181,25 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: skylineToCompleted }}
           />
+          {/* Completed to Team - goes down left side, around heading, through center */}
+          {team && (
+            <motion.path
+              d={`M ${completed.centerX} ${completed.bottom}
+                  L ${completed.centerX} ${completedToTeamTurnY1}
+                  L ${leftMarginX} ${completedToTeamTurnY1}
+                  L ${leftMarginX} ${completedToTeamTurnY2}
+                  L ${teamCenterX} ${completedToTeamTurnY2}
+                  L ${teamCenterX} ${completedToTeamTurnY3}
+                  L ${teamCenterX} ${teamSectionBottom}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: completedToTeam }}
+            />
+          )}
         </>
       ) : (
         <>
@@ -200,6 +248,17 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: skylineToCompleted }}
           />
+          {team && (
+            <motion.line
+              x1={completed.centerX} y1={completed.bottom}
+              x2={teamCenterX} y2={teamSectionBottom}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: completedToTeam }}
+            />
+          )}
         </>
       )}
     </svg>
@@ -266,12 +325,48 @@ export function PageFlowLine() {
       });
     });
 
+    // Find Team section and heading
+    let team: TeamPosition | null = null;
+    const teamSection = document.querySelector('[data-team-section]') as HTMLElement;
+    const teamHeading = document.querySelector('[data-team-heading]') as HTMLElement;
+
+    if (teamSection && teamHeading) {
+      // Get section position
+      let sectionOffsetTop = 0;
+      let current: HTMLElement | null = teamSection;
+      while (current) {
+        sectionOffsetTop += current.offsetTop;
+        current = current.offsetParent as HTMLElement;
+      }
+
+      // Get heading position
+      let headingOffsetTop = 0;
+      current = teamHeading;
+      while (current) {
+        headingOffsetTop += current.offsetTop;
+        current = current.offsetParent as HTMLElement;
+      }
+
+      // Get horizontal center
+      const sectionRect = teamSection.getBoundingClientRect();
+      const centerX = sectionRect.left + sectionRect.width / 2 + window.scrollX;
+
+      team = {
+        sectionTop: sectionOffsetTop,
+        sectionBottom: sectionOffsetTop + teamSection.offsetHeight,
+        headingTop: headingOffsetTop,
+        headingBottom: headingOffsetTop + teamHeading.offsetHeight,
+        centerX
+      };
+    }
+
     setPositions({
       heroBottom,
       heroCenter,
       documentHeight,
       viewportHeight,
       graphics,
+      team,
       isDesktop
     });
   }, []);

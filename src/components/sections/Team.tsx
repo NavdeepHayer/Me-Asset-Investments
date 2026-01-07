@@ -6,10 +6,13 @@ export function Team() {
   const { team } = siteContent;
 
   return (
-    <section className="section-spacing">
+    <section className="section-spacing" data-team-section>
       <div className="container-wide">
         <ScrollReveal>
-          <h2 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white/90 mb-10 sm:mb-14 md:mb-20 lg:mb-24 xl:mb-28 text-center tracking-wide">
+          <h2
+            data-team-heading
+            className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white/90 mb-10 sm:mb-14 md:mb-20 lg:mb-24 xl:mb-28 text-center tracking-wide"
+          >
             {team.headline}
           </h2>
         </ScrollReveal>
