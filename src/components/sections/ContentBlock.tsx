@@ -4,7 +4,7 @@ import { ScrollReveal } from "../ui/ScrollReveal";
 
 interface ContentBlockProps {
   text: string;
-  graphic?: "ukSkyline" | "blueprint" | "framework" | "crossSection";
+  graphic?: "crane" | "blueprint" | "framework" | "skyline";
   graphicPosition?: "left" | "right";
   className?: string;
 }
@@ -54,8 +54,8 @@ export function ContentBlock({
   );
 }
 
-function GraphicElement({ variant }: { variant: "ukSkyline" | "blueprint" | "framework" | "crossSection" }) {
-  const isWide = variant === "crossSection";
+function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framework" | "skyline" }) {
+  const isWide = variant === "skyline";
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -72,10 +72,10 @@ function GraphicElement({ variant }: { variant: "ukSkyline" | "blueprint" | "fra
         : "w-[260px] h-[260px] sm:w-[300px] sm:h-[300px] md:w-[350px] md:h-[350px] lg:w-[420px] lg:h-[420px] xl:w-[500px] xl:h-[500px] 2xl:w-[580px] 2xl:h-[580px]"
       }
     >
-      {variant === "ukSkyline" && <UKSkylineGraphic scrollProgress={scrollYProgress} />}
+      {variant === "crane" && <CraneGraphic scrollProgress={scrollYProgress} />}
       {variant === "blueprint" && <BlueprintGraphic scrollProgress={scrollYProgress} />}
       {variant === "framework" && <FrameworkGraphic scrollProgress={scrollYProgress} />}
-      {variant === "crossSection" && <CrossSectionGraphic scrollProgress={scrollYProgress} />}
+      {variant === "skyline" && <RenovationGraphic scrollProgress={scrollYProgress} />}
     </motion.div>
   );
 }
@@ -95,31 +95,22 @@ interface GraphicProps {
   scrollProgress: MotionValue<number>;
 }
 
-// UK City Skyline - Big Ben, Georgian townhouses, Shard, St Paul's, Gherkin
-function UKSkylineGraphic({ scrollProgress }: GraphicProps) {
-  // Flow line - starts bottom-left, traces roofline, exits center-bottom
+// Construction Crane - Tower crane with boom and hook
+function CraneGraphic({ scrollProgress }: GraphicProps) {
   const flowThrough = useScrollTransform(scrollProgress, 0.08, 0.78);
-
-  // Animation sequence: left to right, top to bottom within each building
   const ground = useScrollTransform(scrollProgress, 0.10, 0.20);
-  const bigBen = useScrollTransform(scrollProgress, 0.12, 0.32);
-  const bigBenDetails = useScrollTransform(scrollProgress, 0.28, 0.40);
-  const townhouses = useScrollTransform(scrollProgress, 0.20, 0.38);
-  const townhouseDetails = useScrollTransform(scrollProgress, 0.34, 0.46);
-  const shard = useScrollTransform(scrollProgress, 0.26, 0.44);
-  const shardDetails = useScrollTransform(scrollProgress, 0.40, 0.52);
-  const stPauls = useScrollTransform(scrollProgress, 0.32, 0.50);
-  const stPaulsDetails = useScrollTransform(scrollProgress, 0.46, 0.58);
-  const gherkin = useScrollTransform(scrollProgress, 0.38, 0.56);
-  const gherkinDetails = useScrollTransform(scrollProgress, 0.52, 0.64);
-  const officeBlock = useScrollTransform(scrollProgress, 0.44, 0.62);
-  const officeDetails = useScrollTransform(scrollProgress, 0.58, 0.70);
-  const lights = useScrollTransform(scrollProgress, 0.65, 0.78);
+  const base = useScrollTransform(scrollProgress, 0.14, 0.28);
+  const tower = useScrollTransform(scrollProgress, 0.22, 0.42);
+  const towerDetails = useScrollTransform(scrollProgress, 0.36, 0.50);
+  const boom = useScrollTransform(scrollProgress, 0.44, 0.58);
+  const counterweight = useScrollTransform(scrollProgress, 0.52, 0.64);
+  const cables = useScrollTransform(scrollProgress, 0.58, 0.70);
+  const hook = useScrollTransform(scrollProgress, 0.66, 0.78);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
       <defs>
-        <filter id="glow-uk" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id="glow-crane" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
@@ -128,27 +119,13 @@ function UKSkylineGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* FLOW LINE - enters bottom-left, traces roofline, exits center */}
+      {/* Flow line - enters top, goes through crane, exits bottom */}
       <motion.path
-        d="M 0 185
-           L 20 185
-           L 20 25
-           L 28 18
-           L 28 25
-           L 35 40
-           L 55 40
-           L 55 65
-           L 85 65
-           L 95 15
-           L 105 65
-           L 115 55
-           L 130 55
-           L 135 80
-           L 150 45
-           L 165 80
-           L 175 60
-           L 185 80
-           L 185 185
+        d="M 100 0
+           L 100 15
+           L 80 15
+           L 80 35
+           L 100 35
            L 100 185
            L 100 200"
         fill="none"
@@ -156,180 +133,141 @@ function UKSkylineGraphic({ scrollProgress }: GraphicProps) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        filter="url(#glow-uk)"
+        filter="url(#glow-crane)"
         style={{ pathLength: flowThrough }}
       />
 
       {/* Ground line */}
-      <motion.line
-        x1="5" y1="185" x2="195" y2="185"
-        stroke="rgba(255,255,255,0.12)"
-        strokeWidth="1"
-        style={{ pathLength: ground }}
-      />
+      <motion.line x1="20" y1="185" x2="180" y2="185" stroke="rgba(255,255,255,0.12)" strokeWidth="1"
+        style={{ pathLength: ground }} />
 
-      {/* === BIG BEN (Victorian Clock Tower) - Left === */}
-      <motion.path
-        d="M 20 185 L 20 45 L 24 40 L 28 18 L 32 40 L 36 45 L 36 185"
-        fill="none"
-        stroke="rgba(255,255,255,0.22)"
-        strokeWidth="1.5"
-        style={{ pathLength: bigBen }}
-      />
-      {/* Clock face */}
-      <motion.circle cx="28" cy="55" r="6" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="1"
-        style={{ pathLength: bigBenDetails }} />
-      <motion.g style={{ opacity: bigBenDetails }}>
-        <line x1="28" y1="51" x2="28" y2="55" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
-        <line x1="28" y1="55" x2="31" y2="57" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
-      </motion.g>
-      {/* Tower details */}
-      <motion.g style={{ opacity: bigBenDetails }}>
-        <line x1="20" y1="70" x2="36" y2="70" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        <line x1="20" y1="100" x2="36" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        <line x1="20" y1="130" x2="36" y2="130" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        <line x1="20" y1="160" x2="36" y2="160" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        {/* Windows */}
-        {[80, 110, 140, 170].map((y, i) => (
-          <rect key={`bb-w-${i}`} x="24" y={y} width="8" height="6" fill="rgba(255,255,255,0.08)" />
-        ))}
-      </motion.g>
-      {/* Spire */}
-      <motion.line x1="28" y1="18" x2="28" y2="8" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
-        style={{ pathLength: bigBen }} />
-
-      {/* === GEORGIAN TOWNHOUSES === */}
-      <motion.path
-        d="M 42 185 L 42 65 L 48 55 L 54 65 L 54 185
-           M 54 185 L 54 70 L 60 60 L 66 70 L 66 185
-           M 66 185 L 66 68 L 72 58 L 78 68 L 78 185"
-        fill="none"
-        stroke="rgba(255,255,255,0.16)"
-        strokeWidth="1"
-        style={{ pathLength: townhouses }}
-      />
-      {/* Chimneys */}
-      <motion.g style={{ opacity: townhouseDetails }}>
-        <rect x="44" y="52" width="3" height="8" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
-        <rect x="56" y="57" width="3" height="8" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
-        <rect x="68" y="55" width="3" height="8" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.5" />
-      </motion.g>
-      {/* Windows and doors */}
-      <motion.g style={{ opacity: townhouseDetails }}>
-        {/* House 1 */}
-        <rect x="44" y="80" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="44" y="100" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="44" y="120" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="46" y="170" width="4" height="15" fill="rgba(255,255,255,0.08)" />
-        {/* House 2 */}
-        <rect x="56" y="85" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="56" y="105" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="56" y="125" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="58" y="170" width="4" height="15" fill="rgba(255,255,255,0.08)" />
-        {/* House 3 */}
-        <rect x="68" y="83" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="68" y="103" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="68" y="123" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="70" y="170" width="4" height="15" fill="rgba(255,255,255,0.08)" />
+      {/* Base/Foundation */}
+      <motion.g style={{ opacity: base }}>
+        <rect x="85" y="175" width="30" height="10" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+        <line x1="85" y1="180" x2="115" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        {/* Base supports */}
+        <line x1="75" y1="185" x2="90" y2="175" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line x1="125" y1="185" x2="110" y2="175" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
       </motion.g>
 
-      {/* === THE SHARD === */}
+      {/* Main Tower (mast) */}
       <motion.path
-        d="M 95 15 L 85 185 M 95 15 L 105 185 M 95 15 L 95 185"
+        d="M 92 175 L 92 35 M 108 175 L 108 35"
         fill="none"
         stroke="rgba(255,255,255,0.2)"
-        strokeWidth="1.5"
-        style={{ pathLength: shard }}
+        strokeWidth="2"
+        style={{ pathLength: tower }}
       />
-      {/* Shard horizontal lines */}
-      <motion.g style={{ opacity: shardDetails }}>
-        {[40, 60, 80, 100, 120, 140, 160].map((y, i) => {
-          const width = (185 - y) * 0.11;
-          return (
-            <line key={`sh-${i}`} x1={95 - width} y1={y} x2={95 + width} y2={y}
-              stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-          );
-        })}
+
+      {/* Tower lattice cross-bracing */}
+      <motion.g style={{ opacity: towerDetails }}>
+        {[45, 65, 85, 105, 125, 145, 165].map((y, i) => (
+          <g key={`lattice-${i}`}>
+            <line x1="92" y1={y} x2="108" y2={y + 15} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+            <line x1="108" y1={y} x2="92" y2={y + 15} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+            <line x1="92" y1={y} x2="108" y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+          </g>
+        ))}
       </motion.g>
 
-      {/* === ST PAUL'S DOME === */}
+      {/* Operator cab */}
+      <motion.g style={{ opacity: towerDetails }}>
+        <rect x="108" y="38" width="12" height="10" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <rect x="110" y="40" width="8" height="6" fill="rgba(255,255,255,0.06)" />
+      </motion.g>
+
+      {/* Slewing unit (top of tower) */}
+      <motion.g style={{ opacity: tower }}>
+        <rect x="88" y="30" width="24" height="8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+      </motion.g>
+
+      {/* Main Boom (jib) - extends right */}
       <motion.path
-        d="M 115 185 L 115 90 L 118 85 L 118 75
-           M 140 185 L 140 90 L 137 85 L 137 75
-           M 118 75 Q 127.5 50, 137 75"
+        d="M 100 32 L 180 20"
         fill="none"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="1.5"
-        style={{ pathLength: stPauls }}
+        stroke="rgba(255,255,255,0.2)"
+        strokeWidth="2"
+        style={{ pathLength: boom }}
       />
-      {/* Dome lantern/cross */}
-      <motion.g style={{ opacity: stPaulsDetails }}>
-        <line x1="127.5" y1="50" x2="127.5" y2="42" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-        <line x1="124" y1="45" x2="131" y2="45" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
-        {/* Columns */}
-        <line x1="118" y1="90" x2="118" y2="185" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        <line x1="124" y1="90" x2="124" y2="185" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        <line x1="131" y1="90" x2="131" y2="185" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        <line x1="137" y1="90" x2="137" y2="185" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        {/* Horizontal bands */}
-        <line x1="115" y1="120" x2="140" y2="120" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <line x1="115" y1="150" x2="140" y2="150" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-      </motion.g>
-
-      {/* === GHERKIN (30 St Mary Axe) === */}
+      {/* Boom bottom chord */}
       <motion.path
-        d="M 150 185 L 150 90 Q 150 45, 160 45 Q 170 45, 170 90 L 170 185"
-        fill="none"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="1.5"
-        style={{ pathLength: gherkin }}
-      />
-      {/* Diagonal lattice pattern */}
-      <motion.g style={{ opacity: gherkinDetails }}>
-        {[60, 80, 100, 120, 140, 160].map((y, i) => {
-          const squeeze = Math.min(1, (y - 45) / 45);
-          const halfWidth = 10 * squeeze;
-          return (
-            <g key={`gh-${i}`}>
-              <line x1={160 - halfWidth} y1={y} x2={160 + halfWidth} y2={y}
-                stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-              <line x1={160 - halfWidth * 0.7} y1={y - 8} x2={160 + halfWidth * 0.7} y2={y + 8}
-                stroke="rgba(255,255,255,0.05)" strokeWidth="0.3" />
-              <line x1={160 + halfWidth * 0.7} y1={y - 8} x2={160 - halfWidth * 0.7} y2={y + 8}
-                stroke="rgba(255,255,255,0.05)" strokeWidth="0.3" />
-            </g>
-          );
-        })}
-      </motion.g>
-
-      {/* === MODERN OFFICE BLOCK (Stepped Art Deco) === */}
-      <motion.path
-        d="M 175 185 L 175 100 L 178 95 L 178 80 L 182 75 L 182 60 L 188 60 L 188 75 L 192 80 L 192 95 L 195 100 L 195 185"
+        d="M 100 38 L 175 32"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
-        style={{ pathLength: officeBlock }}
+        style={{ pathLength: boom }}
       />
-      {/* Office windows grid */}
-      <motion.g style={{ opacity: officeDetails }}>
-        {[110, 130, 150, 170].map((y, i) => (
-          <g key={`of-${i}`}>
-            <rect x="177" y={y} width="4" height="5" fill="rgba(255,255,255,0.06)" />
-            <rect x="183" y={y} width="4" height="5" fill="rgba(255,255,255,0.06)" />
-            <rect x="189" y={y} width="4" height="5" fill="rgba(255,255,255,0.06)" />
+      {/* Boom lattice */}
+      <motion.g style={{ opacity: boom }}>
+        {[115, 135, 155].map((x, i) => (
+          <g key={`boom-lat-${i}`}>
+            <line x1={x} y1={23 + i * 1.5} x2={x} y2={35 + i * 0.8} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+            <line x1={x - 10} y1={22 + i * 1.5} x2={x + 5} y2={34 + i * 0.8} stroke="rgba(255,255,255,0.06)" strokeWidth="0.3" />
           </g>
         ))}
-        <rect x="183" y="85" width="4" height="5" fill="rgba(255,255,255,0.06)" />
-        <rect x="183" y="68" width="4" height="4" fill="rgba(255,255,255,0.06)" />
       </motion.g>
 
-      {/* Beacon lights */}
-      <motion.g style={{ opacity: lights }}>
-        <circle cx="28" cy="8" r="2" fill="rgba(255,255,255,0.5)" />
-        <circle cx="95" cy="15" r="2.5" fill="rgba(255,255,255,0.6)" />
-        <circle cx="127.5" cy="42" r="1.5" fill="rgba(255,255,255,0.4)" />
-        <circle cx="160" cy="45" r="1.5" fill="rgba(255,255,255,0.4)" />
-        <circle cx="185" cy="60" r="1" fill="rgba(255,255,255,0.3)" />
+      {/* Counter-jib (extends left) */}
+      <motion.path
+        d="M 100 32 L 45 25"
+        fill="none"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="1.5"
+        style={{ pathLength: counterweight }}
+      />
+      {/* Counterweight blocks */}
+      <motion.g style={{ opacity: counterweight }}>
+        <rect x="40" y="26" width="15" height="12" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <line x1="40" y1="32" x2="55" y2="32" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <rect x="42" y="28" width="5" height="4" fill="rgba(255,255,255,0.06)" />
+        <rect x="48" y="28" width="5" height="4" fill="rgba(255,255,255,0.06)" />
+      </motion.g>
+
+      {/* Tower top mast (king post) */}
+      <motion.line x1="100" y1="30" x2="100" y2="10" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
+        style={{ pathLength: tower }} />
+
+      {/* Pendant lines (support cables to king post) */}
+      <motion.g style={{ opacity: cables }}>
+        <line x1="100" y1="10" x2="175" y2="22" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+        <line x1="100" y1="10" x2="50" y2="25" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+      </motion.g>
+
+      {/* Trolley on boom */}
+      <motion.g style={{ opacity: cables }}>
+        <rect x="145" y="23" width="8" height="5" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
+      </motion.g>
+
+      {/* Hoist cable */}
+      <motion.line x1="149" y1="28" x2="149" y2="100" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
+        style={{ pathLength: cables }} />
+
+      {/* Hook block */}
+      <motion.g style={{ opacity: hook }}>
+        <rect x="145" y="100" width="8" height="8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        {/* Hook */}
+        <path d="M 149 108 L 149 118 Q 149 124, 144 124 Q 140 124, 140 120"
+          fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" />
+      </motion.g>
+
+      {/* Load being lifted (building section) */}
+      <motion.g style={{ opacity: hook }}>
+        <rect x="130" y="128" width="38" height="25" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line x1="140" y1="128" x2="140" y2="153" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <line x1="150" y1="128" x2="150" y2="153" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <line x1="160" y1="128" x2="160" y2="153" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        {/* Lifting cables */}
+        <line x1="135" y1="128" x2="149" y2="118" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <line x1="163" y1="128" x2="149" y2="118" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+      </motion.g>
+
+      {/* Ground level building under construction */}
+      <motion.g style={{ opacity: ground }}>
+        <rect x="125" y="160" width="50" height="25" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <line x1="125" y1="170" x2="175" y2="170" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <rect x="130" y="162" width="8" height="6" fill="rgba(255,255,255,0.04)" />
+        <rect x="145" y="162" width="8" height="6" fill="rgba(255,255,255,0.04)" />
+        <rect x="160" y="162" width="8" height="6" fill="rgba(255,255,255,0.04)" />
       </motion.g>
     </motion.svg>
   );
@@ -618,23 +556,21 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
   );
 }
 
-// Building Cross-Section - Shows multiple floors with interior details
-function CrossSectionGraphic({ scrollProgress }: GraphicProps) {
+// Building Under Renovation - Half old facade, half modern (SAVE theme)
+function RenovationGraphic({ scrollProgress }: GraphicProps) {
   const flowThrough = useScrollTransform(scrollProgress, 0.08, 0.78);
-  const foundation = useScrollTransform(scrollProgress, 0.10, 0.22);
-  const structure = useScrollTransform(scrollProgress, 0.16, 0.40);
-  const floors = useScrollTransform(scrollProgress, 0.28, 0.48);
-  const walls = useScrollTransform(scrollProgress, 0.36, 0.52);
-  const windows = useScrollTransform(scrollProgress, 0.44, 0.58);
-  const furniture = useScrollTransform(scrollProgress, 0.50, 0.64);
-  const people = useScrollTransform(scrollProgress, 0.56, 0.68);
-  const roof = useScrollTransform(scrollProgress, 0.62, 0.74);
-  const details = useScrollTransform(scrollProgress, 0.68, 0.80);
+  const ground = useScrollTransform(scrollProgress, 0.10, 0.20);
+  const oldStructure = useScrollTransform(scrollProgress, 0.14, 0.32);
+  const oldDetails = useScrollTransform(scrollProgress, 0.28, 0.44);
+  const scaffolding = useScrollTransform(scrollProgress, 0.36, 0.52);
+  const newStructure = useScrollTransform(scrollProgress, 0.44, 0.62);
+  const newDetails = useScrollTransform(scrollProgress, 0.56, 0.72);
+  const workers = useScrollTransform(scrollProgress, 0.64, 0.78);
 
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full">
       <defs>
-        <filter id="glow-cross" x="-50%" y="-50%" width="200%" height="200%">
+        <filter id="glow-reno" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
@@ -643,20 +579,24 @@ function CrossSectionGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - enters top, flows through building, exits bottom */}
+      {/* Flow line - traces from old side through scaffolding to new side */}
       <motion.path
-        d="M 160 0
-           L 160 20
-           L 60 20
-           L 60 45
-           L 100 45
-           L 100 80
-           L 140 80
-           L 140 115
-           L 180 115
-           L 180 150
-           L 220 150
-           L 220 185
+        d="M 40 0
+           L 40 30
+           L 60 30
+           L 60 60
+           L 80 60
+           L 80 90
+           L 100 90
+           L 100 120
+           L 140 120
+           L 140 90
+           L 160 90
+           L 160 60
+           L 220 60
+           L 220 90
+           L 260 90
+           L 260 185
            L 160 185
            L 160 200"
         fill="none"
@@ -664,151 +604,191 @@ function CrossSectionGraphic({ scrollProgress }: GraphicProps) {
         strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
-        filter="url(#glow-cross)"
+        filter="url(#glow-reno)"
         style={{ pathLength: flowThrough }}
       />
 
-      {/* Foundation/Underground */}
-      <motion.g style={{ opacity: foundation }}>
-        <rect x="50" y="180" width="220" height="15" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="50" y1="188" x2="270" y2="188" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" strokeDasharray="4,2" />
-        {/* Underground parking */}
-        <rect x="70" y="182" width="20" height="10" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <rect x="100" y="182" width="20" height="10" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <rect x="200" y="182" width="20" height="10" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <rect x="230" y="182" width="20" height="10" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-      </motion.g>
+      {/* Ground line */}
+      <motion.line x1="20" y1="185" x2="300" y2="185" stroke="rgba(255,255,255,0.12)" strokeWidth="1"
+        style={{ pathLength: ground }} />
 
-      {/* Main building structure */}
+      {/* === LEFT SIDE - OLD DETERIORATING FACADE === */}
+
+      {/* Old building structure - slightly crooked/worn */}
       <motion.path
-        d="M 50 180 L 50 25 L 270 25 L 270 180"
+        d="M 40 185 L 40 35 L 45 30 L 140 30 L 140 185"
         fill="none"
-        stroke="rgba(255,255,255,0.18)"
-        strokeWidth="2"
-        style={{ pathLength: structure }}
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1.5"
+        style={{ pathLength: oldStructure }}
       />
 
-      {/* Floor slabs */}
-      <motion.g style={{ opacity: floors }}>
-        {[45, 80, 115, 150].map((y, i) => (
-          <g key={`floor-${i}`}>
-            <line x1="50" y1={y} x2="270" y2={y} stroke="rgba(255,255,255,0.15)" strokeWidth="2" />
-            {/* Floor beams */}
-            <line x1="50" y1={y + 2} x2="270" y2={y + 2} stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-          </g>
-        ))}
+      {/* Old floor lines - uneven */}
+      <motion.g style={{ opacity: oldDetails }}>
+        <line x1="40" y1="60" x2="140" y2="62" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <line x1="40" y1="95" x2="140" y2="94" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <line x1="40" y1="130" x2="140" y2="131" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        <line x1="40" y1="160" x2="140" y2="159" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
       </motion.g>
 
-      {/* Interior walls */}
-      <motion.g style={{ opacity: walls }}>
-        {/* Floor 1 (top) - offices */}
-        <line x1="110" y1="25" x2="110" y2="45" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="160" y1="25" x2="160" y2="45" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="210" y1="25" x2="210" y2="45" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        {/* Floor 2 */}
-        <line x1="100" y1="45" x2="100" y2="80" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="160" y1="45" x2="160" y2="80" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="220" y1="45" x2="220" y2="80" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        {/* Floor 3 */}
-        <line x1="90" y1="80" x2="90" y2="115" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="140" y1="80" x2="140" y2="115" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="190" y1="80" x2="190" y2="115" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="230" y1="80" x2="230" y2="115" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        {/* Floor 4 (ground) - lobby/retail */}
-        <line x1="120" y1="115" x2="120" y2="150" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="200" y1="115" x2="200" y2="150" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        {/* Basement */}
-        <line x1="160" y1="150" x2="160" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+      {/* Old windows - misaligned, some broken */}
+      <motion.g style={{ opacity: oldDetails }}>
+        {/* Row 1 */}
+        <rect x="50" y="38" width="12" height="16" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <line x1="50" y1="38" x2="62" y2="54" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <rect x="75" y="40" width="12" height="14" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <rect x="100" y="39" width="12" height="15" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <line x1="103" y1="42" x2="109" y2="51" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <rect x="120" y="38" width="10" height="16" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+
+        {/* Row 2 */}
+        <rect x="48" y="68" width="12" height="16" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <rect x="74" y="70" width="12" height="14" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <line x1="74" y1="70" x2="86" y2="84" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <rect x="98" y="69" width="12" height="15" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <rect x="118" y="68" width="12" height="16" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+
+        {/* Row 3 */}
+        <rect x="50" y="103" width="12" height="16" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <rect x="76" y="104" width="12" height="14" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <rect x="100" y="102" width="12" height="16" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+        <rect x="120" y="105" width="10" height="14" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+
+        {/* Row 4 - ground floor */}
+        <rect x="50" y="138" width="14" height="18" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+        <rect x="80" y="140" width="20" height="16" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+        <rect x="115" y="138" width="14" height="18" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
       </motion.g>
 
-      {/* Windows (exterior) */}
-      <motion.g style={{ opacity: windows }}>
-        {/* Left side windows */}
-        {[32, 58, 93, 128].map((y, i) => (
-          <rect key={`lw-${i}`} x="50" y={y} width="3" height="8" fill="rgba(255,255,255,0.12)" />
-        ))}
-        {/* Right side windows */}
-        {[32, 58, 93, 128].map((y, i) => (
-          <rect key={`rw-${i}`} x="267" y={y} width="3" height="8" fill="rgba(255,255,255,0.12)" />
-        ))}
-        {/* Top floor windows */}
-        {[65, 85, 135, 155, 185, 205, 235, 255].map((x, i) => (
-          <rect key={`tw-${i}`} x={x} y="28" width="8" height="12" fill="rgba(255,255,255,0.08)" />
-        ))}
+      {/* Cracks and damage on old side */}
+      <motion.g style={{ opacity: oldDetails }}>
+        <path d="M 55 30 L 58 45 L 52 58" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+        <path d="M 95 94 L 92 105 L 98 118 L 94 128" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+        <path d="M 120 62 L 125 75 L 118 85" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+        <path d="M 70 130 L 68 145 L 72 155" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+        {/* Staining/water damage marks */}
+        <path d="M 40 50 Q 45 55, 40 65" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2" />
+        <path d="M 40 100 Q 48 108, 40 120" fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth="2" />
       </motion.g>
 
-      {/* Furniture/Interior details */}
-      <motion.g style={{ opacity: furniture }}>
-        {/* Top floor - desks */}
-        <rect x="60" y="38" width="12" height="4" fill="rgba(255,255,255,0.06)" />
-        <rect x="120" y="38" width="12" height="4" fill="rgba(255,255,255,0.06)" />
-        <rect x="170" y="38" width="12" height="4" fill="rgba(255,255,255,0.06)" />
-        <rect x="220" y="38" width="12" height="4" fill="rgba(255,255,255,0.06)" />
-        {/* Floor 2 - meeting rooms */}
-        <rect x="55" y="65" width="35" height="10" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <rect x="165" y="65" width="45" height="10" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        {/* Floor 3 - open plan */}
-        <rect x="55" y="100" width="8" height="4" fill="rgba(255,255,255,0.05)" />
-        <rect x="70" y="100" width="8" height="4" fill="rgba(255,255,255,0.05)" />
-        <rect x="145" y="100" width="8" height="4" fill="rgba(255,255,255,0.05)" />
-        <rect x="160" y="100" width="8" height="4" fill="rgba(255,255,255,0.05)" />
-        <rect x="195" y="100" width="8" height="4" fill="rgba(255,255,255,0.05)" />
-        <rect x="235" y="100" width="8" height="4" fill="rgba(255,255,255,0.05)" />
-        {/* Ground floor - lobby */}
-        <circle cx="160" cy="132" r="8" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        <rect x="55" y="125" width="50" height="20" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <rect x="215" y="125" width="45" height="20" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+      {/* === CENTER - SCAFFOLDING/TRANSITION ZONE === */}
+
+      <motion.g style={{ opacity: scaffolding }}>
+        {/* Vertical scaffolding poles */}
+        <line x1="145" y1="30" x2="145" y2="185" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <line x1="165" y1="30" x2="165" y2="185" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <line x1="155" y1="30" x2="155" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="0.8" />
+
+        {/* Horizontal scaffolding platforms */}
+        <line x1="143" y1="50" x2="167" y2="50" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+        <line x1="143" y1="85" x2="167" y2="85" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+        <line x1="143" y1="120" x2="167" y2="120" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+        <line x1="143" y1="155" x2="167" y2="155" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+
+        {/* Cross bracing */}
+        <line x1="145" y1="50" x2="165" y2="85" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <line x1="165" y1="50" x2="145" y2="85" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <line x1="145" y1="85" x2="165" y2="120" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <line x1="165" y1="85" x2="145" y2="120" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <line x1="145" y1="120" x2="165" y2="155" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <line x1="165" y1="120" x2="145" y2="155" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+
+        {/* Protective sheeting/mesh indication */}
+        <rect x="146" y="32" width="18" height="150" fill="rgba(255,255,255,0.02)" />
       </motion.g>
 
-      {/* People silhouettes */}
-      <motion.g style={{ opacity: people }}>
-        {/* Simple person shapes */}
-        {[[75, 36], [130, 36], [180, 36], [65, 63], [200, 63], [60, 98], [155, 98], [240, 98], [80, 130], [240, 130]].map(([x, y], i) => (
-          <g key={`person-${i}`}>
-            <circle cx={x} cy={y} r="2" fill="rgba(255,255,255,0.15)" />
-            <line x1={x} y1={y + 2} x2={x} y2={y + 6} stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-          </g>
-        ))}
+      {/* === RIGHT SIDE - NEW MODERN FACADE === */}
+
+      {/* New building structure - clean, precise */}
+      <motion.path
+        d="M 170 185 L 170 30 L 280 30 L 280 185"
+        fill="none"
+        stroke="rgba(255,255,255,0.2)"
+        strokeWidth="2"
+        style={{ pathLength: newStructure }}
+      />
+
+      {/* New floor lines - perfectly level */}
+      <motion.g style={{ opacity: newDetails }}>
+        <line x1="170" y1="60" x2="280" y2="60" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+        <line x1="170" y1="95" x2="280" y2="95" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+        <line x1="170" y1="130" x2="280" y2="130" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+        <line x1="170" y1="160" x2="280" y2="160" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
       </motion.g>
 
-      {/* Roof structure */}
-      <motion.g style={{ opacity: roof }}>
-        <line x1="50" y1="25" x2="50" y2="18" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="270" y1="25" x2="270" y2="18" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="50" y1="18" x2="270" y2="18" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-        {/* Mechanical equipment */}
-        <rect x="100" y="10" width="25" height="8" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        <rect x="200" y="10" width="30" height="8" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        {/* Elevator shaft */}
-        <rect x="155" y="8" width="10" height="17" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+      {/* New modern windows - uniform, clean */}
+      <motion.g style={{ opacity: newDetails }}>
+        {/* Row 1 */}
+        <rect x="180" y="36" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="208" y="36" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="236" y="36" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="264" y="36" width="10" height="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+
+        {/* Row 2 */}
+        <rect x="180" y="68" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="208" y="68" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="236" y="68" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="264" y="68" width="10" height="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+
+        {/* Row 3 */}
+        <rect x="180" y="103" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="208" y="103" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="236" y="103" width="18" height="18" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <rect x="264" y="103" width="10" height="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+
+        {/* Row 4 - ground floor with larger windows */}
+        <rect x="180" y="136" width="25" height="20" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+        <rect x="215" y="136" width="25" height="20" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
+        <rect x="250" y="136" width="22" height="20" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.18)" strokeWidth="1" />
       </motion.g>
 
-      {/* Final details - stairs, elevator */}
-      <motion.g style={{ opacity: details }}>
-        {/* Elevator shaft through building */}
-        <rect x="155" y="25" width="10" height="155" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" strokeDasharray="2,2" />
-        <rect x="156" y="60" width="8" height="10" fill="rgba(255,255,255,0.08)" />
-        {/* Stairwell */}
+      {/* Modern facade details - clean panels */}
+      <motion.g style={{ opacity: newDetails }}>
+        {/* Horizontal accent lines */}
+        <line x1="170" y1="32" x2="280" y2="32" stroke="rgba(255,255,255,0.1)" strokeWidth="0.8" />
+        <line x1="170" y1="162" x2="280" y2="162" stroke="rgba(255,255,255,0.1)" strokeWidth="0.8" />
+        {/* Vertical panel divisions */}
+        <line x1="205" y1="30" x2="205" y2="185" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+        <line x1="233" y1="30" x2="233" y2="185" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+        <line x1="261" y1="30" x2="261" y2="185" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+      </motion.g>
+
+      {/* Roof line - transition visible */}
+      <motion.g style={{ opacity: newStructure }}>
+        {/* Old roof line - uneven */}
+        <path d="M 40 30 L 45 25 L 90 26 L 95 28 L 140 27" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
+        {/* New roof line - clean parapet */}
+        <line x1="170" y1="25" x2="280" y2="25" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+        <line x1="170" y1="30" x2="170" y2="22" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <line x1="280" y1="30" x2="280" y2="22" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+      </motion.g>
+
+      {/* Workers on scaffolding */}
+      <motion.g style={{ opacity: workers }}>
+        {/* Worker 1 - on platform */}
         <g>
-          {[30, 65, 100, 135].map((y, i) => (
-            <g key={`stairs-${i}`}>
-              <line x1="245" y1={y} x2="265" y2={y} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-              <line x1="245" y1={y} x2="245" y2={y + 30} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-              <line x1="265" y1={y} x2="265" y2={y + 30} stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-              {[0, 5, 10, 15, 20, 25].map((offset, j) => (
-                <line key={`step-${i}-${j}`} x1="247" y1={y + offset} x2="263" y2={y + offset}
-                  stroke="rgba(255,255,255,0.04)" strokeWidth="0.3" />
-              ))}
-            </g>
-          ))}
+          <line x1="150" y1="44" x2="150" y2="50" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+          <line x1="148" y1="48" x2="152" y2="48" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
         </g>
-        {/* Floor labels */}
-        {[35, 62, 97, 132, 165].map((y, i) => (
-          <rect key={`flabel-${i}`} x="52" y={y} width="6" height="6" fill="rgba(255,255,255,0.06)" />
-        ))}
-        {/* Main entrance */}
-        <rect x="145" y="145" width="30" height="5" fill="rgba(255,255,255,0.1)" />
-        <line x1="160" y1="150" x2="160" y2="155" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        {/* Worker 2 - on lower platform */}
+        <g>
+          <line x1="158" y1="114" x2="158" y2="120" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+          <line x1="156" y1="118" x2="160" y2="118" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        </g>
+        {/* Worker 3 - ground level */}
+        <g>
+          <line x1="155" y1="179" x2="155" y2="185" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+          <line x1="153" y1="183" x2="157" y2="183" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        </g>
+      </motion.g>
+
+      {/* Ground level details */}
+      <motion.g style={{ opacity: ground }}>
+        {/* Construction barrier/hoarding */}
+        <line x1="135" y1="185" x2="175" y2="185" stroke="rgba(255,255,255,0.2)" strokeWidth="3" />
+        {/* Entrance to new section */}
+        <rect x="220" y="165" width="20" height="20" fill="rgba(255,255,255,0.15)" />
+        <line x1="230" y1="175" x2="230" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
       </motion.g>
     </motion.svg>
   );

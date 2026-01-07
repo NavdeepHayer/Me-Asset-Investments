@@ -6,128 +6,222 @@ export function Hero() {
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden" data-hero>
-      {/* Animated geometric background */}
-      <div className="absolute inset-0 flex items-center justify-center">
+      {/* UK City Skyline background */}
+      <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[10vh]">
         <motion.svg
-          viewBox="0 0 400 400"
-          className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-[500px] md:h-[500px] lg:w-[650px] lg:h-[650px] xl:w-[750px] xl:h-[750px] 2xl:w-[850px] 2xl:h-[850px]"
+          viewBox="0 0 400 200"
+          className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
+          transition={{ duration: 1.5, ease: "easeOut" }}
+          preserveAspectRatio="xMidYMax meet"
         >
-          {/* Rotating rings group - slow clockwise rotation */}
-          <motion.g
-            style={{ transformOrigin: "200px 200px" }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 120, ease: "linear", repeat: Infinity }}
-          >
-            {/* Outer ring */}
-            <motion.circle
-              cx="200" cy="200" r="180"
-              fill="none"
-              stroke="rgba(255,255,255,0.08)"
-              strokeWidth="1"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 2, delay: 0.2, ease: "easeOut" }}
-            />
-            {/* Ring 2 */}
-            <motion.circle
-              cx="200" cy="200" r="140"
-              fill="none"
-              stroke="rgba(255,255,255,0.1)"
-              strokeWidth="1"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.8, delay: 0.4, ease: "easeOut" }}
-            />
+          {/* Ground line */}
+          <motion.line
+            x1="0" y1="195" x2="400" y2="195"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth="1"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
+          />
+
+          {/* === BIG BEN (Victorian Clock Tower) - Left === */}
+          <motion.path
+            d="M 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195"
+            fill="none"
+            stroke="rgba(255,255,255,0.2)"
+            strokeWidth="1.5"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.2, delay: 0.3, ease: "easeOut" }}
+          />
+          {/* Clock face */}
+          <motion.circle cx="35" cy="68" r="8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
+            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            transition={{ duration: 0.8, delay: 1.2, ease: "easeOut" }} />
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}>
+            <line x1="35" y1="62" x2="35" y2="68" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
+            <line x1="35" y1="68" x2="39" y2="71" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
+          </motion.g>
+          {/* Tower details */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
+            <line x1="25" y1="90" x2="45" y2="90" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+            <line x1="25" y1="120" x2="45" y2="120" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+            <line x1="25" y1="150" x2="45" y2="150" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+            {[100, 130, 160, 180].map((y, i) => (
+              <rect key={`bb-w-${i}`} x="30" y={y} width="10" height="8" fill="rgba(255,255,255,0.05)" />
+            ))}
+          </motion.g>
+          {/* Spire */}
+          <motion.line x1="35" y1="25" x2="35" y2="12" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
+            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
+            transition={{ duration: 0.5, delay: 1.0, ease: "easeOut" }} />
+
+          {/* === GEORGIAN TOWNHOUSES === */}
+          <motion.path
+            d="M 55 195 L 55 85 L 63 72 L 71 85 L 71 195
+               M 71 195 L 71 90 L 79 77 L 87 90 L 87 195
+               M 87 195 L 87 88 L 95 75 L 103 88 L 103 195"
+            fill="none"
+            stroke="rgba(255,255,255,0.14)"
+            strokeWidth="1"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.3, delay: 0.5, ease: "easeOut" }}
+          />
+          {/* Chimneys */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }}>
+            <rect x="58" y="68" width="4" height="10" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+            <rect x="74" y="73" width="4" height="10" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+            <rect x="90" y="71" width="4" height="10" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+          </motion.g>
+          {/* Windows */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
+            {[100, 125, 150].map((y, i) => (
+              <g key={`th-row-${i}`}>
+                <rect x="58" y={y} width="6" height="8" fill="rgba(255,255,255,0.04)" />
+                <rect x="74" y={y + 5} width="6" height="8" fill="rgba(255,255,255,0.04)" />
+                <rect x="90" y={y + 3} width="6" height="8" fill="rgba(255,255,255,0.04)" />
+              </g>
+            ))}
+            {/* Doors */}
+            <rect x="60" y="178" width="6" height="17" fill="rgba(255,255,255,0.06)" />
+            <rect x="76" y="178" width="6" height="17" fill="rgba(255,255,255,0.06)" />
+            <rect x="92" y="178" width="6" height="17" fill="rgba(255,255,255,0.06)" />
           </motion.g>
 
-          {/* Inner rings - rotate counter-clockwise at different speed */}
-          <motion.g
-            style={{ transformOrigin: "200px 200px" }}
-            animate={{ rotate: -360 }}
-            transition={{ duration: 90, ease: "linear", repeat: Infinity }}
-          >
-            {/* Ring 3 */}
-            <motion.circle
-              cx="200" cy="200" r="100"
-              fill="none"
-              stroke="rgba(255,255,255,0.12)"
-              strokeWidth="1"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.6, delay: 0.6, ease: "easeOut" }}
-            />
-            {/* Ring 4 */}
-            <motion.circle
-              cx="200" cy="200" r="60"
-              fill="none"
-              stroke="rgba(255,255,255,0.1)"
-              strokeWidth="1"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.4, delay: 0.8, ease: "easeOut" }}
-            />
+          {/* === THE SHARD (center-left) === */}
+          <motion.path
+            d="M 145 20 L 125 195 M 145 20 L 165 195 M 145 20 L 145 195"
+            fill="none"
+            stroke="rgba(255,255,255,0.18)"
+            strokeWidth="1.5"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.4, delay: 0.4, ease: "easeOut" }}
+          />
+          {/* Shard horizontal lines */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}>
+            {[50, 75, 100, 125, 150, 175].map((y, i) => {
+              const width = (195 - y) * 0.12;
+              return (
+                <line key={`sh-${i}`} x1={145 - width} y1={y} x2={145 + width} y2={y}
+                  stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+              );
+            })}
           </motion.g>
 
-          {/* Center dot - static */}
-          <motion.circle
-            cx="200" cy="200" r="20"
-            fill="rgba(255,255,255,0.05)"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 1.2 }}
+          {/* === ST PAUL'S DOME === */}
+          <motion.path
+            d="M 180 195 L 180 110 L 184 102 L 184 90
+               M 220 195 L 220 110 L 216 102 L 216 90
+               M 184 90 Q 200 55, 216 90"
+            fill="none"
+            stroke="rgba(255,255,255,0.16)"
+            strokeWidth="1.5"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.3, delay: 0.6, ease: "easeOut" }}
           />
-
-          {/* Diagonal lines (X) - very slow rotation */}
-          <motion.g
-            style={{ transformOrigin: "200px 200px" }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 180, ease: "linear", repeat: Infinity }}
-          >
-            <motion.line
-              x1="60" y1="60" x2="340" y2="340"
-              stroke="rgba(255,255,255,0.06)"
-              strokeWidth="1"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-            />
-            <motion.line
-              x1="340" y1="60" x2="60" y2="340"
-              stroke="rgba(255,255,255,0.06)"
-              strokeWidth="1"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-            />
+          {/* Dome lantern/cross */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.6 }}>
+            <line x1="200" y1="55" x2="200" y2="42" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+            <line x1="195" y1="48" x2="205" y2="48" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
+            {/* Columns */}
+            <line x1="184" y1="110" x2="184" y2="195" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+            <line x1="193" y1="110" x2="193" y2="195" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+            <line x1="207" y1="110" x2="207" y2="195" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+            <line x1="216" y1="110" x2="216" y2="195" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
+            <line x1="180" y1="140" x2="220" y2="140" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+            <line x1="180" y1="170" x2="220" y2="170" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
           </motion.g>
 
-          {/* Accent dots at cardinal points */}
-          <motion.circle cx="200" cy="20" r="3" fill="rgba(255,255,255,0.2)"
-            initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.5 }}
+          {/* === GHERKIN (30 St Mary Axe) === */}
+          <motion.path
+            d="M 245 195 L 245 100 Q 245 50, 260 50 Q 275 50, 275 100 L 275 195"
+            fill="none"
+            stroke="rgba(255,255,255,0.16)"
+            strokeWidth="1.5"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.2, delay: 0.7, ease: "easeOut" }}
           />
-          <motion.circle cx="20" cy="200" r="3" fill="rgba(255,255,255,0.2)"
-            initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.6 }}
-          />
-          <motion.circle cx="380" cy="200" r="3" fill="rgba(255,255,255,0.2)"
-            initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.7 }}
-          />
+          {/* Diagonal lattice pattern */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.7 }}>
+            {[70, 95, 120, 145, 170].map((y, i) => {
+              const squeeze = Math.min(1, (y - 50) / 50);
+              const halfWidth = 15 * squeeze;
+              return (
+                <g key={`gh-${i}`}>
+                  <line x1={260 - halfWidth} y1={y} x2={260 + halfWidth} y2={y}
+                    stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+                  <line x1={260 - halfWidth * 0.7} y1={y - 12} x2={260 + halfWidth * 0.7} y2={y + 12}
+                    stroke="rgba(255,255,255,0.04)" strokeWidth="0.3" />
+                  <line x1={260 + halfWidth * 0.7} y1={y - 12} x2={260 - halfWidth * 0.7} y2={y + 12}
+                    stroke="rgba(255,255,255,0.04)" strokeWidth="0.3" />
+                </g>
+              );
+            })}
+          </motion.g>
 
-          {/* Bottom convergence point - where line starts */}
-          <motion.circle cx="200" cy="380" r="4" fill="rgba(255,255,255,0.25)"
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.5, delay: 2 }}
+          {/* === MODERN OFFICE TOWER (Right) === */}
+          <motion.path
+            d="M 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195"
+            fill="none"
+            stroke="rgba(255,255,255,0.14)"
+            strokeWidth="1.5"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.1, delay: 0.8, ease: "easeOut" }}
           />
+          {/* Windows grid */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.8 }}>
+            {[85, 105, 125, 145, 165].map((y, i) => (
+              <g key={`mt-${i}`}>
+                <rect x="298" y={y} width="8" height="10" fill="rgba(255,255,255,0.05)" />
+                <rect x="310" y={y} width="8" height="10" fill="rgba(255,255,255,0.05)" />
+              </g>
+            ))}
+          </motion.g>
+
+          {/* === STEPPED ART DECO BUILDING (Far Right) === */}
+          <motion.path
+            d="M 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195"
+            fill="none"
+            stroke="rgba(255,255,255,0.12)"
+            strokeWidth="1"
+            initial={{ pathLength: 0 }}
+            animate={{ pathLength: 1 }}
+            transition={{ duration: 1.0, delay: 0.9, ease: "easeOut" }}
+          />
+          {/* Windows */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.9 }}>
+            {[130, 150, 170].map((y, i) => (
+              <g key={`ad-${i}`}>
+                <rect x="343" y={y} width="5" height="8" fill="rgba(255,255,255,0.04)" />
+                <rect x="352" y={y} width="5" height="8" fill="rgba(255,255,255,0.04)" />
+                <rect x="362" y={y} width="5" height="8" fill="rgba(255,255,255,0.04)" />
+              </g>
+            ))}
+            <rect x="352" y="100" width="5" height="6" fill="rgba(255,255,255,0.04)" />
+            <rect x="352" y="78" width="5" height="6" fill="rgba(255,255,255,0.04)" />
+          </motion.g>
+
+          {/* Small buildings filling gaps */}
+          <motion.g initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.4 }}>
+            <rect x="110" y="150" width="12" height="45" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+            <rect x="230" y="160" width="10" height="35" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+            <rect x="380" y="140" width="15" height="55" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />
+          </motion.g>
+
         </motion.svg>
       </div>
 
-      {/* Line from circle bottom going down */}
+      {/* Line from bottom going down */}
       <motion.div
         className="absolute left-1/2 -translate-x-1/2 w-px pointer-events-none"
-        style={{ top: 'calc(50% + min(42.5vw, 425px))', bottom: 0 }}
+        style={{ bottom: 0, height: '15vh' }}
         initial={{ scaleY: 0, opacity: 0 }}
         animate={{ scaleY: 1, opacity: 1 }}
         transition={{ duration: 1, delay: 2.2, ease: "easeOut" }}
@@ -136,7 +230,7 @@ export function Hero() {
       </motion.div>
 
       {/* Content */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6" style={{ transform: 'translateZ(0)' }}>
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6 pb-[25vh] sm:pb-[22vh] md:pb-[18vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
