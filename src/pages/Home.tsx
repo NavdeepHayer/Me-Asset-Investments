@@ -17,8 +17,8 @@ export function Home() {
         {/* Hero with ME branding */}
         <Hero />
 
-        {/* Intro - with construction crane graphic */}
-        <ContentBlock text={intro.text} graphic="crane" graphicPosition="right" />
+        {/* Intro - with UK skyline graphic */}
+        <ContentBlock text={intro.text} graphic="ukSkyline" graphicPosition="right" />
 
         {/* Investment Focus */}
         <TextSection text={investmentFocus.text} />
@@ -32,8 +32,8 @@ export function Home() {
         {/* Mission/ESG */}
         <TextSection text={mission.text} />
 
-        {/* City skyline - full width */}
-        <ContentBlock text="" graphic="skyline" graphicPosition="right" />
+        {/* Building Cross-Section - full width */}
+        <ContentBlock text="" graphic="crossSection" graphicPosition="right" />
 
         {/* Projects Section */}
         <Projects />
