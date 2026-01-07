@@ -95,20 +95,33 @@ interface GraphicProps {
   scrollProgress: MotionValue<number>;
 }
 
-// Construction Crane - Tower crane with boom and hook
+// Tower crane with detailed lattice structure
 function CraneGraphic({ scrollProgress }: GraphicProps) {
-  const flowThrough = useScrollTransform(scrollProgress, 0.08, 0.78);
-  const ground = useScrollTransform(scrollProgress, 0.10, 0.20);
-  const base = useScrollTransform(scrollProgress, 0.14, 0.28);
-  const tower = useScrollTransform(scrollProgress, 0.22, 0.42);
-  const towerDetails = useScrollTransform(scrollProgress, 0.36, 0.50);
-  const boom = useScrollTransform(scrollProgress, 0.44, 0.58);
-  const counterweight = useScrollTransform(scrollProgress, 0.52, 0.64);
-  const cables = useScrollTransform(scrollProgress, 0.58, 0.70);
-  const hook = useScrollTransform(scrollProgress, 0.66, 0.78);
+  // Flow line - straight through
+  const flowThrough = useScrollTransform(scrollProgress, 0.10, 0.75);
+
+  // Animation builds TOP to BOTTOM
+  const peak = useScrollTransform(scrollProgress, 0.12, 0.22);
+  const pendant = useScrollTransform(scrollProgress, 0.16, 0.26);
+  const jibTop = useScrollTransform(scrollProgress, 0.18, 0.30);
+  const jibBottom = useScrollTransform(scrollProgress, 0.20, 0.32);
+  const jibLattice = useScrollTransform(scrollProgress, 0.24, 0.36);
+  const counterJib = useScrollTransform(scrollProgress, 0.22, 0.34);
+  const trolley = useScrollTransform(scrollProgress, 0.30, 0.40);
+  const hook = useScrollTransform(scrollProgress, 0.34, 0.48);
+  const load = useScrollTransform(scrollProgress, 0.42, 0.54);
+  const cabin = useScrollTransform(scrollProgress, 0.28, 0.38);
+  const slewing = useScrollTransform(scrollProgress, 0.32, 0.42);
+  const towerLeft = useScrollTransform(scrollProgress, 0.36, 0.56);
+  const towerRight = useScrollTransform(scrollProgress, 0.38, 0.58);
+  const lattice = useScrollTransform(scrollProgress, 0.40, 0.60);
+  const building = useScrollTransform(scrollProgress, 0.50, 0.65);
+  const foundation = useScrollTransform(scrollProgress, 0.60, 0.72);
+  const ground = useScrollTransform(scrollProgress, 0.68, 0.78);
 
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+      {/* Glow filter for flow line */}
       <defs>
         <filter id="glow-crane" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -119,22 +132,14 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - enters top via king post, follows boom, down cable, along hook, down tower, exits bottom */}
+      {/* FLOW LINE - follows crane geometry: down to peak, along A-frame, down tower */}
       <motion.path
         d="M 100 0
-           L 100 10
-           L 175 22
-           L 149 26
-           L 149 100
-           L 149 118
-           L 144 124
-           L 140 120
-           L 140 128
-           L 130 128
-           L 130 153
-           L 125 160
-           L 125 185
-           L 100 185
+           L 100 18
+           L 92 38
+           L 92 100
+           L 108 100
+           L 108 170
            L 100 200"
         fill="none"
         stroke="rgba(255,255,255,0.5)"
@@ -145,138 +150,185 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
         style={{ pathLength: flowThrough }}
       />
 
-      {/* Ground line */}
-      <motion.line x1="20" y1="185" x2="180" y2="185" stroke="rgba(255,255,255,0.12)" strokeWidth="1"
-        style={{ pathLength: ground }} />
-
-      {/* Base/Foundation */}
-      <motion.g style={{ opacity: base }}>
-        <rect x="85" y="175" width="30" height="10" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
-        <line x1="85" y1="180" x2="115" y2="180" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        {/* Base supports */}
-        <line x1="75" y1="185" x2="90" y2="175" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="125" y1="185" x2="110" y2="175" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-      </motion.g>
-
-      {/* Main Tower (mast) */}
-      <motion.path
-        d="M 92 175 L 92 35 M 108 175 L 108 35"
-        fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="2"
-        style={{ pathLength: tower }}
+      {/* Ground and construction site base */}
+      <motion.line
+        x1="10" y1="185" x2="190" y2="185"
+        stroke="rgba(255,255,255,0.08)"
+        strokeWidth="1"
+        style={{ pathLength: ground }}
       />
 
-      {/* Tower lattice cross-bracing */}
-      <motion.g style={{ opacity: towerDetails }}>
-        {[45, 65, 85, 105, 125, 145, 165].map((y, i) => (
-          <g key={`lattice-${i}`}>
-            <line x1="92" y1={y} x2="108" y2={y + 15} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-            <line x1="108" y1={y} x2="92" y2={y + 15} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-            <line x1="92" y1={y} x2="108" y2={y} stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-          </g>
-        ))}
-      </motion.g>
-
-      {/* Operator cab */}
-      <motion.g style={{ opacity: towerDetails }}>
-        <rect x="108" y="38" width="12" height="10" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-        <rect x="110" y="40" width="8" height="6" fill="rgba(255,255,255,0.06)" />
-      </motion.g>
-
-      {/* Slewing unit (top of tower) */}
-      <motion.g style={{ opacity: tower }}>
-        <rect x="88" y="30" width="24" height="8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-      </motion.g>
-
-      {/* Main Boom (jib) - extends right */}
+      {/* Crane base/foundation */}
       <motion.path
-        d="M 100 32 L 180 20"
+        d="M 80 185 L 80 175 L 120 175 L 120 185 M 85 175 L 85 170 L 115 170 L 115 175"
         fill="none"
-        stroke="rgba(255,255,255,0.2)"
-        strokeWidth="2"
-        style={{ pathLength: boom }}
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1.5"
+        style={{ pathLength: foundation }}
       />
-      {/* Boom bottom chord */}
+
+      {/* Main tower - left rail (draws top to bottom) */}
+      <motion.line
+        x1="92" y1="38" x2="92" y2="170"
+        stroke="rgba(255,255,255,0.18)"
+        strokeWidth="1.5"
+        style={{ pathLength: towerLeft }}
+      />
+      {/* Main tower - right rail (draws top to bottom) */}
+      <motion.line
+        x1="108" y1="38" x2="108" y2="170"
+        stroke="rgba(255,255,255,0.18)"
+        strokeWidth="1.5"
+        style={{ pathLength: towerRight }}
+      />
+
+      {/* Tower lattice cross-bracing (top to bottom) */}
+      {[45, 60, 75, 90, 105, 120, 135, 150, 165].map((y, i) => (
+        <motion.path
+          key={`lattice-${i}`}
+          d={`M 92 ${y} L 108 ${y + 12} M 108 ${y} L 92 ${y + 12} M 92 ${y + 6} L 108 ${y + 6}`}
+          fill="none"
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="0.5"
+          style={{ pathLength: lattice, opacity: lattice }}
+        />
+      ))}
+
+      {/* Slewing unit (turntable) */}
+      <motion.rect
+        x="88" y="35" width="24" height="8"
+        fill="rgba(255,255,255,0.1)"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="0.5"
+        style={{ opacity: slewing, scale: slewing }}
+      />
+
+      {/* Operator cabin */}
       <motion.path
-        d="M 100 38 L 175 32"
+        d="M 94 35 L 94 26 L 106 26 L 106 35 M 96 32 L 104 32"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
         strokeWidth="1"
-        style={{ pathLength: boom }}
+        style={{ pathLength: cabin }}
       />
-      {/* Boom lattice */}
-      <motion.g style={{ opacity: boom }}>
-        {[115, 135, 155].map((x, i) => (
-          <g key={`boom-lat-${i}`}>
-            <line x1={x} y1={23 + i * 1.5} x2={x} y2={35 + i * 0.8} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-            <line x1={x - 10} y1={22 + i * 1.5} x2={x + 5} y2={34 + i * 0.8} stroke="rgba(255,255,255,0.06)" strokeWidth="0.3" />
-          </g>
-        ))}
-      </motion.g>
 
-      {/* Counter-jib (extends left) */}
+      {/* Main jib (horizontal boom) - top chord */}
+      <motion.line
+        x1="100" y1="28" x2="175" y2="28"
+        stroke="rgba(255,255,255,0.2)"
+        strokeWidth="1.5"
+        style={{ pathLength: jibTop }}
+      />
+      {/* Main jib - bottom chord */}
+      <motion.line
+        x1="100" y1="35" x2="175" y2="35"
+        stroke="rgba(255,255,255,0.15)"
+        strokeWidth="1"
+        style={{ pathLength: jibBottom }}
+      />
+      {/* Jib lattice */}
+      {[115, 130, 145, 160].map((x, i) => (
+        <motion.path
+          key={`jib-lat-${i}`}
+          d={`M ${x} 28 L ${x} 35 M ${x - 7} 28 L ${x} 35 M ${x} 28 L ${x + 7} 35`}
+          fill="none"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth="0.5"
+          style={{ pathLength: jibLattice, opacity: jibLattice }}
+        />
+      ))}
+      {/* Jib tip */}
       <motion.path
-        d="M 100 32 L 45 25"
+        d="M 175 28 L 178 31 L 175 35"
+        fill="none"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        style={{ pathLength: jibLattice }}
+      />
+
+      {/* Counter-jib */}
+      <motion.line
+        x1="100" y1="30" x2="45" y2="30"
+        stroke="rgba(255,255,255,0.12)"
+        strokeWidth="1"
+        style={{ pathLength: counterJib }}
+      />
+      {/* Counterweights */}
+      {[52, 60, 68].map((x, i) => (
+        <motion.rect
+          key={`cw-${i}`}
+          x={x} y="30" width="6" height="10"
+          fill="rgba(255,255,255,0.08)"
+          stroke="rgba(255,255,255,0.1)"
+          strokeWidth="0.5"
+          style={{ opacity: counterJib }}
+        />
+      ))}
+
+      {/* Tower peak / A-frame */}
+      <motion.path
+        d="M 92 38 L 100 18 L 108 38 M 96 28 L 100 18 L 104 28"
         fill="none"
         stroke="rgba(255,255,255,0.15)"
-        strokeWidth="1.5"
-        style={{ pathLength: counterweight }}
+        strokeWidth="1"
+        style={{ pathLength: peak }}
       />
-      {/* Counterweight blocks */}
-      <motion.g style={{ opacity: counterweight }}>
-        <rect x="40" y="26" width="15" height="12" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
-        <line x1="40" y1="32" x2="55" y2="32" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        <rect x="42" y="28" width="5" height="4" fill="rgba(255,255,255,0.06)" />
-        <rect x="48" y="28" width="5" height="4" fill="rgba(255,255,255,0.06)" />
+
+      {/* Pendant lines (cables from peak to jib) */}
+      <motion.path
+        d="M 100 18 L 140 28 M 100 18 L 175 28"
+        fill="none"
+        stroke="rgba(255,255,255,0.1)"
+        strokeWidth="0.5"
+        style={{ pathLength: pendant }}
+      />
+      {/* Counter-jib pendant */}
+      <motion.line
+        x1="100" y1="18" x2="50" y2="30"
+        stroke="rgba(255,255,255,0.08)"
+        strokeWidth="0.5"
+        style={{ pathLength: pendant }}
+      />
+
+      {/* Trolley */}
+      <motion.rect
+        x="148" y="34" width="8" height="4"
+        fill="rgba(255,255,255,0.15)"
+        style={{ opacity: trolley }}
+      />
+
+      {/* Hook block and cable */}
+      <motion.path
+        d="M 152 38 L 152 95 M 149 95 L 155 95 L 155 100 Q 152 105, 149 100 L 149 95"
+        fill="none"
+        stroke="rgba(255,255,255,0.18)"
+        strokeWidth="1"
+        style={{ pathLength: hook }}
+      />
+
+      {/* Load (steel beam) */}
+      <motion.g style={{ opacity: load }}>
+        <rect x="140" y="108" width="24" height="4" fill="rgba(255,255,255,0.12)" />
+        <line x1="140" y1="108" x2="140" y2="112" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <line x1="164" y1="108" x2="164" y2="112" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <line x1="145" y1="105" x2="152" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+        <line x1="159" y1="105" x2="152" y2="100" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
       </motion.g>
 
-      {/* Tower top mast (king post) */}
-      <motion.line x1="100" y1="30" x2="100" y2="10" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
-        style={{ pathLength: tower }} />
-
-      {/* Pendant lines (support cables to king post) */}
-      <motion.g style={{ opacity: cables }}>
-        <line x1="100" y1="10" x2="175" y2="22" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
-        <line x1="100" y1="10" x2="50" y2="25" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+      {/* Building under construction (background - draws top to bottom) */}
+      <motion.g style={{ opacity: building }}>
+        <line x1="25" y1="140" x2="25" y2="185" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+        <line x1="55" y1="140" x2="55" y2="185" stroke="rgba(255,255,255,0.06)" strokeWidth="1" />
+        <line x1="25" y1="140" x2="55" y2="140" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+        <line x1="25" y1="160" x2="55" y2="160" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
       </motion.g>
 
-      {/* Trolley on boom */}
-      <motion.g style={{ opacity: cables }}>
-        <rect x="145" y="23" width="8" height="5" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="0.8" />
-      </motion.g>
-
-      {/* Hoist cable */}
-      <motion.line x1="149" y1="28" x2="149" y2="100" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
-        style={{ pathLength: cables }} />
-
-      {/* Hook block */}
-      <motion.g style={{ opacity: hook }}>
-        <rect x="145" y="100" width="8" height="8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-        {/* Hook */}
-        <path d="M 149 108 L 149 118 Q 149 124, 144 124 Q 140 124, 140 120"
-          fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" strokeLinecap="round" />
-      </motion.g>
-
-      {/* Load being lifted (building section) */}
-      <motion.g style={{ opacity: hook }}>
-        <rect x="130" y="128" width="38" height="25" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
-        <line x1="140" y1="128" x2="140" y2="153" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <line x1="150" y1="128" x2="150" y2="153" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <line x1="160" y1="128" x2="160" y2="153" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        {/* Lifting cables */}
-        <line x1="135" y1="128" x2="149" y2="118" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-        <line x1="163" y1="128" x2="149" y2="118" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
-      </motion.g>
-
-      {/* Ground level building under construction */}
-      <motion.g style={{ opacity: ground }}>
-        <rect x="125" y="160" width="50" height="25" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
-        <line x1="125" y1="170" x2="175" y2="170" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" />
-        <rect x="130" y="162" width="8" height="6" fill="rgba(255,255,255,0.04)" />
-        <rect x="145" y="162" width="8" height="6" fill="rgba(255,255,255,0.04)" />
-        <rect x="160" y="162" width="8" height="6" fill="rgba(255,255,255,0.04)" />
-      </motion.g>
+      {/* Warning light */}
+      <motion.circle
+        cx="100" cy="18" r="2"
+        fill="rgba(255,255,255,0.5)"
+        style={{ opacity: peak }}
+      />
     </motion.svg>
   );
 }
@@ -587,10 +639,10 @@ function RenovationGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - enters from top, flows through scaffolding, across to new building, ends at entrance */}
+      {/* Flow line - enters from top center, flows through scaffolding, across to new building, ends at entrance */}
       <motion.path
-        d="M 155 0
-           L 155 50
+        d="M 160 0
+           L 160 50
            L 167 50
            L 167 85
            L 143 85
@@ -680,7 +732,7 @@ function RenovationGraphic({ scrollProgress }: GraphicProps) {
         {/* Vertical scaffolding poles */}
         <line x1="145" y1="30" x2="145" y2="185" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
         <line x1="165" y1="30" x2="165" y2="185" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-        <line x1="155" y1="30" x2="155" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="0.8" />
+        <line x1="160" y1="30" x2="160" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="0.8" />
 
         {/* Horizontal scaffolding platforms */}
         <line x1="143" y1="50" x2="167" y2="50" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
