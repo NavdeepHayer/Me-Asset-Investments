@@ -362,7 +362,7 @@ export function Hero() {
               {company.prefix}
             </span>
             <span className="hidden sm:inline text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/30 mx-3 lg:mx-4 font-light">|</span>
-            <span className="block sm:inline mt-2 sm:mt-0 text-base sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.08em] sm:tracking-[0.1em] uppercase font-light whitespace-nowrap">
+            <span className="block sm:inline mt-2 sm:mt-0 text-sm sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.06em] sm:tracking-[0.1em] uppercase font-light">
               {company.name}
             </span>
           </h1>
