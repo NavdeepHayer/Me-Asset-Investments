@@ -51,16 +51,19 @@ function TeamBranch({
   scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress'];
 }) {
   // Calculate when the main line reaches this member's Y position
-  const mainLineLength = mainLineEndY - mainLineStartY;
-  const memberProgress = Math.max(0, Math.min(1, (member.centerY - mainLineStartY) / mainLineLength));
+  // Map the member's Y within the main line's travel range to scroll progress
+  const mainLineRange = mainLineEndY - mainLineStartY;
+  const memberYRelative = member.centerY - mainLineStartY;
+  const memberProgress = memberYRelative / mainLineRange; // 0 to 1 within the team section
 
-  // Branch should start when main line reaches member, complete shortly after
-  const branchStart = scrollRange[0] + (scrollRange[1] - scrollRange[0]) * memberProgress;
-  const branchEnd = branchStart + (scrollRange[1] - scrollRange[0]) * 0.1; // Branch draws quickly
+  // Map to scroll range - branch starts when main line reaches member
+  const scrollRangeSize = scrollRange[1] - scrollRange[0];
+  const branchStart = scrollRange[0] + (memberProgress * scrollRangeSize);
+  const branchEnd = Math.min(scrollRange[1], branchStart + 0.02); // Branch draws quickly
 
   const branchProgress = useTransform(
     scrollYProgress,
-    [branchStart, Math.min(branchEnd, scrollRange[1])],
+    [branchStart, branchEnd],
     [0, 1]
   );
 
@@ -68,13 +71,11 @@ function TeamBranch({
   const branchEndX = member.centerX;
 
   return (
-    <motion.line
-      x1={centerX}
-      y1={member.centerY}
-      x2={branchEndX}
-      y2={member.centerY}
-      stroke="rgba(255,255,255,0.4)"
-      strokeWidth="1.5"
+    <motion.path
+      d={`M ${centerX} ${member.centerY} L ${branchEndX} ${member.centerY}`}
+      fill="none"
+      stroke="rgba(255,255,255,0.5)"
+      strokeWidth="2"
       strokeLinecap="round"
       filter="url(#glow-flow)"
       style={{ pathLength: branchProgress }}
