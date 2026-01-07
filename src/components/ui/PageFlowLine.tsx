@@ -1,4 +1,4 @@
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
 import { useEffect, useState, useCallback, useMemo } from "react";
 
 interface GraphicPosition {
@@ -32,6 +32,14 @@ interface MailingPosition {
   rightEdge: number;
 }
 
+interface TransitionBoxConfig {
+  id: string;
+  label: string;
+  centerX: number;
+  centerY: number;
+  turnDirection: 'left' | 'right';
+}
+
 interface Positions {
   heroBottom: number;
   heroCenter: number;
@@ -41,6 +49,118 @@ interface Positions {
   team: TeamPosition | null;
   mailing: MailingPosition | null;
   isDesktop: boolean;
+  transitionBoxes: TransitionBoxConfig[];
+}
+
+// Component for the ME → WE flip animation text box
+function TransitionBox({
+  config,
+  scrollYProgress,
+  animationRange,
+}: {
+  config: TransitionBoxConfig;
+  scrollYProgress: MotionValue<number>;
+  animationRange: [number, number];
+}) {
+  const { label, centerX, centerY } = config;
+
+  // Box dimensions
+  const boxWidth = 180;
+  const boxHeight = 50;
+
+  // Animation progress for the flip (happens in the middle of the box drawing)
+  const flipStart = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.3;
+  const flipEnd = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.7;
+
+  // Rotate from 0 to 180 degrees (front to back)
+  const rotateY = useTransform(
+    scrollYProgress,
+    [flipStart, flipEnd],
+    [0, 180]
+  );
+
+  // Opacity for ME text (visible when rotation < 90)
+  const meOpacity = useTransform(
+    scrollYProgress,
+    [flipStart, (flipStart + flipEnd) / 2 - 0.01, (flipStart + flipEnd) / 2],
+    [1, 1, 0]
+  );
+
+  // Opacity for WE text (visible when rotation > 90)
+  const weOpacity = useTransform(
+    scrollYProgress,
+    [(flipStart + flipEnd) / 2, (flipStart + flipEnd) / 2 + 0.01, flipEnd],
+    [0, 1, 1]
+  );
+
+  // Overall box opacity (fade in as box is drawn)
+  const boxOpacity = useTransform(
+    scrollYProgress,
+    [animationRange[0], animationRange[0] + 0.02],
+    [0, 1]
+  );
+
+  return (
+    <motion.div
+      style={{
+        position: 'absolute',
+        left: centerX - boxWidth / 2,
+        top: centerY - boxHeight / 2,
+        width: boxWidth,
+        height: boxHeight,
+        opacity: boxOpacity,
+        perspective: 400,
+        zIndex: 10,
+      }}
+    >
+      <div
+        style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          position: 'relative',
+        }}
+      >
+        {/* ME text (front side) */}
+        <motion.span
+          style={{
+            position: 'absolute',
+            rotateY,
+            opacity: meOpacity,
+            backfaceVisibility: 'hidden',
+            fontFamily: 'monospace',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: 'rgba(255, 255, 255, 0.9)',
+            textShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          ME <span style={{ opacity: 0.6 }}>|</span> {label}
+        </motion.span>
+
+        {/* WE text (back side - pre-rotated 180deg) */}
+        <motion.span
+          style={{
+            position: 'absolute',
+            rotateY: useTransform(rotateY, (r) => r - 180),
+            opacity: weOpacity,
+            backfaceVisibility: 'hidden',
+            fontFamily: 'monospace',
+            fontSize: '16px',
+            fontWeight: 'bold',
+            color: 'rgba(255, 255, 255, 0.9)',
+            textShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          WE <span style={{ opacity: 0.6 }}>|</span> {label}
+        </motion.span>
+      </div>
+    </motion.div>
+  );
 }
 
 // Component for team member branch lines - short animated stubs
@@ -92,11 +212,16 @@ function TeamBranch({
 // Child component that handles the scroll-linked animations
 // This ensures hooks are always called consistently
 function FlowLines({ positions }: { positions: Positions }) {
-  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, team, mailing, isDesktop } = positions;
+  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, team, mailing, isDesktop, transitionBoxes } = positions;
   const [crane, blueprint, framework, skyline, completed] = graphics;
   const scrollableHeight = documentHeight - viewportHeight;
 
   const { scrollYProgress } = useScroll();
+
+  // Transition box dimensions
+  const boxWidth = 180;
+  const boxHeight = 50;
+  const boxPadding = 15; // Padding around the text for the line path
 
   // Helper: convert destination element's local scroll to global scroll percentage
   const localToGlobal = useCallback((element: GraphicPosition, localScroll: number) => {
@@ -154,6 +279,17 @@ function FlowLines({ positions }: { positions: Positions }) {
   const blueprintToFrameworkTurnY = framework.top - 50;
   const frameworkToSkylineTurnY = skyline.top - 50;
 
+  // Get transition box configs by ID
+  const getBox = (id: string) => transitionBoxes.find(b => b.id === id);
+  const craneToBoxConfig = getBox('crane-to-blueprint');
+  const blueprintToBoxConfig = getBox('blueprint-to-framework');
+  const frameworkToBoxConfig = getBox('framework-to-skyline');
+  const skylineToBoxConfig = getBox('skyline-to-completed');
+
+  // Box edge calculations for path splitting
+  const halfBoxWidth = boxWidth / 2 + boxPadding;
+  const halfBoxHeight = boxHeight / 2 + boxPadding;
+
   // For skyline to completed: route down the right side, around Projects
   const sideMarginX = window.innerWidth - 80; // Right edge of viewport
   const skylineToCompletedTurnY1 = skyline.bottom + 30; // First turn - go right
@@ -174,6 +310,7 @@ function FlowLines({ positions }: { positions: Positions }) {
   const mailingRightX = mailing ? mailing.rightEdge : window.innerWidth - 40;
 
   return (
+    <>
     <svg
       className="pointer-events-none absolute left-0 top-0"
       style={{
@@ -208,61 +345,176 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: heroToCrane }}
           />
-          <motion.path
-            d={`M ${crane.centerX} ${crane.bottom}
-                L ${crane.centerX} ${craneToBlueprintTurnY}
-                L ${blueprint.centerX} ${craneToBlueprintTurnY}
-                L ${blueprint.centerX} ${blueprint.top}`}
-            fill="none"
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: craneToBlueprint }}
-          />
-          <motion.path
-            d={`M ${blueprint.centerX} ${blueprint.bottom}
-                L ${blueprint.centerX} ${blueprintToFrameworkTurnY}
-                L ${framework.centerX} ${blueprintToFrameworkTurnY}
-                L ${framework.centerX} ${framework.top}`}
-            fill="none"
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: blueprintToFramework }}
-          />
-          <motion.path
-            d={`M ${framework.centerX} ${framework.bottom}
-                L ${framework.centerX} ${frameworkToSkylineTurnY}
-                L ${skyline.centerX} ${frameworkToSkylineTurnY}
-                L ${skyline.centerX} ${skyline.top}`}
-            fill="none"
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: frameworkToSkyline }}
-          />
-          {/* Skyline to Completed - goes down right side, around Projects */}
-          <motion.path
-            d={`M ${skyline.centerX} ${skyline.bottom}
-                L ${skyline.centerX} ${skylineToCompletedTurnY1}
-                L ${sideMarginX} ${skylineToCompletedTurnY1}
-                L ${sideMarginX} ${skylineToCompletedTurnY2}
-                L ${completed.centerX} ${skylineToCompletedTurnY2}
-                L ${completed.centerX} ${completed.top}`}
-            fill="none"
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: skylineToCompleted }}
-          />
+          {/* Crane to Blueprint - with transition box (turns LEFT) */}
+          {craneToBoxConfig && (
+            <>
+              {/* Top path: goes above the box */}
+              <motion.path
+                d={`M ${crane.centerX} ${crane.bottom}
+                    L ${crane.centerX} ${craneToBlueprintTurnY}
+                    L ${craneToBoxConfig.centerX + halfBoxWidth} ${craneToBlueprintTurnY}
+                    L ${craneToBoxConfig.centerX + halfBoxWidth} ${craneToBoxConfig.centerY - halfBoxHeight}
+                    L ${craneToBoxConfig.centerX - halfBoxWidth} ${craneToBoxConfig.centerY - halfBoxHeight}
+                    L ${craneToBoxConfig.centerX - halfBoxWidth} ${craneToBlueprintTurnY}
+                    L ${blueprint.centerX} ${craneToBlueprintTurnY}
+                    L ${blueprint.centerX} ${blueprint.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: craneToBlueprint }}
+              />
+              {/* Bottom path: goes below the box */}
+              <motion.path
+                d={`M ${crane.centerX} ${crane.bottom}
+                    L ${crane.centerX} ${craneToBlueprintTurnY}
+                    L ${craneToBoxConfig.centerX + halfBoxWidth} ${craneToBlueprintTurnY}
+                    L ${craneToBoxConfig.centerX + halfBoxWidth} ${craneToBoxConfig.centerY + halfBoxHeight}
+                    L ${craneToBoxConfig.centerX - halfBoxWidth} ${craneToBoxConfig.centerY + halfBoxHeight}
+                    L ${craneToBoxConfig.centerX - halfBoxWidth} ${craneToBlueprintTurnY}
+                    L ${blueprint.centerX} ${craneToBlueprintTurnY}
+                    L ${blueprint.centerX} ${blueprint.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: craneToBlueprint }}
+              />
+            </>
+          )}
+
+          {/* Blueprint to Framework - with transition box (turns RIGHT) */}
+          {blueprintToBoxConfig && (
+            <>
+              {/* Top path: goes above the box */}
+              <motion.path
+                d={`M ${blueprint.centerX} ${blueprint.bottom}
+                    L ${blueprint.centerX} ${blueprintToFrameworkTurnY}
+                    L ${blueprintToBoxConfig.centerX - halfBoxWidth} ${blueprintToFrameworkTurnY}
+                    L ${blueprintToBoxConfig.centerX - halfBoxWidth} ${blueprintToBoxConfig.centerY - halfBoxHeight}
+                    L ${blueprintToBoxConfig.centerX + halfBoxWidth} ${blueprintToBoxConfig.centerY - halfBoxHeight}
+                    L ${blueprintToBoxConfig.centerX + halfBoxWidth} ${blueprintToFrameworkTurnY}
+                    L ${framework.centerX} ${blueprintToFrameworkTurnY}
+                    L ${framework.centerX} ${framework.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: blueprintToFramework }}
+              />
+              {/* Bottom path: goes below the box */}
+              <motion.path
+                d={`M ${blueprint.centerX} ${blueprint.bottom}
+                    L ${blueprint.centerX} ${blueprintToFrameworkTurnY}
+                    L ${blueprintToBoxConfig.centerX - halfBoxWidth} ${blueprintToFrameworkTurnY}
+                    L ${blueprintToBoxConfig.centerX - halfBoxWidth} ${blueprintToBoxConfig.centerY + halfBoxHeight}
+                    L ${blueprintToBoxConfig.centerX + halfBoxWidth} ${blueprintToBoxConfig.centerY + halfBoxHeight}
+                    L ${blueprintToBoxConfig.centerX + halfBoxWidth} ${blueprintToFrameworkTurnY}
+                    L ${framework.centerX} ${blueprintToFrameworkTurnY}
+                    L ${framework.centerX} ${framework.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: blueprintToFramework }}
+              />
+            </>
+          )}
+
+          {/* Framework to Skyline - with transition box (turns LEFT) */}
+          {frameworkToBoxConfig && (
+            <>
+              {/* Top path: goes above the box */}
+              <motion.path
+                d={`M ${framework.centerX} ${framework.bottom}
+                    L ${framework.centerX} ${frameworkToSkylineTurnY}
+                    L ${frameworkToBoxConfig.centerX + halfBoxWidth} ${frameworkToSkylineTurnY}
+                    L ${frameworkToBoxConfig.centerX + halfBoxWidth} ${frameworkToBoxConfig.centerY - halfBoxHeight}
+                    L ${frameworkToBoxConfig.centerX - halfBoxWidth} ${frameworkToBoxConfig.centerY - halfBoxHeight}
+                    L ${frameworkToBoxConfig.centerX - halfBoxWidth} ${frameworkToSkylineTurnY}
+                    L ${skyline.centerX} ${frameworkToSkylineTurnY}
+                    L ${skyline.centerX} ${skyline.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: frameworkToSkyline }}
+              />
+              {/* Bottom path: goes below the box */}
+              <motion.path
+                d={`M ${framework.centerX} ${framework.bottom}
+                    L ${framework.centerX} ${frameworkToSkylineTurnY}
+                    L ${frameworkToBoxConfig.centerX + halfBoxWidth} ${frameworkToSkylineTurnY}
+                    L ${frameworkToBoxConfig.centerX + halfBoxWidth} ${frameworkToBoxConfig.centerY + halfBoxHeight}
+                    L ${frameworkToBoxConfig.centerX - halfBoxWidth} ${frameworkToBoxConfig.centerY + halfBoxHeight}
+                    L ${frameworkToBoxConfig.centerX - halfBoxWidth} ${frameworkToSkylineTurnY}
+                    L ${skyline.centerX} ${frameworkToSkylineTurnY}
+                    L ${skyline.centerX} ${skyline.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: frameworkToSkyline }}
+              />
+            </>
+          )}
+          {/* Skyline to Completed - goes down right side, around Projects, with transition box */}
+          {skylineToBoxConfig && (
+            <>
+              {/* Top path: goes above the box */}
+              <motion.path
+                d={`M ${skyline.centerX} ${skyline.bottom}
+                    L ${skyline.centerX} ${skylineToCompletedTurnY1}
+                    L ${sideMarginX} ${skylineToCompletedTurnY1}
+                    L ${sideMarginX} ${skylineToCompletedTurnY2}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY2}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToBoxConfig.centerY - halfBoxHeight}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToBoxConfig.centerY - halfBoxHeight}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY2}
+                    L ${completed.centerX} ${skylineToCompletedTurnY2}
+                    L ${completed.centerX} ${completed.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: skylineToCompleted }}
+              />
+              {/* Bottom path: goes below the box */}
+              <motion.path
+                d={`M ${skyline.centerX} ${skyline.bottom}
+                    L ${skyline.centerX} ${skylineToCompletedTurnY1}
+                    L ${sideMarginX} ${skylineToCompletedTurnY1}
+                    L ${sideMarginX} ${skylineToCompletedTurnY2}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY2}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToBoxConfig.centerY + halfBoxHeight}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToBoxConfig.centerY + halfBoxHeight}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY2}
+                    L ${completed.centerX} ${skylineToCompletedTurnY2}
+                    L ${completed.centerX} ${completed.top}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: skylineToCompleted }}
+              />
+            </>
+          )}
           {/* Completed to Team - goes down center, around heading, through team section */}
           {team && (
             <>
@@ -439,6 +691,41 @@ function FlowLines({ positions }: { positions: Positions }) {
         </>
       )}
     </svg>
+
+    {/* Transition Boxes with ME → WE flip animation */}
+    {isDesktop && (
+      <>
+        {craneToBoxConfig && (
+          <TransitionBox
+            config={craneToBoxConfig}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.craneToBlueprint}
+          />
+        )}
+        {blueprintToBoxConfig && (
+          <TransitionBox
+            config={blueprintToBoxConfig}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.blueprintToFramework}
+          />
+        )}
+        {frameworkToBoxConfig && (
+          <TransitionBox
+            config={frameworkToBoxConfig}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.frameworkToSkyline}
+          />
+        )}
+        {skylineToBoxConfig && (
+          <TransitionBox
+            config={skylineToBoxConfig}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.skylineToCompleted}
+          />
+        )}
+      </>
+    )}
+    </>
   );
 }
 
@@ -602,6 +889,56 @@ export function PageFlowLine() {
       };
     }
 
+    // Calculate transition box positions
+    const transitionBoxes: TransitionBoxConfig[] = [];
+
+    if (graphics.length >= 5) {
+      const [crane, blueprint, framework, skyline, completed] = graphics;
+
+      // Turn Y positions (same as in FlowLines component)
+      const craneToBlueprintTurnY = blueprint.top - 50;
+      const blueprintToFrameworkTurnY = framework.top - 50;
+      const frameworkToSkylineTurnY = skyline.top - 50;
+      const skylineToCompletedTurnY2 = completed.top - 50;
+      const sideMarginX = window.innerWidth - 80;
+
+      // Box 1: Crane to Blueprint (turns LEFT)
+      transitionBoxes.push({
+        id: 'crane-to-blueprint',
+        label: 'Asset owner',
+        centerX: (crane.centerX + blueprint.centerX) / 2,
+        centerY: craneToBlueprintTurnY,
+        turnDirection: 'left'
+      });
+
+      // Box 2: Blueprint to Framework (turns RIGHT)
+      transitionBoxes.push({
+        id: 'blueprint-to-framework',
+        label: 'Service provider',
+        centerX: (blueprint.centerX + framework.centerX) / 2,
+        centerY: blueprintToFrameworkTurnY,
+        turnDirection: 'right'
+      });
+
+      // Box 3: Framework to Skyline (turns LEFT)
+      transitionBoxes.push({
+        id: 'framework-to-skyline',
+        label: 'Income player',
+        centerX: (framework.centerX + skyline.centerX) / 2,
+        centerY: frameworkToSkylineTurnY,
+        turnDirection: 'left'
+      });
+
+      // Box 4: Skyline to Completed (on second horizontal segment, turns LEFT after Projects)
+      transitionBoxes.push({
+        id: 'skyline-to-completed',
+        label: 'Management',
+        centerX: (sideMarginX + completed.centerX) / 2,
+        centerY: skylineToCompletedTurnY2,
+        turnDirection: 'left'
+      });
+    }
+
     setPositions({
       heroBottom,
       heroCenter,
@@ -610,7 +947,8 @@ export function PageFlowLine() {
       graphics,
       team,
       mailing,
-      isDesktop
+      isDesktop,
+      transitionBoxes
     });
   }, []);
 
