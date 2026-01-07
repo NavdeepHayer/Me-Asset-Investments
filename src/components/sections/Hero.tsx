@@ -5,8 +5,8 @@ export function Hero() {
   const { company } = siteContent;
 
   // Animation timing constants (in seconds)
-  const LINE_DURATION = 5; // Total time for line to draw all buildings
-  const DETAIL_FADE_DURATION = 0.5;
+  const LINE_DURATION = 3.5; // Total time for line to draw all buildings
+  const DETAIL_FADE_DURATION = 0.4;
 
   // Building completion times (as percentage of LINE_DURATION)
   const bigBenComplete = 0.12;      // ~0.96s
@@ -35,7 +35,7 @@ export function Hero() {
   const exitLineDelay = LINE_DURATION + 0.5;
 
   // Single continuous path that draws all buildings left to right
-  // goes down at the right, then returns to center and goes down
+  // goes down at the right, then returns to center and continues down
   const skylinePath = `
     M 0 195
     L 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
@@ -46,8 +46,9 @@ export function Hero() {
     L 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195
     L 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195
     L 400 195
-    L 400 210
-    L 200 210
+    L 400 220
+    L 200 220
+    L 200 280
   `;
 
   return (
@@ -55,7 +56,7 @@ export function Hero() {
       {/* UK City Skyline background */}
       <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[10vh]">
         <motion.svg
-          viewBox="0 0 400 210"
+          viewBox="0 0 400 280"
           className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto"
           initial={{ opacity: 1 }}
           preserveAspectRatio="xMidYMax meet"
@@ -328,17 +329,6 @@ export function Hero() {
 
         </motion.svg>
       </div>
-
-      {/* Line from bottom going down - appears after skyline completes */}
-      <motion.div
-        className="absolute left-1/2 -translate-x-1/2 w-px pointer-events-none"
-        style={{ bottom: 0, height: '15vh' }}
-        initial={{ scaleY: 0, opacity: 0 }}
-        animate={{ scaleY: 1, opacity: 1 }}
-        transition={{ duration: 1, delay: exitLineDelay, ease: "easeOut" }}
-      >
-        <div className="w-full h-full bg-gradient-to-b from-white/30 to-white/10 origin-top" />
-      </motion.div>
 
       {/* Content - Logo fades in when line reaches center */}
       <div className="container-wide relative z-10 text-center px-4 sm:px-6 pb-[25vh] sm:pb-[22vh] md:pb-[18vh]" style={{ transform: 'translateZ(0)' }}>
