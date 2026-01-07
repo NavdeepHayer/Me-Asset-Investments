@@ -79,17 +79,19 @@ export const siteContent = {
       {
         name: "Verender S. Badial",
         role: "CEO",
-        bio: "Strategic advisor and former investment banker with over 20 years' leadership in global capital markets. Track record spanning technology and large-scale real estate, consistently scaling high-growth ventures and delivering long-term shareholder value.",
+        bio: "Strategic advisor and former investment banker with over 20 years' leadership in global capital markets, track record spanning technology and large-scale real estate consistently scaled high-growth ventures and delivered long-term shareholder value. Since 2015, funded and developed over £150 million across 500,000 sq ft of UK real estate. Verender was Co-Founder, Sponsor, and CFO of JATT Acquisition Corp, a New York listed SPAC, and a key architect in ~US$300 million of Nasdaq fundraising. Away from business, is patron of a charitable college in North India offering science studies to women and girls.",
       },
       {
         name: "Tarvy Gosal & Jas Randhawa",
         role: "Managing Directors, Fleetwood Architectural Aluminium",
-        bio: "Fleetwood Architectural Aluminium are experts and one of the UK leaders in recladding non-compliant buildings and deliver high-quality building envelopes, on time every time. FAA is on track to exceed £40+ million revenues by end of 2025.",
+        bio: "Fleetwood Architectural Aluminium are experts and one of the UK leaders in recladding non-compliant buildings and deliver high-quality building envelopes, on time every time. FAA has developed over XXX,000 square foot of facades and cladding in 2025.",
+        link: "https://www.faa-group.co.uk/our-services/cladding-remediation/",
       },
       {
         name: "Michael Mirelman & Daniel Benton",
-        role: "Directors, GRE Finance",
+        role: "Directors, GRE Capital",
         bio: "Each having had 20+ years' experience working across the finance, banking, and real estate sectors, and alongside property developers, investors, and family offices. Recently, both have led over £150+ million real estate finance, development and portfolio management.",
+        link: "https://www.grecapital.com",
       },
     ],
   },
