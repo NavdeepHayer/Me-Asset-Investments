@@ -310,6 +310,12 @@ function FlowLines({ positions }: { positions: Positions }) {
   const frameworkToBoxConfig = getBox('framework-to-skyline');
   const skylineToBoxConfig = getBox('skyline-to-completed');
 
+  // Get mobile transition box configs by ID
+  const getMobileBox = (id: string) => mobileTransitionBoxes.find(b => b.id === id);
+  const mobileBox1 = getMobileBox('mobile-crane-to-blueprint');
+  const mobileBox2 = getMobileBox('mobile-blueprint-to-framework');
+  const mobileBox3 = getMobileBox('mobile-framework-to-skyline');
+  const mobileBox4 = getMobileBox('mobile-skyline-to-completed');
 
   // Box edge calculations for path splitting
   const halfBoxWidth = boxWidth / 2 + boxPadding;
@@ -655,6 +661,52 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: skylineToCompleted }}
           />
+
+          {/* Mobile box continuation lines - small lines extending from bottom of each box */}
+          {mobileBox1 && (
+            <motion.line
+              x1={mobileBox1.centerX} y1={mobileBox1.centerY + 25}
+              x2={mobileBox1.centerX} y2={mobileBox1.centerY + 65}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: craneToBlueprint }}
+            />
+          )}
+          {mobileBox2 && (
+            <motion.line
+              x1={mobileBox2.centerX} y1={mobileBox2.centerY + 25}
+              x2={mobileBox2.centerX} y2={mobileBox2.centerY + 65}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: blueprintToFramework }}
+            />
+          )}
+          {mobileBox3 && (
+            <motion.line
+              x1={mobileBox3.centerX} y1={mobileBox3.centerY + 25}
+              x2={mobileBox3.centerX} y2={mobileBox3.centerY + 65}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: frameworkToSkyline }}
+            />
+          )}
+          {mobileBox4 && (
+            <motion.line
+              x1={mobileBox4.centerX} y1={mobileBox4.centerY + 25}
+              x2={mobileBox4.centerX} y2={mobileBox4.centerY + 65}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: skylineToCompleted }}
+            />
+          )}
           {team && (
             <>
               <motion.line
@@ -752,6 +804,39 @@ function FlowLines({ positions }: { positions: Positions }) {
       </>
     )}
 
+    {/* Mobile Transition Boxes with ME → WE flip animation */}
+    {!isDesktop && (
+      <>
+        {mobileBox1 && (
+          <TransitionBox
+            config={mobileBox1}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.craneToBlueprint}
+          />
+        )}
+        {mobileBox2 && (
+          <TransitionBox
+            config={mobileBox2}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.blueprintToFramework}
+          />
+        )}
+        {mobileBox3 && (
+          <TransitionBox
+            config={mobileBox3}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.frameworkToSkyline}
+          />
+        )}
+        {mobileBox4 && (
+          <TransitionBox
+            config={mobileBox4}
+            scrollYProgress={scrollYProgress}
+            animationRange={ranges.skylineToCompleted}
+          />
+        )}
+      </>
+    )}
     </>
   );
 }
