@@ -46,33 +46,27 @@ interface Positions {
 // Component for team member branch lines - short animated stubs
 function TeamBranch({
   member,
-  mainLineStartY,
-  mainLineEndY,
   centerX,
-  scrollRange,
-  scrollYProgress
+  scrollYProgress,
+  viewportHeight,
+  scrollableHeight
 }: {
   member: TeamMemberPosition;
-  mainLineStartY: number;
-  mainLineEndY: number;
   centerX: number;
-  scrollRange: [number, number];
   scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress'];
+  viewportHeight: number;
+  scrollableHeight: number;
 }) {
   // Short stub line - 30px in the direction of the member
   const stubLength = 30;
   const direction = member.centerX > centerX ? 1 : -1;
   const branchEndX = centerX + (stubLength * direction);
 
-  // Calculate when the main line reaches this member's Y position
-  const mainLineRange = mainLineEndY - mainLineStartY;
-  const memberYRelative = member.centerY - mainLineStartY;
-  const memberProgress = Math.max(0, Math.min(1, memberYRelative / mainLineRange));
-
-  // Map to scroll range - branch starts when main line reaches member
-  const scrollRangeSize = scrollRange[1] - scrollRange[0];
-  const branchStart = scrollRange[0] + (memberProgress * scrollRangeSize);
-  const branchEnd = Math.min(scrollRange[1], branchStart + 0.02);
+  // Calculate scroll position when this member's Y enters the viewport center
+  // This is when the line should branch out to them
+  const memberScrollY = member.centerY - viewportHeight * 0.6; // When member is 60% down viewport
+  const branchStart = Math.max(0, Math.min(1, memberScrollY / scrollableHeight));
+  const branchEnd = Math.min(1, branchStart + 0.03); // Animate over 3% of page scroll
 
   const branchProgress = useTransform(
     scrollYProgress,
@@ -290,11 +284,10 @@ function FlowLines({ positions }: { positions: Positions }) {
                 <TeamBranch
                   key={member.index}
                   member={member}
-                  mainLineStartY={completedToTeamTurnY2}
-                  mainLineEndY={teamSectionBottom}
                   centerX={teamCenterX}
-                  scrollRange={ranges.completedToTeam}
                   scrollYProgress={scrollYProgress}
+                  viewportHeight={viewportHeight}
+                  scrollableHeight={scrollableHeight}
                 />
               ))}
             </>
@@ -398,11 +391,10 @@ function FlowLines({ positions }: { positions: Positions }) {
                 <TeamBranch
                   key={member.index}
                   member={member}
-                  mainLineStartY={completed.bottom}
-                  mainLineEndY={teamSectionBottom}
                   centerX={teamCenterX}
-                  scrollRange={ranges.completedToTeam}
                   scrollYProgress={scrollYProgress}
+                  viewportHeight={viewportHeight}
+                  scrollableHeight={scrollableHeight}
                 />
               ))}
             </>
