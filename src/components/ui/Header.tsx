@@ -5,7 +5,7 @@ export function Header() {
   const { company } = siteContent;
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 py-6 md:py-8">
+    <header className="fixed top-0 left-0 right-0 z-50 py-6 md:py-8 bg-[#1a1f1a]">
       <div className="container-editorial">
         <motion.div
           initial={{ opacity: 0 }}
