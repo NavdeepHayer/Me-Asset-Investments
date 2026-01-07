@@ -86,7 +86,7 @@ function FlowLines({ positions }: { positions: Positions }) {
 
   // For completed to team: go down center, around heading, then through team section
   const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
-  const headingAvoidX = teamCenterX + 250; // Go right to avoid heading
+  const headingAvoidX = teamCenterX + 120; // Go right just enough to clear heading
   const completedToTeamTurnY1 = team ? team.headingTop - 30 : 0; // Above heading - go right
   const completedToTeamTurnY2 = team ? team.headingBottom + 40 : 0; // Below heading - go back to center
   const teamSectionBottom = team ? team.sectionBottom - 50 : 0; // End point in team section
