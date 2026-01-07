@@ -59,30 +59,32 @@ function TeamBranch({
 }) {
   // Short stub line - 30px in the direction of the member
   const stubLength = 30;
+  // Determine direction based on member position relative to center line
   const direction = member.centerX > centerX ? 1 : -1;
   const branchEndX = centerX + (stubLength * direction);
 
-  // Calculate scroll position when this member's Y enters the viewport center
-  // This is when the line should branch out to them
-  const memberScrollY = member.centerY - viewportHeight * 0.6; // When member is 60% down viewport
+  // Calculate scroll position when this member's Y enters the viewport
+  const memberScrollY = member.centerY - viewportHeight * 0.6;
   const branchStart = Math.max(0, Math.min(1, memberScrollY / scrollableHeight));
-  const branchEnd = Math.min(1, branchStart + 0.03); // Animate over 3% of page scroll
+  const branchEnd = Math.min(1, branchStart + 0.04); // Animate over 4% of page scroll
 
-  const branchProgress = useTransform(
+  // Animate the end X position from center to full extension
+  const animatedEndX = useTransform(
     scrollYProgress,
     [branchStart, branchEnd],
-    [0, 1]
+    [centerX, branchEndX]
   );
 
   return (
-    <motion.path
-      d={`M ${centerX} ${member.centerY} L ${branchEndX} ${member.centerY}`}
-      fill="none"
+    <motion.line
+      x1={centerX}
+      y1={member.centerY}
+      x2={animatedEndX}
+      y2={member.centerY}
       stroke="rgba(255,255,255,0.5)"
       strokeWidth="2"
       strokeLinecap="round"
       filter="url(#glow-flow)"
-      style={{ pathLength: branchProgress }}
     />
   );
 }
