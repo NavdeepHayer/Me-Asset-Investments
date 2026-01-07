@@ -1168,52 +1168,53 @@ export function PageFlowLine() {
       });
     }
 
-    // Calculate mobile transition box positions (between graphics in vertical flow)
+    // Calculate mobile transition box positions (within section, right after graphic)
     const mobileTransitionBoxes: TransitionBoxConfig[] = [];
 
     if (graphics.length >= 5 && !isDesktop) {
       const [crane, blueprint, framework, skyline, completed] = graphics;
 
-      // Mobile boxes are centered between graphics vertically
-      // Position them at the midpoint between bottom of one and top of next
+      // Mobile boxes positioned just below each graphic (within same section)
+      // This creates flow: graphic → box → exits section → next section
       const pageCenter = window.innerWidth / 2;
+      const boxOffset = 80; // Distance below the graphic
 
-      // Box 1: Between Crane and Blueprint
+      // Box 1: After Crane (within crane section)
       mobileTransitionBoxes.push({
         id: 'mobile-crane-to-blueprint',
         label: 'Asset owner',
         centerX: pageCenter,
-        centerY: (crane.bottom + blueprint.top) / 2,
+        centerY: crane.bottom + boxOffset,
         turnDirection: 'left',
         isMobile: true
       });
 
-      // Box 2: Between Blueprint and Framework
+      // Box 2: After Blueprint (within blueprint section)
       mobileTransitionBoxes.push({
         id: 'mobile-blueprint-to-framework',
         label: 'Service provider',
         centerX: pageCenter,
-        centerY: (blueprint.bottom + framework.top) / 2,
+        centerY: blueprint.bottom + boxOffset,
         turnDirection: 'right',
         isMobile: true
       });
 
-      // Box 3: Between Framework and Skyline
+      // Box 3: After Framework (within framework section)
       mobileTransitionBoxes.push({
         id: 'mobile-framework-to-skyline',
         label: 'Income player',
         centerX: pageCenter,
-        centerY: (framework.bottom + skyline.top) / 2,
+        centerY: framework.bottom + boxOffset,
         turnDirection: 'left',
         isMobile: true
       });
 
-      // Box 4: Between Skyline and Completed
+      // Box 4: After Skyline (within skyline section)
       mobileTransitionBoxes.push({
         id: 'mobile-skyline-to-completed',
         label: 'Management',
         centerX: pageCenter,
-        centerY: (skyline.bottom + completed.top) / 2,
+        centerY: skyline.bottom + boxOffset,
         turnDirection: 'left',
         isMobile: true
       });
