@@ -172,7 +172,7 @@ function FlowLines({ positions }: { positions: Positions }) {
 
   // For mailing list box: line splits at top, goes around both sides, meets at bottom center
   const mailingCenterX = mailing ? mailing.centerX : heroCenter;
-  const mailingTop = mailing ? mailing.sectionTop + 20 : 0;
+  const mailingTop = mailing ? mailing.sectionTop + 5 : 0; // Split 5px from top
   const mailingBottom = mailing ? mailing.sectionBottom - 20 : 0;
   const mailingLeftX = mailing ? mailing.leftEdge : 40;
   const mailingRightX = mailing ? mailing.rightEdge : window.innerWidth - 40;
@@ -578,11 +578,12 @@ export function PageFlowLine() {
       };
     }
 
-    // Find Mailing List section
+    // Find Mailing List section and content container
     let mailing: MailingPosition | null = null;
     const mailingSection = document.querySelector('[data-mailing-section]') as HTMLElement;
+    const mailingContent = document.querySelector('[data-mailing-content]') as HTMLElement;
 
-    if (mailingSection) {
+    if (mailingSection && mailingContent) {
       let mailingOffsetTop = 0;
       let current: HTMLElement | null = mailingSection;
       while (current) {
@@ -590,12 +591,13 @@ export function PageFlowLine() {
         current = current.offsetParent as HTMLElement;
       }
 
-      const mailingRect = mailingSection.getBoundingClientRect();
-      const centerX = mailingRect.left + mailingRect.width / 2 + window.scrollX;
-      // Box edges with some padding from viewport edges
-      const padding = isDesktop ? 80 : 40;
-      const leftEdge = padding;
-      const rightEdge = window.innerWidth - padding;
+      // Use content container for box width, with extra padding on mobile
+      const contentRect = mailingContent.getBoundingClientRect();
+      const centerX = contentRect.left + contentRect.width / 2 + window.scrollX;
+      // On mobile, extend box 20px beyond content edges
+      const mobilePadding = isDesktop ? 0 : 20;
+      const leftEdge = contentRect.left + window.scrollX - mobilePadding;
+      const rightEdge = contentRect.right + window.scrollX + mobilePadding;
 
       mailing = {
         sectionTop: mailingOffsetTop,
