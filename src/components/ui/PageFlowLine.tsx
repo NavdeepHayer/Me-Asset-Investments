@@ -58,8 +58,8 @@ function FlowLines({ positions }: { positions: Positions }) {
   const frameworkToSkylineTurnY = skyline.top - 50;
 
   // For skyline to completed: route down the right side, around Projects
-  const sideMarginX = Math.min(skyline.centerX + 400, window.innerWidth - 50); // Right side margin
-  const skylineToCompletedTurnY1 = skyline.bottom + 50; // First turn - go right
+  const sideMarginX = window.innerWidth - 80; // Right edge of viewport
+  const skylineToCompletedTurnY1 = skyline.bottom + 30; // First turn - go right
   const skylineToCompletedTurnY2 = completed.top - 50; // Second turn - go left toward completed
 
   return (
