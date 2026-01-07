@@ -21,7 +21,7 @@ interface Positions {
 // This ensures hooks are always called consistently
 function FlowLines({ positions }: { positions: Positions }) {
   const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, isDesktop } = positions;
-  const [crane, blueprint, framework, skyline] = graphics;
+  const [crane, blueprint, framework, skyline, completed] = graphics;
   const scrollableHeight = documentHeight - viewportHeight;
 
   const { scrollYProgress } = useScroll();
@@ -40,19 +40,26 @@ function FlowLines({ positions }: { positions: Positions }) {
     craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
     blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
     frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
-  }), [localToGlobal, crane, blueprint, framework, skyline]);
+    skylineToCompleted: [localToGlobal(completed, -0.05), localToGlobal(completed, 0.08)] as [number, number],
+  }), [localToGlobal, crane, blueprint, framework, skyline, completed]);
 
   // Animated segments - tied to destination graphic's scroll position
   const heroToCrane = useTransform(scrollYProgress, ranges.heroToCrane, [0, 1]);
   const craneToBlueprint = useTransform(scrollYProgress, ranges.craneToBlueprint, [0, 1]);
   const blueprintToFramework = useTransform(scrollYProgress, ranges.blueprintToFramework, [0, 1]);
   const frameworkToSkyline = useTransform(scrollYProgress, ranges.frameworkToSkyline, [0, 1]);
+  const skylineToCompleted = useTransform(scrollYProgress, ranges.skylineToCompleted, [0, 1]);
 
   // Calculate turn points for 90° turns
   const heroToCraneTurnY = crane.top - 50;
   const craneToBlueprintTurnY = blueprint.top - 50;
   const blueprintToFrameworkTurnY = framework.top - 50;
   const frameworkToSkylineTurnY = skyline.top - 50;
+
+  // For skyline to completed: route down the right side, around Projects
+  const sideMarginX = Math.min(skyline.centerX + 400, window.innerWidth - 50); // Right side margin
+  const skylineToCompletedTurnY1 = skyline.bottom + 50; // First turn - go right
+  const skylineToCompletedTurnY2 = completed.top - 50; // Second turn - go left toward completed
 
   return (
     <svg
@@ -128,6 +135,22 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: frameworkToSkyline }}
           />
+          {/* Skyline to Completed - goes down right side, around Projects */}
+          <motion.path
+            d={`M ${skyline.centerX} ${skyline.bottom}
+                L ${skyline.centerX} ${skylineToCompletedTurnY1}
+                L ${sideMarginX} ${skylineToCompletedTurnY1}
+                L ${sideMarginX} ${skylineToCompletedTurnY2}
+                L ${completed.centerX} ${skylineToCompletedTurnY2}
+                L ${completed.centerX} ${completed.top}`}
+            fill="none"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: skylineToCompleted }}
+          />
         </>
       ) : (
         <>
@@ -166,6 +189,15 @@ function FlowLines({ positions }: { positions: Positions }) {
             strokeLinecap="round"
             filter="url(#glow-flow)"
             style={{ pathLength: frameworkToSkyline }}
+          />
+          <motion.line
+            x1={skyline.centerX} y1={skyline.bottom}
+            x2={completed.centerX} y2={completed.top}
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: skylineToCompleted }}
           />
         </>
       )}
@@ -206,7 +238,7 @@ export function PageFlowLine() {
     const isDesktop = window.innerWidth >= 1024;
 
     // Find all graphics in order
-    const graphicIds = ['crane', 'blueprint', 'framework', 'skyline'];
+    const graphicIds = ['crane', 'blueprint', 'framework', 'skyline', 'completed'];
     const graphics: GraphicPosition[] = [];
 
     graphicIds.forEach(id => {
@@ -264,7 +296,7 @@ export function PageFlowLine() {
     };
   }, [calculate]);
 
-  if (!positions || positions.graphics.length < 4) return null;
+  if (!positions || positions.graphics.length < 5) return null;
 
   return <FlowLines positions={positions} />;
 }

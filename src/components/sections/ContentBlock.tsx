@@ -4,7 +4,7 @@ import { ScrollReveal } from "../ui/ScrollReveal";
 
 interface ContentBlockProps {
   text: string;
-  graphic?: "crane" | "blueprint" | "framework" | "skyline";
+  graphic?: "crane" | "blueprint" | "framework" | "skyline" | "completed";
   graphicPosition?: "left" | "right";
   className?: string;
 }
@@ -54,8 +54,8 @@ export function ContentBlock({
   );
 }
 
-function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framework" | "skyline" }) {
-  const isWide = variant === "skyline";
+function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framework" | "skyline" | "completed" }) {
+  const isWide = variant === "skyline" || variant === "completed";
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -76,6 +76,7 @@ function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framewo
       {variant === "blueprint" && <BlueprintGraphic scrollProgress={scrollYProgress} />}
       {variant === "framework" && <FrameworkGraphic scrollProgress={scrollYProgress} />}
       {variant === "skyline" && <RenovationGraphic scrollProgress={scrollYProgress} />}
+      {variant === "completed" && <CompletedBuildingGraphic scrollProgress={scrollYProgress} />}
     </motion.div>
   );
 }
@@ -844,6 +845,176 @@ function RenovationGraphic({ scrollProgress }: GraphicProps) {
         {/* Entrance to new section */}
         <rect x="220" y="165" width="20" height="20" fill="rgba(255,255,255,0.15)" />
         <line x1="230" y1="175" x2="230" y2="185" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+      </motion.g>
+    </motion.svg>
+  );
+}
+
+// Completed modern building - the finished product
+function CompletedBuildingGraphic({ scrollProgress }: GraphicProps) {
+  const flowThrough = useScrollTransform(scrollProgress, 0.08, 0.78);
+  const ground = useScrollTransform(scrollProgress, 0.10, 0.20);
+  const structure = useScrollTransform(scrollProgress, 0.14, 0.32);
+  const floors = useScrollTransform(scrollProgress, 0.26, 0.42);
+  const windows = useScrollTransform(scrollProgress, 0.36, 0.52);
+  const details = useScrollTransform(scrollProgress, 0.46, 0.62);
+  const entrance = useScrollTransform(scrollProgress, 0.56, 0.70);
+  const finishing = useScrollTransform(scrollProgress, 0.64, 0.78);
+
+  return (
+    <motion.svg viewBox="0 0 320 200" className="w-full h-full">
+      <defs>
+        <filter id="glow-completed" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* Flow line - enters from top center, goes through building, exits bottom */}
+      <motion.path
+        d="M 160 0
+           L 160 25
+           L 160 185
+           L 160 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#glow-completed)"
+        style={{ pathLength: flowThrough }}
+      />
+
+      {/* Ground line */}
+      <motion.line x1="40" y1="185" x2="280" y2="185" stroke="rgba(255,255,255,0.15)" strokeWidth="1"
+        style={{ pathLength: ground }} />
+
+      {/* === MAIN BUILDING STRUCTURE === */}
+
+      {/* Building outline - clean modern lines */}
+      <motion.path
+        d="M 80 185 L 80 30 L 240 30 L 240 185"
+        fill="none"
+        stroke="rgba(255,255,255,0.25)"
+        strokeWidth="2"
+        style={{ pathLength: structure }}
+      />
+
+      {/* Roof detail */}
+      <motion.path
+        d="M 75 30 L 245 30 M 80 25 L 240 25"
+        fill="none"
+        stroke="rgba(255,255,255,0.2)"
+        strokeWidth="1.5"
+        style={{ pathLength: structure }}
+      />
+
+      {/* Floor lines - clean and level */}
+      <motion.g style={{ opacity: floors }}>
+        <line x1="80" y1="55" x2="240" y2="55" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line x1="80" y1="80" x2="240" y2="80" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line x1="80" y1="105" x2="240" y2="105" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line x1="80" y1="130" x2="240" y2="130" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        <line x1="80" y1="155" x2="240" y2="155" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+      </motion.g>
+
+      {/* Windows - lit and uniform */}
+      <motion.g style={{ opacity: windows }}>
+        {/* Row 1 - Penthouse */}
+        <rect x="95" y="35" width="18" height="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="125" y="35" width="18" height="15" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="155" y="35" width="18" height="15" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="185" y="35" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="215" y="35" width="18" height="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+
+        {/* Row 2 */}
+        <rect x="95" y="60" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="125" y="60" width="18" height="15" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="155" y="60" width="18" height="15" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="185" y="60" width="18" height="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="215" y="60" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+
+        {/* Row 3 */}
+        <rect x="95" y="85" width="18" height="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="125" y="85" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="155" y="85" width="18" height="15" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="185" y="85" width="18" height="15" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="215" y="85" width="18" height="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+
+        {/* Row 4 */}
+        <rect x="95" y="110" width="18" height="15" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="125" y="110" width="18" height="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="155" y="110" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="185" y="110" width="18" height="15" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="215" y="110" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+
+        {/* Row 5 */}
+        <rect x="95" y="135" width="18" height="15" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="125" y="135" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="155" y="135" width="18" height="15" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="185" y="135" width="18" height="15" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <rect x="215" y="135" width="18" height="15" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+      </motion.g>
+
+      {/* Building details - reveals polish */}
+      <motion.g style={{ opacity: details }}>
+        {/* Vertical accent lines */}
+        <line x1="80" y1="30" x2="80" y2="185" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
+        <line x1="240" y1="30" x2="240" y2="185" stroke="rgba(255,255,255,0.08)" strokeWidth="2" />
+
+        {/* Crown/parapet detail */}
+        <path d="M 80 30 L 80 22 L 90 22 M 230 22 L 240 22 L 240 30"
+          fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+
+        {/* Decorative elements on facade */}
+        <line x1="90" y1="30" x2="90" y2="155" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+        <line x1="230" y1="30" x2="230" y2="155" stroke="rgba(255,255,255,0.05)" strokeWidth="1" />
+      </motion.g>
+
+      {/* Grand entrance */}
+      <motion.g style={{ opacity: entrance }}>
+        {/* Entrance canopy */}
+        <path d="M 130 160 L 130 155 L 190 155 L 190 160"
+          fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+
+        {/* Double doors */}
+        <rect x="140" y="160" width="18" height="25" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+        <rect x="162" y="160" width="18" height="25" fill="rgba(255,255,255,0.2)" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+
+        {/* Door handles */}
+        <line x1="155" y1="170" x2="155" y2="178" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+        <line x1="165" y1="170" x2="165" y2="178" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+
+        {/* Steps */}
+        <line x1="135" y1="185" x2="185" y2="185" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
+        <line x1="138" y1="188" x2="182" y2="188" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+      </motion.g>
+
+      {/* Finishing touches - landscaping and people */}
+      <motion.g style={{ opacity: finishing }}>
+        {/* Flag pole on roof */}
+        <line x1="160" y1="22" x2="160" y2="8" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+        <path d="M 160 8 L 172 11 L 160 14" fill="rgba(255,255,255,0.15)" stroke="none" />
+
+        {/* Planters */}
+        <rect x="50" y="175" width="20" height="10" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <ellipse cx="60" cy="172" rx="8" ry="4" fill="rgba(255,255,255,0.08)" />
+
+        <rect x="250" y="175" width="20" height="10" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <ellipse cx="260" cy="172" rx="8" ry="4" fill="rgba(255,255,255,0.08)" />
+
+        {/* People silhouettes near entrance */}
+        <ellipse cx="120" cy="182" rx="3" ry="3" fill="rgba(255,255,255,0.15)" />
+        <line x1="120" y1="185" x2="120" y2="193" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+
+        <ellipse cx="200" cy="181" rx="3" ry="3" fill="rgba(255,255,255,0.12)" />
+        <line x1="200" y1="184" x2="200" y2="192" stroke="rgba(255,255,255,0.12)" strokeWidth="1.5" />
+
+        {/* Company sign above entrance */}
+        <rect x="145" y="152" width="30" height="3" fill="rgba(255,255,255,0.2)" />
       </motion.g>
     </motion.svg>
   );

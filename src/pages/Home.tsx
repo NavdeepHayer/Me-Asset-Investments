@@ -38,6 +38,9 @@ export function Home() {
         {/* Projects Section */}
         <Projects />
 
+        {/* Completed Building - represents finished investment */}
+        <ContentBlock text="" graphic="completed" graphicPosition="left" />
+
         {/* Team Section */}
         <Team />
 
