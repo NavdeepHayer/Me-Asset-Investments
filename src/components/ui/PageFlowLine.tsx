@@ -184,23 +184,7 @@ export function PageFlowLine() {
 
     const heroRect = heroEl.getBoundingClientRect();
     const heroCenter = heroRect.left + heroRect.width / 2 + window.scrollX;
-
-    // Find the hero line end marker (where the hero's animated line ends)
-    const heroLineEnd = document.querySelector('[data-hero-line-end]') as HTMLElement;
-    let heroBottom: number;
-    if (heroLineEnd) {
-      // Use the marker's position - this is where the hero's SVG line ends
-      let offsetTop = 0;
-      let current: HTMLElement | null = heroLineEnd;
-      while (current) {
-        offsetTop += current.offsetTop;
-        current = current.offsetParent as HTMLElement;
-      }
-      heroBottom = offsetTop;
-    } else {
-      // Fallback to section bottom
-      heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
-    }
+    const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
     const documentHeight = document.documentElement.scrollHeight;
     const viewportHeight = window.innerHeight;
     const isDesktop = window.innerWidth >= 1024;

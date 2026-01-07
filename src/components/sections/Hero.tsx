@@ -31,34 +31,25 @@ export function Hero() {
   const taglineDelay = logoDelay + 0.5;
 
   // Single continuous path that draws all buildings left to right
-  // goes down at the right, then returns to center and continues down
+  // Buildings only - PageFlowLine handles the connection to next section
   const skylinePath = `
-    M 0 195
-    L 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
-    L 55 195 L 55 85 L 63 72 L 71 85 L 71 90 L 79 77 L 87 90 L 87 88 L 95 75 L 103 88 L 103 195
-    L 125 195 L 145 20 L 165 195
-    L 180 195 L 180 110 L 184 102 L 184 90 Q 200 55, 216 90 L 216 102 L 220 110 L 220 195
-    L 245 195 L 245 100 Q 245 50, 260 50 Q 275 50, 275 100 L 275 195
-    L 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195
-    L 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195
-    L 400 195
-    L 400 220
-    L 200 220
-    L 200 280
+    M 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
+    M 55 195 L 55 85 L 63 72 L 71 85 L 71 195
+    M 71 195 L 71 90 L 79 77 L 87 90 L 87 195
+    M 87 195 L 87 88 L 95 75 L 103 88 L 103 195
+    M 125 195 L 145 20 L 165 195
+    M 180 195 L 180 110 L 184 102 L 184 90 Q 200 55, 216 90 L 216 102 L 220 110 L 220 195
+    M 245 195 L 245 100 Q 245 50, 260 50 Q 275 50, 275 100 L 275 195
+    M 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195
+    M 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195
   `;
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden" data-hero>
-      {/* Marker for where hero line ends - PageFlowLine connects from here */}
-      <div
-        data-hero-line-end
-        className="absolute left-1/2 -translate-x-1/2 bottom-[15vh] sm:bottom-[12vh] md:bottom-[10vh] w-1 h-1"
-      />
-
       {/* UK City Skyline background */}
       <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[10vh]">
         <motion.svg
-          viewBox="0 0 400 280"
+          viewBox="0 0 400 200"
           className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto"
           initial={{ opacity: 1 }}
           preserveAspectRatio="xMidYMax meet"
@@ -325,9 +316,6 @@ export function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: artDecoDetailDelay + 0.2, duration: DETAIL_FADE_DURATION }}
           />
-
-          {/* Ground line (static, subtle) */}
-          <line x1="0" y1="195" x2="400" y2="195" stroke="rgba(255,255,255,0.08)" strokeWidth="1" />
 
         </motion.svg>
       </div>
