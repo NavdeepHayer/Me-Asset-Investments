@@ -296,20 +296,42 @@ function FlowLines({ positions }: { positions: Positions }) {
     return Math.max(0, Math.min(1, scrollY / scrollableHeight));
   }, [mailing, viewportHeight, scrollableHeight]);
 
+  // Helper: convert a Y position to scroll percentage (when that Y is in middle of viewport)
+  const yToScrollProgress = useCallback((y: number) => {
+    // When does this Y position reach the middle of the viewport?
+    const scrollY = y - viewportHeight * 0.5;
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  }, [viewportHeight, scrollableHeight]);
+
   // Calculate scroll ranges - line completes just before internal flow starts (local 0.10)
   // All segments use consistent timing: start slightly before element, complete at 0.08
-  const ranges = useMemo(() => ({
-    heroToCrane: [localToGlobal(crane, -0.05), localToGlobal(crane, 0.08)] as [number, number],
-    craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
-    blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
-    frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
-    // Skyline to completed: start after skyline internal flow completes (0.78), end at completed entry
-    skylineToCompleted: [localToGlobal(skyline, 0.78), localToGlobal(completed, 0.08)] as [number, number],
-    // Completed to Team: start after completed internal flow completes, draw through Team section
-    completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
-    // Team to Mailing box: start after team section, both sides animate together
-    teamToMailingBox: [teamToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
-  }), [localToGlobal, teamToGlobal, mailingToGlobal, crane, blueprint, framework, skyline, completed]);
+  const ranges = useMemo(() => {
+    // Mobile box positions (same calculation as in calculate function)
+    const boxOffset = 50;
+    const mobileBox1Y = crane.bottom + boxOffset;
+    const mobileBox2Y = blueprint.bottom + boxOffset;
+    const mobileBox3Y = framework.bottom + boxOffset;
+    const mobileBox4Y = skyline.bottom + boxOffset;
+
+    return {
+      heroToCrane: [localToGlobal(crane, -0.05), localToGlobal(crane, 0.08)] as [number, number],
+      craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
+      blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
+      frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
+      // Skyline to completed: start after skyline internal flow completes (0.78), end at completed entry
+      skylineToCompleted: [localToGlobal(skyline, 0.78), localToGlobal(completed, 0.08)] as [number, number],
+      // Completed to Team: start after completed internal flow completes, draw through Team section
+      completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
+      // Team to Mailing box: start after team section, both sides animate together
+      teamToMailingBox: [teamToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
+      // Mobile box animation ranges - based on when BOX is visible, not next section
+      // Box appears when it enters viewport, flip happens while viewing it
+      mobileBox1: [yToScrollProgress(mobileBox1Y) - 0.05, yToScrollProgress(mobileBox1Y) + 0.15] as [number, number],
+      mobileBox2: [yToScrollProgress(mobileBox2Y) - 0.05, yToScrollProgress(mobileBox2Y) + 0.15] as [number, number],
+      mobileBox3: [yToScrollProgress(mobileBox3Y) - 0.05, yToScrollProgress(mobileBox3Y) + 0.15] as [number, number],
+      mobileBox4: [yToScrollProgress(mobileBox4Y) - 0.05, yToScrollProgress(mobileBox4Y) + 0.15] as [number, number],
+    };
+  }, [localToGlobal, teamToGlobal, mailingToGlobal, yToScrollProgress, crane, blueprint, framework, skyline, completed]);
 
   // Animated segments - tied to destination graphic's scroll position
   const heroToCrane = useTransform(scrollYProgress, ranges.heroToCrane, [0, 1]);
@@ -898,34 +920,35 @@ function FlowLines({ positions }: { positions: Positions }) {
     )}
 
     {/* Mobile Transition Boxes with ME → WE flip animation */}
+    {/* Uses mobile-specific ranges based on when BOX is visible, not next section */}
     {!isDesktop && (
       <>
         {mobileBox1 && (
           <TransitionBox
             config={mobileBox1}
             scrollYProgress={scrollYProgress}
-            animationRange={ranges.craneToBlueprint}
+            animationRange={ranges.mobileBox1}
           />
         )}
         {mobileBox2 && (
           <TransitionBox
             config={mobileBox2}
             scrollYProgress={scrollYProgress}
-            animationRange={ranges.blueprintToFramework}
+            animationRange={ranges.mobileBox2}
           />
         )}
         {mobileBox3 && (
           <TransitionBox
             config={mobileBox3}
             scrollYProgress={scrollYProgress}
-            animationRange={ranges.frameworkToSkyline}
+            animationRange={ranges.mobileBox3}
           />
         )}
         {mobileBox4 && (
           <TransitionBox
             config={mobileBox4}
             scrollYProgress={scrollYProgress}
-            animationRange={ranges.skylineToCompleted}
+            animationRange={ranges.mobileBox4}
           />
         )}
       </>
