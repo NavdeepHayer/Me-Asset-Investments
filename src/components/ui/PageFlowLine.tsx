@@ -40,7 +40,8 @@ function FlowLines({ positions }: { positions: Positions }) {
     craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
     blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
     frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
-    skylineToCompleted: [localToGlobal(completed, -0.05), localToGlobal(completed, 0.08)] as [number, number],
+    // Start drawing when leaving skyline, complete when reaching completed (flows through Projects)
+    skylineToCompleted: [localToGlobal(skyline, 0.6), localToGlobal(completed, 0.08)] as [number, number],
   }), [localToGlobal, crane, blueprint, framework, skyline, completed]);
 
   // Animated segments - tied to destination graphic's scroll position
