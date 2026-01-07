@@ -90,12 +90,11 @@ export function PageFlowLine() {
   }, [calculate]);
 
   // Animated segments - draw as you scroll
-  // Each connecting line starts AFTER the previous graphic's internal flow completes
-  // Pushed later to ensure internal graphic flows finish first
-  const heroToCrane = useTransform(scrollYProgress, [0.04, 0.10], [0, 1]);
-  const craneToBlueprint = useTransform(scrollYProgress, [0.24, 0.32], [0, 1]);
-  const blueprintToFramework = useTransform(scrollYProgress, [0.48, 0.56], [0, 1]);
-  const frameworkToSkyline = useTransform(scrollYProgress, [0.68, 0.76], [0, 1]);
+  // Connecting lines should COMPLETE before the next graphic's internal flow starts
+  const heroToCrane = useTransform(scrollYProgress, [0.02, 0.06], [0, 1]);
+  const craneToBlueprint = useTransform(scrollYProgress, [0.16, 0.22], [0, 1]);
+  const blueprintToFramework = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
+  const frameworkToSkyline = useTransform(scrollYProgress, [0.56, 0.62], [0, 1]);
 
   if (!positions || positions.graphics.length < 4) return null;
 
