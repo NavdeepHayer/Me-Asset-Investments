@@ -11,7 +11,7 @@ interface GraphicPosition {
 export function PageFlowLine() {
   const [positions, setPositions] = useState<{
     heroBottom: number;
-    pageCenter: number;
+    heroCenter: number;
     documentHeight: number;
     graphics: GraphicPosition[];
     isDesktop: boolean;
@@ -24,8 +24,10 @@ export function PageFlowLine() {
     const heroEl = document.querySelector('[data-hero]') as HTMLElement;
     if (!heroEl) return;
 
+    // Get hero's center position (where the line ends) from the actual element
+    const heroRect = heroEl.getBoundingClientRect();
+    const heroCenter = heroRect.left + heroRect.width / 2 + window.scrollX;
     const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
-    const pageCenter = window.innerWidth / 2;
     const documentHeight = document.documentElement.scrollHeight;
     const isDesktop = window.innerWidth >= 1024; // lg breakpoint
 
@@ -59,7 +61,7 @@ export function PageFlowLine() {
 
     setPositions({
       heroBottom,
-      pageCenter,
+      heroCenter,
       documentHeight,
       graphics,
       isDesktop
@@ -97,7 +99,7 @@ export function PageFlowLine() {
 
   if (!positions || positions.graphics.length < 4) return null;
 
-  const { heroBottom, pageCenter, documentHeight, graphics, isDesktop } = positions;
+  const { heroBottom, heroCenter, documentHeight, graphics, isDesktop } = positions;
   const [crane, blueprint, framework, skyline] = graphics;
 
   // Calculate turn points for 90° turns
@@ -136,8 +138,8 @@ export function PageFlowLine() {
 
             {/* Hero (center) to Crane (right): down, right, down */}
             <motion.path
-              d={`M ${pageCenter} ${heroBottom}
-                  L ${pageCenter} ${heroToCraneTurnY}
+              d={`M ${heroCenter} ${heroBottom}
+                  L ${heroCenter} ${heroToCraneTurnY}
                   L ${crane.centerX} ${heroToCraneTurnY}
                   L ${crane.centerX} ${crane.top}`}
               fill="none"
@@ -199,7 +201,7 @@ export function PageFlowLine() {
             {/* Mobile: simple vertical lines (everything is centered) */}
 
             <motion.line
-              x1={pageCenter} y1={heroBottom}
+              x1={heroCenter} y1={heroBottom}
               x2={crane.centerX} y2={crane.top}
               stroke="rgba(255,255,255,0.5)"
               strokeWidth="2"
