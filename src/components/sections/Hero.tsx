@@ -15,48 +15,63 @@ export function Hero() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
         >
-          {/* All circles draw on load - staggered timing */}
-          {/* Outer ring */}
-          <motion.circle
-            cx="200" cy="200" r="180"
-            fill="none"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="1"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 2, delay: 0.2, ease: "easeOut" }}
-          />
-          {/* Ring 2 */}
-          <motion.circle
-            cx="200" cy="200" r="140"
-            fill="none"
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth="1"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.8, delay: 0.4, ease: "easeOut" }}
-          />
-          {/* Ring 3 */}
-          <motion.circle
-            cx="200" cy="200" r="100"
-            fill="none"
-            stroke="rgba(255,255,255,0.12)"
-            strokeWidth="1"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.6, delay: 0.6, ease: "easeOut" }}
-          />
-          {/* Ring 4 */}
-          <motion.circle
-            cx="200" cy="200" r="60"
-            fill="none"
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth="1"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.4, delay: 0.8, ease: "easeOut" }}
-          />
-          {/* Center dot */}
+          {/* Rotating rings group - slow clockwise rotation */}
+          <motion.g
+            style={{ originX: '200px', originY: '200px' }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 120, ease: "linear", repeat: Infinity }}
+          >
+            {/* Outer ring */}
+            <motion.circle
+              cx="200" cy="200" r="180"
+              fill="none"
+              stroke="rgba(255,255,255,0.08)"
+              strokeWidth="1"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 2, delay: 0.2, ease: "easeOut" }}
+            />
+            {/* Ring 2 */}
+            <motion.circle
+              cx="200" cy="200" r="140"
+              fill="none"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth="1"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.8, delay: 0.4, ease: "easeOut" }}
+            />
+          </motion.g>
+
+          {/* Inner rings - rotate counter-clockwise at different speed */}
+          <motion.g
+            style={{ originX: '200px', originY: '200px' }}
+            animate={{ rotate: -360 }}
+            transition={{ duration: 90, ease: "linear", repeat: Infinity }}
+          >
+            {/* Ring 3 */}
+            <motion.circle
+              cx="200" cy="200" r="100"
+              fill="none"
+              stroke="rgba(255,255,255,0.12)"
+              strokeWidth="1"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.6, delay: 0.6, ease: "easeOut" }}
+            />
+            {/* Ring 4 */}
+            <motion.circle
+              cx="200" cy="200" r="60"
+              fill="none"
+              stroke="rgba(255,255,255,0.1)"
+              strokeWidth="1"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.4, delay: 0.8, ease: "easeOut" }}
+            />
+          </motion.g>
+
+          {/* Center dot - static */}
           <motion.circle
             cx="200" cy="200" r="20"
             fill="rgba(255,255,255,0.05)"
@@ -65,23 +80,29 @@ export function Hero() {
             transition={{ duration: 0.5, delay: 1.2 }}
           />
 
-          {/* Diagonal lines */}
-          <motion.line
-            x1="60" y1="60" x2="340" y2="340"
-            stroke="rgba(255,255,255,0.06)"
-            strokeWidth="1"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-          />
-          <motion.line
-            x1="340" y1="60" x2="60" y2="340"
-            stroke="rgba(255,255,255,0.06)"
-            strokeWidth="1"
-            initial={{ pathLength: 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
-          />
+          {/* Diagonal lines (X) - very slow rotation */}
+          <motion.g
+            style={{ originX: '200px', originY: '200px' }}
+            animate={{ rotate: 360 }}
+            transition={{ duration: 180, ease: "linear", repeat: Infinity }}
+          >
+            <motion.line
+              x1="60" y1="60" x2="340" y2="340"
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="1"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+            />
+            <motion.line
+              x1="340" y1="60" x2="60" y2="340"
+              stroke="rgba(255,255,255,0.06)"
+              strokeWidth="1"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 1.5, delay: 0.3, ease: "easeOut" }}
+            />
+          </motion.g>
 
           {/* Accent dots at cardinal points */}
           <motion.circle cx="200" cy="20" r="3" fill="rgba(255,255,255,0.2)"
