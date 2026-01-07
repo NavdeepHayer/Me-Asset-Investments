@@ -17,8 +17,9 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
   // Track scroll progress for this element
   const { scrollYProgress } = useScroll({
     target: ref,
-    // Start when element enters viewport, end when it reaches center
-    offset: ["start 0.9", "start 0.5"]
+    // Start when element is closer to center, end when above center
+    // This delays the fade-in to sync better with the flow line
+    offset: ["start 0.7", "start 0.4"]
   });
 
   // On desktop: left members come from left, right from right
