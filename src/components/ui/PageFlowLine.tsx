@@ -594,10 +594,10 @@ export function PageFlowLine() {
       // Use content container for box width
       const contentRect = mailingContent.getBoundingClientRect();
       const centerX = contentRect.left + contentRect.width / 2 + window.scrollX;
-      // On mobile, extend box slightly beyond content edges
-      const mobilePadding = isDesktop ? 0 : 10;
-      const leftEdge = contentRect.left + window.scrollX - mobilePadding;
-      const rightEdge = contentRect.right + window.scrollX + mobilePadding;
+      // On mobile, inset the box so it's visible on screen
+      const mobileInset = isDesktop ? 0 : 15;
+      const leftEdge = contentRect.left + window.scrollX + mobileInset;
+      const rightEdge = contentRect.right + window.scrollX - mobileInset;
 
       mailing = {
         sectionTop: mailingOffsetTop,
