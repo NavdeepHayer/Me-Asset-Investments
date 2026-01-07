@@ -34,7 +34,7 @@ interface Positions {
   isDesktop: boolean;
 }
 
-// Component for team member branch lines
+// Component for team member branch lines - short animated stubs
 function TeamBranch({
   member,
   mainLineStartY,
@@ -50,17 +50,20 @@ function TeamBranch({
   scrollRange: [number, number];
   scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress'];
 }) {
+  // Short stub line - 30px in the direction of the member
+  const stubLength = 30;
+  const direction = member.centerX > centerX ? 1 : -1;
+  const branchEndX = centerX + (stubLength * direction);
+
   // Calculate when the main line reaches this member's Y position
-  // Map the member's Y within the main line's travel range to scroll progress
   const mainLineRange = mainLineEndY - mainLineStartY;
   const memberYRelative = member.centerY - mainLineStartY;
-  // Clamp memberProgress to 0-1 range
   const memberProgress = Math.max(0, Math.min(1, memberYRelative / mainLineRange));
 
   // Map to scroll range - branch starts when main line reaches member
   const scrollRangeSize = scrollRange[1] - scrollRange[0];
   const branchStart = scrollRange[0] + (memberProgress * scrollRangeSize);
-  const branchEnd = Math.min(scrollRange[1], branchStart + 0.03); // Branch draws quickly
+  const branchEnd = Math.min(scrollRange[1], branchStart + 0.02);
 
   const branchProgress = useTransform(
     scrollYProgress,
@@ -68,34 +71,16 @@ function TeamBranch({
     [0, 1]
   );
 
-  // Branch goes from center line to member - ensure we have a valid line length
-  const branchEndX = member.centerX;
-  const lineLength = Math.abs(branchEndX - centerX);
-
-  // Don't render if line would be too short
-  if (lineLength < 10) return null;
-
   return (
-    <>
-      {/* Static dim background line - always visible */}
-      <path
-        d={`M ${centerX} ${member.centerY} L ${branchEndX} ${member.centerY}`}
-        fill="none"
-        stroke="rgba(255,255,255,0.1)"
-        strokeWidth="1"
-        strokeLinecap="round"
-      />
-      {/* Animated glow line - draws as scroll progresses */}
-      <motion.path
-        d={`M ${centerX} ${member.centerY} L ${branchEndX} ${member.centerY}`}
-        fill="none"
-        stroke="rgba(255,255,255,0.6)"
-        strokeWidth="2"
-        strokeLinecap="round"
-        filter="url(#glow-flow)"
-        style={{ pathLength: branchProgress }}
-      />
-    </>
+    <motion.path
+      d={`M ${centerX} ${member.centerY} L ${branchEndX} ${member.centerY}`}
+      fill="none"
+      stroke="rgba(255,255,255,0.5)"
+      strokeWidth="2"
+      strokeLinecap="round"
+      filter="url(#glow-flow)"
+      style={{ pathLength: branchProgress }}
+    />
   );
 }
 
