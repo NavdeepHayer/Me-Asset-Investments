@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 
 interface GraphicPosition {
   id: string;
@@ -8,30 +8,186 @@ interface GraphicPosition {
   bottom: number;
 }
 
-export function PageFlowLine() {
-  const [positions, setPositions] = useState<{
-    heroBottom: number;
-    heroCenter: number;
-    documentHeight: number;
-    viewportHeight: number;
-    graphics: GraphicPosition[];
-    isDesktop: boolean;
-  } | null>(null);
+interface Positions {
+  heroBottom: number;
+  heroCenter: number;
+  documentHeight: number;
+  viewportHeight: number;
+  graphics: GraphicPosition[];
+  isDesktop: boolean;
+}
+
+// Child component that handles the scroll-linked animations
+// This ensures hooks are always called consistently
+function FlowLines({ positions }: { positions: Positions }) {
+  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, isDesktop } = positions;
+  const [crane, blueprint, framework, skyline] = graphics;
+  const scrollableHeight = documentHeight - viewportHeight;
 
   const { scrollYProgress } = useScroll();
+
+  // Helper: convert destination element's local scroll to global scroll percentage
+  const localToGlobal = useCallback((element: GraphicPosition, localScroll: number) => {
+    const elementHeight = element.bottom - element.top;
+    const scrollRange = elementHeight + viewportHeight;
+    const scrollY = localScroll * scrollRange + (element.top - viewportHeight);
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  }, [viewportHeight, scrollableHeight]);
+
+  // Calculate scroll ranges - line completes just before internal flow starts (local 0.10)
+  const ranges = useMemo(() => ({
+    heroToCrane: [localToGlobal(crane, -0.05), localToGlobal(crane, 0.08)] as [number, number],
+    craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
+    blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
+    frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
+  }), [localToGlobal, crane, blueprint, framework, skyline]);
+
+  // Animated segments - tied to destination graphic's scroll position
+  const heroToCrane = useTransform(scrollYProgress, ranges.heroToCrane, [0, 1]);
+  const craneToBlueprint = useTransform(scrollYProgress, ranges.craneToBlueprint, [0, 1]);
+  const blueprintToFramework = useTransform(scrollYProgress, ranges.blueprintToFramework, [0, 1]);
+  const frameworkToSkyline = useTransform(scrollYProgress, ranges.frameworkToSkyline, [0, 1]);
+
+  // Calculate turn points for 90° turns
+  const heroToCraneTurnY = crane.top - 50;
+  const craneToBlueprintTurnY = blueprint.top - 50;
+  const blueprintToFrameworkTurnY = framework.top - 50;
+  const frameworkToSkylineTurnY = skyline.top - 50;
+
+  return (
+    <svg
+      className="pointer-events-none absolute left-0 top-0"
+      style={{
+        width: '100%',
+        height: documentHeight,
+        zIndex: 0
+      }}
+      preserveAspectRatio="none"
+    >
+      <defs>
+        <filter id="glow-flow" x="-50%" y="-50%" width="200%" height="200%">
+          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      {isDesktop ? (
+        <>
+          <motion.path
+            d={`M ${heroCenter} ${heroBottom}
+                L ${heroCenter} ${heroToCraneTurnY}
+                L ${crane.centerX} ${heroToCraneTurnY}
+                L ${crane.centerX} ${crane.top}`}
+            fill="none"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: heroToCrane }}
+          />
+          <motion.path
+            d={`M ${crane.centerX} ${crane.bottom}
+                L ${crane.centerX} ${craneToBlueprintTurnY}
+                L ${blueprint.centerX} ${craneToBlueprintTurnY}
+                L ${blueprint.centerX} ${blueprint.top}`}
+            fill="none"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: craneToBlueprint }}
+          />
+          <motion.path
+            d={`M ${blueprint.centerX} ${blueprint.bottom}
+                L ${blueprint.centerX} ${blueprintToFrameworkTurnY}
+                L ${framework.centerX} ${blueprintToFrameworkTurnY}
+                L ${framework.centerX} ${framework.top}`}
+            fill="none"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: blueprintToFramework }}
+          />
+          <motion.path
+            d={`M ${framework.centerX} ${framework.bottom}
+                L ${framework.centerX} ${frameworkToSkylineTurnY}
+                L ${skyline.centerX} ${frameworkToSkylineTurnY}
+                L ${skyline.centerX} ${skyline.top}`}
+            fill="none"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: frameworkToSkyline }}
+          />
+        </>
+      ) : (
+        <>
+          <motion.line
+            x1={heroCenter} y1={heroBottom}
+            x2={crane.centerX} y2={crane.top}
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: heroToCrane }}
+          />
+          <motion.line
+            x1={crane.centerX} y1={crane.bottom}
+            x2={blueprint.centerX} y2={blueprint.top}
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: craneToBlueprint }}
+          />
+          <motion.line
+            x1={blueprint.centerX} y1={blueprint.bottom}
+            x2={framework.centerX} y2={framework.top}
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: blueprintToFramework }}
+          />
+          <motion.line
+            x1={framework.centerX} y1={framework.bottom}
+            x2={skyline.centerX} y2={skyline.top}
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: frameworkToSkyline }}
+          />
+        </>
+      )}
+    </svg>
+  );
+}
+
+// Main component that calculates positions
+export function PageFlowLine() {
+  const [positions, setPositions] = useState<Positions | null>(null);
 
   // Calculate positions of all graphics
   const calculate = useCallback(() => {
     const heroEl = document.querySelector('[data-hero]') as HTMLElement;
     if (!heroEl) return;
 
-    // Get hero's center position (where the line ends) from the actual element
     const heroRect = heroEl.getBoundingClientRect();
     const heroCenter = heroRect.left + heroRect.width / 2 + window.scrollX;
     const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
     const documentHeight = document.documentElement.scrollHeight;
     const viewportHeight = window.innerHeight;
-    const isDesktop = window.innerWidth >= 1024; // lg breakpoint
+    const isDesktop = window.innerWidth >= 1024;
 
     // Find all graphics in order
     const graphicIds = ['crane', 'blueprint', 'framework', 'skyline'];
@@ -94,180 +250,5 @@ export function PageFlowLine() {
 
   if (!positions || positions.graphics.length < 4) return null;
 
-  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, isDesktop } = positions;
-  const [crane, blueprint, framework, skyline] = graphics;
-  const scrollableHeight = documentHeight - viewportHeight;
-
-  // Helper: convert destination element's local scroll to global scroll percentage
-  // Local scroll 0 = element top at viewport bottom
-  // Local scroll 1 = element bottom at viewport top
-  const localToGlobal = (element: GraphicPosition, localScroll: number) => {
-    const elementHeight = element.bottom - element.top;
-    const scrollRange = elementHeight + viewportHeight;
-    const scrollY = localScroll * scrollRange + (element.top - viewportHeight);
-    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
-  };
-
-  // Each connecting line completes just BEFORE destination's internal flow starts (local 0.10)
-  // Line draws from when destination enters view (local -0.05) to just before flow starts (local 0.08)
-  const heroToCraneStart = localToGlobal(crane, -0.05);
-  const heroToCraneEnd = localToGlobal(crane, 0.08);
-
-  const craneToBlueprintStart = localToGlobal(blueprint, -0.05);
-  const craneToBlueprintEnd = localToGlobal(blueprint, 0.08);
-
-  const blueprintToFrameworkStart = localToGlobal(framework, -0.05);
-  const blueprintToFrameworkEnd = localToGlobal(framework, 0.08);
-
-  const frameworkToSkylineStart = localToGlobal(skyline, -0.05);
-  const frameworkToSkylineEnd = localToGlobal(skyline, 0.08);
-
-  // Animated segments - tied to destination graphic's scroll position
-  const heroToCrane = useTransform(scrollYProgress, [heroToCraneStart, heroToCraneEnd], [0, 1]);
-  const craneToBlueprint = useTransform(scrollYProgress, [craneToBlueprintStart, craneToBlueprintEnd], [0, 1]);
-  const blueprintToFramework = useTransform(scrollYProgress, [blueprintToFrameworkStart, blueprintToFrameworkEnd], [0, 1]);
-  const frameworkToSkyline = useTransform(scrollYProgress, [frameworkToSkylineStart, frameworkToSkylineEnd], [0, 1]);
-
-  // Calculate turn points for 90° turns
-  // Place horizontal segments CLOSE to destination graphic (90% down) to go BELOW text
-  const heroToCraneTurnY = crane.top - 50; // Just above crane
-  const craneToBlueprintTurnY = blueprint.top - 50; // Just above blueprint
-  const blueprintToFrameworkTurnY = framework.top - 50; // Just above framework
-  const frameworkToSkylineTurnY = skyline.top - 50; // Just above skyline
-
-  return (
-    <>
-      {/* SVG overlay for connecting paths */}
-      <svg
-        className="pointer-events-none absolute left-0 top-0"
-        style={{
-          width: '100%',
-          height: documentHeight,
-          zIndex: 0
-        }}
-        preserveAspectRatio="none"
-      >
-        {/* Glow filter for flow lines */}
-        <defs>
-          <filter id="glow-flow" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-
-        {isDesktop ? (
-          <>
-            {/* Desktop: 90° turns to go around text */}
-
-            {/* Hero (center) to Crane (right): down, right, down */}
-            <motion.path
-              d={`M ${heroCenter} ${heroBottom}
-                  L ${heroCenter} ${heroToCraneTurnY}
-                  L ${crane.centerX} ${heroToCraneTurnY}
-                  L ${crane.centerX} ${crane.top}`}
-              fill="none"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: heroToCrane }}
-            />
-
-            {/* Crane (right) to Blueprint (left): down, left, down */}
-            <motion.path
-              d={`M ${crane.centerX} ${crane.bottom}
-                  L ${crane.centerX} ${craneToBlueprintTurnY}
-                  L ${blueprint.centerX} ${craneToBlueprintTurnY}
-                  L ${blueprint.centerX} ${blueprint.top}`}
-              fill="none"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: craneToBlueprint }}
-            />
-
-            {/* Blueprint (left) to Framework (right): down, right, down */}
-            <motion.path
-              d={`M ${blueprint.centerX} ${blueprint.bottom}
-                  L ${blueprint.centerX} ${blueprintToFrameworkTurnY}
-                  L ${framework.centerX} ${blueprintToFrameworkTurnY}
-                  L ${framework.centerX} ${framework.top}`}
-              fill="none"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: blueprintToFramework }}
-            />
-
-            {/* Framework (right) to Skyline (center): down, left, down */}
-            <motion.path
-              d={`M ${framework.centerX} ${framework.bottom}
-                  L ${framework.centerX} ${frameworkToSkylineTurnY}
-                  L ${skyline.centerX} ${frameworkToSkylineTurnY}
-                  L ${skyline.centerX} ${skyline.top}`}
-              fill="none"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: frameworkToSkyline }}
-            />
-          </>
-        ) : (
-          <>
-            {/* Mobile: simple vertical lines (everything is centered) */}
-
-            <motion.line
-              x1={heroCenter} y1={heroBottom}
-              x2={crane.centerX} y2={crane.top}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: heroToCrane }}
-            />
-
-            <motion.line
-              x1={crane.centerX} y1={crane.bottom}
-              x2={blueprint.centerX} y2={blueprint.top}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: craneToBlueprint }}
-            />
-
-            <motion.line
-              x1={blueprint.centerX} y1={blueprint.bottom}
-              x2={framework.centerX} y2={framework.top}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: blueprintToFramework }}
-            />
-
-            <motion.line
-              x1={framework.centerX} y1={framework.bottom}
-              x2={skyline.centerX} y2={skyline.top}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: frameworkToSkyline }}
-            />
-          </>
-        )}
-      </svg>
-    </>
-  );
+  return <FlowLines positions={positions} />;
 }
