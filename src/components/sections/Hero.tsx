@@ -5,8 +5,8 @@ export function Hero() {
   const { company } = siteContent;
 
   // Animation timing constants (in seconds)
-  const LINE_DURATION = 8; // Total time for line to draw all buildings
-  const DETAIL_FADE_DURATION = 0.6;
+  const LINE_DURATION = 5; // Total time for line to draw all buildings
+  const DETAIL_FADE_DURATION = 0.5;
 
   // Building completion times (as percentage of LINE_DURATION)
   const bigBenComplete = 0.12;      // ~0.96s
@@ -29,13 +29,13 @@ export function Hero() {
 
   // Logo appears when line reaches center (St Paul's area)
   const logoDelay = stPaulsComplete * LINE_DURATION;
-  const taglineDelay = logoDelay + 0.8;
+  const taglineDelay = logoDelay + 0.5;
 
   // Exit line appears after skyline is complete
   const exitLineDelay = LINE_DURATION + 0.5;
 
   // Single continuous path that draws all buildings left to right
-  // then returns to center and goes down
+  // goes down at the right, then returns to center and goes down
   const skylinePath = `
     M 0 195
     L 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
@@ -46,7 +46,7 @@ export function Hero() {
     L 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195
     L 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195
     L 400 195
-    L 200 195
+    L 400 210
     L 200 210
   `;
 
