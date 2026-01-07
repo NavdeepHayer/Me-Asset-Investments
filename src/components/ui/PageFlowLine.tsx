@@ -14,6 +14,7 @@ export function PageFlowLine() {
     pageCenter: number;
     documentHeight: number;
     graphics: GraphicPosition[];
+    isDesktop: boolean;
   } | null>(null);
 
   const { scrollYProgress } = useScroll();
@@ -26,6 +27,7 @@ export function PageFlowLine() {
     const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
     const pageCenter = window.innerWidth / 2;
     const documentHeight = document.documentElement.scrollHeight;
+    const isDesktop = window.innerWidth >= 1024; // lg breakpoint
 
     // Find all graphics in order
     const graphicIds = ['crane', 'blueprint', 'framework', 'skyline'];
@@ -59,7 +61,8 @@ export function PageFlowLine() {
       heroBottom,
       pageCenter,
       documentHeight,
-      graphics
+      graphics,
+      isDesktop
     });
   }, []);
 
@@ -86,15 +89,21 @@ export function PageFlowLine() {
 
   // Animated segments - draw as you scroll
   // Each connecting line starts AFTER the previous graphic's internal flow completes
-  const heroToCrane = useTransform(scrollYProgress, [0.02, 0.06], [0, 1]);
-  const craneToBlueprint = useTransform(scrollYProgress, [0.18, 0.24], [0, 1]);
-  const blueprintToFramework = useTransform(scrollYProgress, [0.38, 0.44], [0, 1]);
-  const frameworkToSkyline = useTransform(scrollYProgress, [0.58, 0.64], [0, 1]);
+  const heroToCrane = useTransform(scrollYProgress, [0.02, 0.08], [0, 1]);
+  const craneToBlueprint = useTransform(scrollYProgress, [0.18, 0.26], [0, 1]);
+  const blueprintToFramework = useTransform(scrollYProgress, [0.38, 0.46], [0, 1]);
+  const frameworkToSkyline = useTransform(scrollYProgress, [0.58, 0.66], [0, 1]);
 
   if (!positions || positions.graphics.length < 4) return null;
 
-  const { heroBottom, pageCenter, documentHeight, graphics } = positions;
+  const { heroBottom, pageCenter, documentHeight, graphics, isDesktop } = positions;
   const [crane, blueprint, framework, skyline] = graphics;
+
+  // Calculate midpoints for 90° turns (horizontal segments go at midpoint between sections)
+  const heroToCraneMidY = heroBottom + (crane.top - heroBottom) / 2;
+  const craneToBlueprintMidY = crane.bottom + (blueprint.top - crane.bottom) / 2;
+  const blueprintToFrameworkMidY = blueprint.bottom + (framework.top - blueprint.bottom) / 2;
+  const frameworkToSkylineMidY = framework.bottom + (skyline.top - framework.bottom) / 2;
 
   return (
     <>
@@ -119,49 +128,115 @@ export function PageFlowLine() {
           </filter>
         </defs>
 
-        {/* Hero to Crane */}
-        <motion.line
-          x1={pageCenter} y1={heroBottom}
-          x2={crane.centerX} y2={crane.top}
-          stroke="rgba(255,255,255,0.5)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: heroToCrane }}
-        />
+        {isDesktop ? (
+          <>
+            {/* Desktop: 90° turns to go around text */}
 
-        {/* Crane to Blueprint */}
-        <motion.line
-          x1={crane.centerX} y1={crane.bottom}
-          x2={blueprint.centerX} y2={blueprint.top}
-          stroke="rgba(255,255,255,0.5)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: craneToBlueprint }}
-        />
+            {/* Hero (center) to Crane (right): down, right, down */}
+            <motion.path
+              d={`M ${pageCenter} ${heroBottom}
+                  L ${pageCenter} ${heroToCraneMidY}
+                  L ${crane.centerX} ${heroToCraneMidY}
+                  L ${crane.centerX} ${crane.top}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: heroToCrane }}
+            />
 
-        {/* Blueprint to Framework */}
-        <motion.line
-          x1={blueprint.centerX} y1={blueprint.bottom}
-          x2={framework.centerX} y2={framework.top}
-          stroke="rgba(255,255,255,0.5)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: blueprintToFramework }}
-        />
+            {/* Crane (right) to Blueprint (left): down, left, down */}
+            <motion.path
+              d={`M ${crane.centerX} ${crane.bottom}
+                  L ${crane.centerX} ${craneToBlueprintMidY}
+                  L ${blueprint.centerX} ${craneToBlueprintMidY}
+                  L ${blueprint.centerX} ${blueprint.top}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: craneToBlueprint }}
+            />
 
-        {/* Framework to Skyline */}
-        <motion.line
-          x1={framework.centerX} y1={framework.bottom}
-          x2={skyline.centerX} y2={skyline.top}
-          stroke="rgba(255,255,255,0.5)"
-          strokeWidth="2"
-          strokeLinecap="round"
-          filter="url(#glow-flow)"
-          style={{ pathLength: frameworkToSkyline }}
-        />
+            {/* Blueprint (left) to Framework (right): down, right, down */}
+            <motion.path
+              d={`M ${blueprint.centerX} ${blueprint.bottom}
+                  L ${blueprint.centerX} ${blueprintToFrameworkMidY}
+                  L ${framework.centerX} ${blueprintToFrameworkMidY}
+                  L ${framework.centerX} ${framework.top}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: blueprintToFramework }}
+            />
+
+            {/* Framework (right) to Skyline (center): down, left, down */}
+            <motion.path
+              d={`M ${framework.centerX} ${framework.bottom}
+                  L ${framework.centerX} ${frameworkToSkylineMidY}
+                  L ${skyline.centerX} ${frameworkToSkylineMidY}
+                  L ${skyline.centerX} ${skyline.top}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: frameworkToSkyline }}
+            />
+          </>
+        ) : (
+          <>
+            {/* Mobile: simple vertical lines (everything is centered) */}
+
+            <motion.line
+              x1={pageCenter} y1={heroBottom}
+              x2={crane.centerX} y2={crane.top}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: heroToCrane }}
+            />
+
+            <motion.line
+              x1={crane.centerX} y1={crane.bottom}
+              x2={blueprint.centerX} y2={blueprint.top}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: craneToBlueprint }}
+            />
+
+            <motion.line
+              x1={blueprint.centerX} y1={blueprint.bottom}
+              x2={framework.centerX} y2={framework.top}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: blueprintToFramework }}
+            />
+
+            <motion.line
+              x1={framework.centerX} y1={framework.bottom}
+              x2={skyline.centerX} y2={skyline.top}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: frameworkToSkyline }}
+            />
+          </>
+        )}
       </svg>
     </>
   );
