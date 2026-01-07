@@ -8,12 +8,20 @@ interface GraphicPosition {
   bottom: number;
 }
 
+interface TeamMemberPosition {
+  index: number;
+  centerX: number;
+  centerY: number;
+  isLeft: boolean; // true if on left side of grid (desktop)
+}
+
 interface TeamPosition {
   sectionTop: number;
   sectionBottom: number;
   headingTop: number;
   headingBottom: number;
   centerX: number;
+  members: TeamMemberPosition[];
 }
 
 interface Positions {
@@ -24,6 +32,54 @@ interface Positions {
   graphics: GraphicPosition[];
   team: TeamPosition | null;
   isDesktop: boolean;
+}
+
+// Component for team member branch lines
+function TeamBranch({
+  member,
+  mainLineStartY,
+  mainLineEndY,
+  centerX,
+  scrollRange,
+  scrollYProgress
+}: {
+  member: TeamMemberPosition;
+  mainLineStartY: number;
+  mainLineEndY: number;
+  centerX: number;
+  scrollRange: [number, number];
+  scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress'];
+}) {
+  // Calculate when the main line reaches this member's Y position
+  const mainLineLength = mainLineEndY - mainLineStartY;
+  const memberProgress = Math.max(0, Math.min(1, (member.centerY - mainLineStartY) / mainLineLength));
+
+  // Branch should start when main line reaches member, complete shortly after
+  const branchStart = scrollRange[0] + (scrollRange[1] - scrollRange[0]) * memberProgress;
+  const branchEnd = branchStart + (scrollRange[1] - scrollRange[0]) * 0.1; // Branch draws quickly
+
+  const branchProgress = useTransform(
+    scrollYProgress,
+    [branchStart, Math.min(branchEnd, scrollRange[1])],
+    [0, 1]
+  );
+
+  // Branch goes from center line to member
+  const branchEndX = member.centerX;
+
+  return (
+    <motion.line
+      x1={centerX}
+      y1={member.centerY}
+      x2={branchEndX}
+      y2={member.centerY}
+      stroke="rgba(255,255,255,0.4)"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      filter="url(#glow-flow)"
+      style={{ pathLength: branchProgress }}
+    />
+  );
 }
 
 // Child component that handles the scroll-linked animations
@@ -183,21 +239,35 @@ function FlowLines({ positions }: { positions: Positions }) {
           />
           {/* Completed to Team - goes down center, around heading, through team section */}
           {team && (
-            <motion.path
-              d={`M ${completed.centerX} ${completed.bottom}
-                  L ${completed.centerX} ${completedToTeamTurnY1}
-                  L ${headingAvoidX} ${completedToTeamTurnY1}
-                  L ${headingAvoidX} ${completedToTeamTurnY2}
-                  L ${teamCenterX} ${completedToTeamTurnY2}
-                  L ${teamCenterX} ${teamSectionBottom}`}
-              fill="none"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: completedToTeam }}
-            />
+            <>
+              <motion.path
+                d={`M ${completed.centerX} ${completed.bottom}
+                    L ${completed.centerX} ${completedToTeamTurnY1}
+                    L ${headingAvoidX} ${completedToTeamTurnY1}
+                    L ${headingAvoidX} ${completedToTeamTurnY2}
+                    L ${teamCenterX} ${completedToTeamTurnY2}
+                    L ${teamCenterX} ${teamSectionBottom}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: completedToTeam }}
+              />
+              {/* Branch lines to each team member */}
+              {team.members.map((member) => (
+                <TeamBranch
+                  key={member.index}
+                  member={member}
+                  mainLineStartY={completedToTeamTurnY2}
+                  mainLineEndY={teamSectionBottom}
+                  centerX={teamCenterX}
+                  scrollRange={ranges.completedToTeam}
+                  scrollYProgress={scrollYProgress}
+                />
+              ))}
+            </>
           )}
         </>
       ) : (
@@ -248,15 +318,29 @@ function FlowLines({ positions }: { positions: Positions }) {
             style={{ pathLength: skylineToCompleted }}
           />
           {team && (
-            <motion.line
-              x1={completed.centerX} y1={completed.bottom}
-              x2={teamCenterX} y2={teamSectionBottom}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: completedToTeam }}
-            />
+            <>
+              <motion.line
+                x1={completed.centerX} y1={completed.bottom}
+                x2={teamCenterX} y2={teamSectionBottom}
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: completedToTeam }}
+              />
+              {/* Branch lines to each team member */}
+              {team.members.map((member) => (
+                <TeamBranch
+                  key={member.index}
+                  member={member}
+                  mainLineStartY={completed.bottom}
+                  mainLineEndY={teamSectionBottom}
+                  centerX={teamCenterX}
+                  scrollRange={ranges.completedToTeam}
+                  scrollYProgress={scrollYProgress}
+                />
+              ))}
+            </>
           )}
         </>
       )}
@@ -350,12 +434,47 @@ export function PageFlowLine() {
       const sectionRect = teamSection.getBoundingClientRect();
       const centerX = sectionRect.left + sectionRect.width / 2 + window.scrollX;
 
+      // Find all team members
+      const members: TeamMemberPosition[] = [];
+      const memberElements = document.querySelectorAll('[data-team-member]');
+      memberElements.forEach((el) => {
+        const memberEl = el as HTMLElement;
+        const index = parseInt(memberEl.getAttribute('data-team-member') || '0', 10);
+
+        // Get position
+        let memberOffsetTop = 0;
+        let curr: HTMLElement | null = memberEl;
+        while (curr) {
+          memberOffsetTop += curr.offsetTop;
+          curr = curr.offsetParent as HTMLElement;
+        }
+
+        const memberRect = memberEl.getBoundingClientRect();
+        const memberCenterX = memberRect.left + memberRect.width / 2 + window.scrollX;
+        const memberCenterY = memberOffsetTop + memberEl.offsetHeight / 2;
+
+        // On desktop 2-col grid: even indices are left (0, 2, 4), odd are right (1, 3, 5)
+        // But we need to check actual position relative to center
+        const isLeft = memberCenterX < centerX;
+
+        members.push({
+          index,
+          centerX: memberCenterX,
+          centerY: memberCenterY,
+          isLeft
+        });
+      });
+
+      // Sort by index
+      members.sort((a, b) => a.index - b.index);
+
       team = {
         sectionTop: sectionOffsetTop,
         sectionBottom: sectionOffsetTop + teamSection.offsetHeight,
         headingTop: headingOffsetTop,
         headingBottom: headingOffsetTop + teamHeading.offsetHeight,
-        centerX
+        centerX,
+        members
       };
     }
 
