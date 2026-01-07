@@ -65,15 +65,16 @@ function TransitionBox({
   const { label, centerX, centerY } = config;
 
   // Box dimensions
-  const boxWidth = 180;
+  const boxWidth = 220;
   const boxHeight = 50;
 
-  // Animation progress for the flip (happens in the middle of the box drawing)
-  const flipStart = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.3;
-  const flipEnd = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.7;
+  // Animation progress - show ME early, flip happens later in the animation
+  // ME is visible from start, flip starts at 50% and ends at 90% of animation
+  const flipStart = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.5;
+  const flipEnd = animationRange[0] + (animationRange[1] - animationRange[0]) * 0.9;
 
-  // Rotate from 0 to 180 degrees (front to back)
-  const rotateY = useTransform(
+  // Rotate from 0 to 180 degrees (front to back) - only for ME/WE text
+  const rotateX = useTransform(
     scrollYProgress,
     [flipStart, flipEnd],
     [0, 180]
@@ -82,21 +83,21 @@ function TransitionBox({
   // Opacity for ME text (visible when rotation < 90)
   const meOpacity = useTransform(
     scrollYProgress,
-    [flipStart, (flipStart + flipEnd) / 2 - 0.01, (flipStart + flipEnd) / 2],
+    [flipStart, (flipStart + flipEnd) / 2 - 0.02, (flipStart + flipEnd) / 2],
     [1, 1, 0]
   );
 
   // Opacity for WE text (visible when rotation > 90)
   const weOpacity = useTransform(
     scrollYProgress,
-    [(flipStart + flipEnd) / 2, (flipStart + flipEnd) / 2 + 0.01, flipEnd],
+    [(flipStart + flipEnd) / 2, (flipStart + flipEnd) / 2 + 0.02, flipEnd],
     [0, 1, 1]
   );
 
   // Overall box opacity (fade in as box is drawn)
   const boxOpacity = useTransform(
     scrollYProgress,
-    [animationRange[0], animationRange[0] + 0.02],
+    [animationRange[0], animationRange[0] + 0.03],
     [0, 1]
   );
 
@@ -109,7 +110,6 @@ function TransitionBox({
         width: boxWidth,
         height: boxHeight,
         opacity: boxOpacity,
-        perspective: 400,
         zIndex: 10,
       }}
     >
@@ -120,44 +120,58 @@ function TransitionBox({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          position: 'relative',
+          gap: '8px',
+          fontFamily: 'monospace',
+          fontSize: '16px',
+          fontWeight: 'bold',
+          color: 'rgba(255, 255, 255, 0.9)',
+          textShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
+          whiteSpace: 'nowrap',
         }}
       >
-        {/* ME text (front side) */}
-        <motion.span
+        {/* ME/WE flip container - only this part flips */}
+        <div
           style={{
-            position: 'absolute',
-            rotateY,
-            opacity: meOpacity,
-            backfaceVisibility: 'hidden',
-            fontFamily: 'monospace',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            color: 'rgba(255, 255, 255, 0.9)',
-            textShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
-            whiteSpace: 'nowrap',
+            position: 'relative',
+            width: '28px',
+            height: '24px',
+            perspective: 200,
           }}
         >
-          ME <span style={{ opacity: 0.6 }}>|</span> {label}
-        </motion.span>
+          {/* ME text (front side) */}
+          <motion.span
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              rotateX,
+              opacity: meOpacity,
+              backfaceVisibility: 'hidden',
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            ME
+          </motion.span>
 
-        {/* WE text (back side - pre-rotated 180deg) */}
-        <motion.span
-          style={{
-            position: 'absolute',
-            rotateY: useTransform(rotateY, (r) => r - 180),
-            opacity: weOpacity,
-            backfaceVisibility: 'hidden',
-            fontFamily: 'monospace',
-            fontSize: '16px',
-            fontWeight: 'bold',
-            color: 'rgba(255, 255, 255, 0.9)',
-            textShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
-            whiteSpace: 'nowrap',
-          }}
-        >
-          WE <span style={{ opacity: 0.6 }}>|</span> {label}
-        </motion.span>
+          {/* WE text (back side - pre-rotated 180deg on X axis) */}
+          <motion.span
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              rotateX: useTransform(rotateX, (r) => r - 180),
+              opacity: weOpacity,
+              backfaceVisibility: 'hidden',
+              transformStyle: 'preserve-3d',
+            }}
+          >
+            WE
+          </motion.span>
+        </div>
+
+        {/* Static label part */}
+        <span style={{ opacity: 0.6 }}>|</span>
+        <span>{label}</span>
       </div>
     </motion.div>
   );
