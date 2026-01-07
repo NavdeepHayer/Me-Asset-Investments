@@ -13,6 +13,7 @@ export function PageFlowLine() {
     heroBottom: number;
     heroCenter: number;
     documentHeight: number;
+    viewportHeight: number;
     graphics: GraphicPosition[];
     isDesktop: boolean;
   } | null>(null);
@@ -29,6 +30,7 @@ export function PageFlowLine() {
     const heroCenter = heroRect.left + heroRect.width / 2 + window.scrollX;
     const heroBottom = heroEl.offsetTop + heroEl.offsetHeight;
     const documentHeight = document.documentElement.scrollHeight;
+    const viewportHeight = window.innerHeight;
     const isDesktop = window.innerWidth >= 1024; // lg breakpoint
 
     // Find all graphics in order
@@ -63,6 +65,7 @@ export function PageFlowLine() {
       heroBottom,
       heroCenter,
       documentHeight,
+      viewportHeight,
       graphics,
       isDesktop
     });
@@ -89,17 +92,41 @@ export function PageFlowLine() {
     };
   }, [calculate]);
 
-  // Animated segments - draw as you scroll
-  // Connecting lines should COMPLETE before the next graphic's internal flow starts
-  const heroToCrane = useTransform(scrollYProgress, [0.02, 0.06], [0, 1]);
-  const craneToBlueprint = useTransform(scrollYProgress, [0.16, 0.22], [0, 1]);
-  const blueprintToFramework = useTransform(scrollYProgress, [0.36, 0.42], [0, 1]);
-  const frameworkToSkyline = useTransform(scrollYProgress, [0.56, 0.62], [0, 1]);
-
   if (!positions || positions.graphics.length < 4) return null;
 
-  const { heroBottom, heroCenter, documentHeight, graphics, isDesktop } = positions;
+  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, isDesktop } = positions;
   const [crane, blueprint, framework, skyline] = graphics;
+  const scrollableHeight = documentHeight - viewportHeight;
+
+  // Helper: convert destination element's local scroll to global scroll percentage
+  // Local scroll 0 = element top at viewport bottom
+  // Local scroll 1 = element bottom at viewport top
+  const localToGlobal = (element: GraphicPosition, localScroll: number) => {
+    const elementHeight = element.bottom - element.top;
+    const scrollRange = elementHeight + viewportHeight;
+    const scrollY = localScroll * scrollRange + (element.top - viewportHeight);
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  };
+
+  // Each connecting line completes just BEFORE destination's internal flow starts (local 0.10)
+  // Line draws from when destination enters view (local -0.05) to just before flow starts (local 0.08)
+  const heroToCraneStart = localToGlobal(crane, -0.05);
+  const heroToCraneEnd = localToGlobal(crane, 0.08);
+
+  const craneToBlueprintStart = localToGlobal(blueprint, -0.05);
+  const craneToBlueprintEnd = localToGlobal(blueprint, 0.08);
+
+  const blueprintToFrameworkStart = localToGlobal(framework, -0.05);
+  const blueprintToFrameworkEnd = localToGlobal(framework, 0.08);
+
+  const frameworkToSkylineStart = localToGlobal(skyline, -0.05);
+  const frameworkToSkylineEnd = localToGlobal(skyline, 0.08);
+
+  // Animated segments - tied to destination graphic's scroll position
+  const heroToCrane = useTransform(scrollYProgress, [heroToCraneStart, heroToCraneEnd], [0, 1]);
+  const craneToBlueprint = useTransform(scrollYProgress, [craneToBlueprintStart, craneToBlueprintEnd], [0, 1]);
+  const blueprintToFramework = useTransform(scrollYProgress, [blueprintToFrameworkStart, blueprintToFrameworkEnd], [0, 1]);
+  const frameworkToSkyline = useTransform(scrollYProgress, [frameworkToSkylineStart, frameworkToSkylineEnd], [0, 1]);
 
   // Calculate turn points for 90° turns
   // Place horizontal segments CLOSE to destination graphic (90% down) to go BELOW text
