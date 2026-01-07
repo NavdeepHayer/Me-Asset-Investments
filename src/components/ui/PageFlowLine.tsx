@@ -121,10 +121,11 @@ function TransitionBox({
     [0, 1]
   );
 
-  // Mobile-specific sizing
-  const fontSize = isMobile ? '20px' : '16px';
-  const meWeWidth = isMobile ? '36px' : '28px';
-  const meWeHeight = isMobile ? '30px' : '24px';
+  // Mobile-specific sizing - ME/WE stays prominent, label is smaller to fit
+  const meWeFontSize = isMobile ? '18px' : '16px';
+  const labelFontSize = isMobile ? '12px' : '16px';
+  const meWeWidth = isMobile ? '32px' : '28px';
+  const meWeHeight = isMobile ? '26px' : '24px';
 
   return (
     <motion.div
@@ -136,7 +137,8 @@ function TransitionBox({
         height: boxHeight,
         opacity: boxOpacity,
         zIndex: 10,
-        padding: '0 16px', // Padding for the content
+        padding: '0 12px', // Padding for the content
+        maxWidth: isMobile ? '220px' : 'none', // Constrain width on mobile to fit in box
       }}
     >
       <div
@@ -145,9 +147,8 @@ function TransitionBox({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          gap: '8px',
+          gap: isMobile ? '6px' : '8px',
           fontFamily: 'monospace',
-          fontSize,
           fontWeight: 'bold',
           color: isMobile ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.9)',
           textShadow: isMobile
@@ -164,6 +165,7 @@ function TransitionBox({
             height: meWeHeight,
             perspective: 400,
             transformStyle: 'preserve-3d',
+            fontSize: meWeFontSize,
           }}
         >
           {/* ME text (front side) - visible from start, flips away */}
@@ -200,8 +202,8 @@ function TransitionBox({
         </div>
 
         {/* Static label part */}
-        <span style={{ opacity: 0.6 }}>|</span>
-        <span>{label}</span>
+        <span style={{ opacity: 0.6, fontSize: labelFontSize }}>|</span>
+        <span style={{ fontSize: labelFontSize }}>{label}</span>
       </div>
     </motion.div>
   );
