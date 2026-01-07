@@ -1,6 +1,6 @@
 export const siteContent = {
   meta: {
-    title: "ME Asset Management | Strategic Property Investment",
+    title: "ME | Asset Management - Strategic Property Investment",
     description:
       "A discretionary investment firm specializing in income-producing real estate assets across hotels, student housing, and commercial properties.",
   },
@@ -13,7 +13,7 @@ export const siteContent = {
 
   // Main intro text block
   intro: {
-    text: "ME Asset Management is a discretionary investment firm focused on acquiring, enhancing, and managing income-producing real estate assets. We take a hands-on approach to value creation, working closely with our partners to unlock the full potential of every property in our portfolio.",
+    text: "ME | Asset Management is a discretionary investment firm focused on acquiring, enhancing, and managing income-producing real estate assets. We take a hands-on approach to value creation, working closely with our partners to unlock the full potential of every property in our portfolio.",
   },
 
   // Investment focus
@@ -41,7 +41,7 @@ export const siteContent = {
     headline: "Our Portfolio",
     items: [
       {
-        name: "ME Swansea Ltd",
+        name: "ME | Swansea Ltd",
         location: "Swansea, Wales",
         type: "132-Bed Premier Inn Hotel",
         status: "Acquired",
@@ -104,7 +104,7 @@ export const siteContent = {
   },
 
   footer: {
-    copyright: "ME Asset Management",
+    copyright: "ME | Asset Management",
     contact: {
       email: "verender@meassetmanagement.com",
       person: "Verender Badial",
