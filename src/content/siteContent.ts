@@ -36,6 +36,37 @@ export const siteContent = {
     text: "We are committed to responsible investing and sustainable value creation. Our focus on Environmental, Social, and Governance principles ensures that our investments deliver returns while contributing positively to communities and the environment.",
   },
 
+  // Projects
+  projects: {
+    headline: "Our Portfolio",
+    items: [
+      {
+        name: "ME Swansea Ltd",
+        location: "Swansea, Wales",
+        type: "132-Bed Premier Inn Hotel",
+        status: "Acquired",
+        description: "Investment grade covenant with excellent location and strong demand drivers. Remediation works underway.",
+        image: "/images/projects/swansea.jpg",
+      },
+      {
+        name: "Confidential",
+        location: "Details on Request",
+        type: "",
+        status: "Coming Soon",
+        description: "",
+        image: null,
+      },
+      {
+        name: "Confidential",
+        location: "Details on Request",
+        type: "",
+        status: "Coming Soon",
+        description: "",
+        image: null,
+      },
+    ],
+  },
+
   // Team
   team: {
     headline: "Our Team",

@@ -1,4 +1,4 @@
-import { Hero, ContentBlock, TextSection, Team, MailingList, Footer } from "../components/sections";
+import { Hero, ContentBlock, TextSection, Projects, Team, MailingList, Footer } from "../components/sections";
 import { FloatingSocial } from "../components/ui/FloatingSocial";
 import { Header } from "../components/ui/Header";
 import { PageFlowLine } from "../components/ui/PageFlowLine";
@@ -34,6 +34,9 @@ export function Home() {
 
         {/* City skyline - full width */}
         <ContentBlock text="" graphic="skyline" graphicPosition="right" />
+
+        {/* Projects Section */}
+        <Projects />
 
         {/* Team Section */}
         <Team />
