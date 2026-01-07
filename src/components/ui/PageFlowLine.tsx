@@ -64,7 +64,7 @@ function TransitionBox({
   scrollYProgress: MotionValue<number>;
   animationRange: [number, number];
 }) {
-  const { label, centerX, centerY } = config;
+  const { label, centerX, centerY, isMobile } = config;
 
   // Box dimensions - height is fixed, width is auto based on content
   const boxHeight = 50;
@@ -72,10 +72,24 @@ function TransitionBox({
   // Animation timing:
   // - Box fades in at start of animation
   // - ME is visible from start
-  // - Flip happens AFTER the box lines connect (starts at 95%, continues past animation end)
+  // - Desktop: Flip happens AFTER the box lines connect (starts at 95%, continues past animation end)
+  // - Mobile: Flip happens in the MIDDLE of scroll so user can see it better
   const animationDuration = animationRange[1] - animationRange[0];
-  const flipStart = animationRange[1] - (animationDuration * 0.05); // Start flip at 95% (just as lines finish)
-  const flipEnd = animationRange[1] + (animationDuration * 0.15); // End flip after animation completes
+
+  let flipStart: number;
+  let flipEnd: number;
+
+  if (isMobile) {
+    // Mobile: flip happens in the middle of the animation range
+    // This means the flip triggers when the user is viewing the middle of the section
+    flipStart = animationRange[0] + (animationDuration * 0.4); // Start flip at 40% of animation
+    flipEnd = animationRange[0] + (animationDuration * 0.7); // End flip at 70% of animation
+  } else {
+    // Desktop: flip happens near the end
+    flipStart = animationRange[1] - (animationDuration * 0.05); // Start flip at 95% (just as lines finish)
+    flipEnd = animationRange[1] + (animationDuration * 0.15); // End flip after animation completes
+  }
+
   const flipMidpoint = (flipStart + flipEnd) / 2;
 
   // Rotate from 0 to 180 degrees (front to back) - only for ME/WE text
@@ -615,7 +629,7 @@ function FlowLines({ positions }: { positions: Positions }) {
         </>
       ) : (
         <>
-          {/* Mobile: Simple straight lines between graphics, skipping text sections */}
+          {/* Mobile: Hero to Crane - simple straight line */}
           <motion.line
             x1={heroCenter} y1={heroBottom}
             x2={crane.centerX} y2={crane.top}
@@ -625,53 +639,18 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: heroToCrane }}
           />
-          <motion.line
-            x1={crane.centerX} y1={crane.bottom}
-            x2={blueprint.centerX} y2={blueprint.top}
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: craneToBlueprint }}
-          />
-          <motion.line
-            x1={blueprint.centerX} y1={blueprint.bottom}
-            x2={framework.centerX} y2={framework.top}
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: blueprintToFramework }}
-          />
-          <motion.line
-            x1={framework.centerX} y1={framework.bottom}
-            x2={skyline.centerX} y2={skyline.top}
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: frameworkToSkyline }}
-          />
-          <motion.line
-            x1={skyline.centerX} y1={skyline.bottom}
-            x2={completed.centerX} y2={completed.top}
-            stroke="rgba(255,255,255,0.5)"
-            strokeWidth="2"
-            strokeLinecap="round"
-            filter="url(#glow-flow)"
-            style={{ pathLength: skylineToCompleted }}
-          />
 
-          {/* Mobile box outlines - line splits, draws box around text, continues */}
+          {/* Mobile box outlines - connects from graphic, splits around text, continues */}
           {mobileBox1 && (() => {
-            const boxHalfWidth = 120; // Half width of box
-            const boxHalfHeight = 25; // Half height of box
-            const tailLength = 40; // Continuation line length
+            const boxHalfWidth = 120;
+            const boxHalfHeight = 25;
+            const tailLength = 20;
             return (
               <>
-                {/* Left side of box + continuation */}
+                {/* Connection from graphic + left side of box + continuation */}
                 <motion.path
-                  d={`M ${mobileBox1.centerX} ${mobileBox1.centerY - boxHalfHeight}
+                  d={`M ${crane.centerX} ${crane.bottom}
+                      L ${mobileBox1.centerX} ${mobileBox1.centerY - boxHalfHeight}
                       L ${mobileBox1.centerX - boxHalfWidth} ${mobileBox1.centerY - boxHalfHeight}
                       L ${mobileBox1.centerX - boxHalfWidth} ${mobileBox1.centerY + boxHalfHeight}
                       L ${mobileBox1.centerX} ${mobileBox1.centerY + boxHalfHeight}
@@ -704,11 +683,12 @@ function FlowLines({ positions }: { positions: Positions }) {
           {mobileBox2 && (() => {
             const boxHalfWidth = 120;
             const boxHalfHeight = 25;
-            const tailLength = 40;
+            const tailLength = 20;
             return (
               <>
                 <motion.path
-                  d={`M ${mobileBox2.centerX} ${mobileBox2.centerY - boxHalfHeight}
+                  d={`M ${blueprint.centerX} ${blueprint.bottom}
+                      L ${mobileBox2.centerX} ${mobileBox2.centerY - boxHalfHeight}
                       L ${mobileBox2.centerX - boxHalfWidth} ${mobileBox2.centerY - boxHalfHeight}
                       L ${mobileBox2.centerX - boxHalfWidth} ${mobileBox2.centerY + boxHalfHeight}
                       L ${mobileBox2.centerX} ${mobileBox2.centerY + boxHalfHeight}
@@ -740,11 +720,12 @@ function FlowLines({ positions }: { positions: Positions }) {
           {mobileBox3 && (() => {
             const boxHalfWidth = 120;
             const boxHalfHeight = 25;
-            const tailLength = 40;
+            const tailLength = 20;
             return (
               <>
                 <motion.path
-                  d={`M ${mobileBox3.centerX} ${mobileBox3.centerY - boxHalfHeight}
+                  d={`M ${framework.centerX} ${framework.bottom}
+                      L ${mobileBox3.centerX} ${mobileBox3.centerY - boxHalfHeight}
                       L ${mobileBox3.centerX - boxHalfWidth} ${mobileBox3.centerY - boxHalfHeight}
                       L ${mobileBox3.centerX - boxHalfWidth} ${mobileBox3.centerY + boxHalfHeight}
                       L ${mobileBox3.centerX} ${mobileBox3.centerY + boxHalfHeight}
@@ -776,11 +757,12 @@ function FlowLines({ positions }: { positions: Positions }) {
           {mobileBox4 && (() => {
             const boxHalfWidth = 120;
             const boxHalfHeight = 25;
-            const tailLength = 40;
+            const tailLength = 20;
             return (
               <>
                 <motion.path
-                  d={`M ${mobileBox4.centerX} ${mobileBox4.centerY - boxHalfHeight}
+                  d={`M ${skyline.centerX} ${skyline.bottom}
+                      L ${mobileBox4.centerX} ${mobileBox4.centerY - boxHalfHeight}
                       L ${mobileBox4.centerX - boxHalfWidth} ${mobileBox4.centerY - boxHalfHeight}
                       L ${mobileBox4.centerX - boxHalfWidth} ${mobileBox4.centerY + boxHalfHeight}
                       L ${mobileBox4.centerX} ${mobileBox4.centerY + boxHalfHeight}
@@ -1162,7 +1144,7 @@ export function PageFlowLine() {
       // Mobile boxes positioned just below each graphic (within same section)
       // This creates flow: graphic → box → exits section → next section
       const pageCenter = window.innerWidth / 2;
-      const boxOffset = 80; // Distance below the graphic
+      const boxOffset = 50; // Distance below the graphic
 
       // Box 1: After Crane (within crane section)
       mobileTransitionBoxes.push({
