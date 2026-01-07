@@ -99,11 +99,12 @@ export function PageFlowLine() {
   const { heroBottom, pageCenter, documentHeight, graphics, isDesktop } = positions;
   const [crane, blueprint, framework, skyline] = graphics;
 
-  // Calculate midpoints for 90° turns (horizontal segments go at midpoint between sections)
-  const heroToCraneMidY = heroBottom + (crane.top - heroBottom) / 2;
-  const craneToBlueprintMidY = crane.bottom + (blueprint.top - crane.bottom) / 2;
-  const blueprintToFrameworkMidY = blueprint.bottom + (framework.top - blueprint.bottom) / 2;
-  const frameworkToSkylineMidY = framework.bottom + (skyline.top - framework.bottom) / 2;
+  // Calculate turn points for 90° turns
+  // Place horizontal segments CLOSE to destination graphic (90% down) to go BELOW text
+  const heroToCraneTurnY = crane.top - 50; // Just above crane
+  const craneToBlueprintTurnY = blueprint.top - 50; // Just above blueprint
+  const blueprintToFrameworkTurnY = framework.top - 50; // Just above framework
+  const frameworkToSkylineTurnY = skyline.top - 50; // Just above skyline
 
   return (
     <>
@@ -135,8 +136,8 @@ export function PageFlowLine() {
             {/* Hero (center) to Crane (right): down, right, down */}
             <motion.path
               d={`M ${pageCenter} ${heroBottom}
-                  L ${pageCenter} ${heroToCraneMidY}
-                  L ${crane.centerX} ${heroToCraneMidY}
+                  L ${pageCenter} ${heroToCraneTurnY}
+                  L ${crane.centerX} ${heroToCraneTurnY}
                   L ${crane.centerX} ${crane.top}`}
               fill="none"
               stroke="rgba(255,255,255,0.5)"
@@ -150,8 +151,8 @@ export function PageFlowLine() {
             {/* Crane (right) to Blueprint (left): down, left, down */}
             <motion.path
               d={`M ${crane.centerX} ${crane.bottom}
-                  L ${crane.centerX} ${craneToBlueprintMidY}
-                  L ${blueprint.centerX} ${craneToBlueprintMidY}
+                  L ${crane.centerX} ${craneToBlueprintTurnY}
+                  L ${blueprint.centerX} ${craneToBlueprintTurnY}
                   L ${blueprint.centerX} ${blueprint.top}`}
               fill="none"
               stroke="rgba(255,255,255,0.5)"
@@ -165,8 +166,8 @@ export function PageFlowLine() {
             {/* Blueprint (left) to Framework (right): down, right, down */}
             <motion.path
               d={`M ${blueprint.centerX} ${blueprint.bottom}
-                  L ${blueprint.centerX} ${blueprintToFrameworkMidY}
-                  L ${framework.centerX} ${blueprintToFrameworkMidY}
+                  L ${blueprint.centerX} ${blueprintToFrameworkTurnY}
+                  L ${framework.centerX} ${blueprintToFrameworkTurnY}
                   L ${framework.centerX} ${framework.top}`}
               fill="none"
               stroke="rgba(255,255,255,0.5)"
@@ -180,8 +181,8 @@ export function PageFlowLine() {
             {/* Framework (right) to Skyline (center): down, left, down */}
             <motion.path
               d={`M ${framework.centerX} ${framework.bottom}
-                  L ${framework.centerX} ${frameworkToSkylineMidY}
-                  L ${skyline.centerX} ${frameworkToSkylineMidY}
+                  L ${framework.centerX} ${frameworkToSkylineTurnY}
+                  L ${skyline.centerX} ${frameworkToSkylineTurnY}
                   L ${skyline.centerX} ${skyline.top}`}
               fill="none"
               stroke="rgba(255,255,255,0.5)"
