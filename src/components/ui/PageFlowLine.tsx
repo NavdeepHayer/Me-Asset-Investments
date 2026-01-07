@@ -80,10 +80,11 @@ function TransitionBox({
   let flipEnd: number;
 
   if (isMobile) {
-    // Mobile: flip happens in the middle of the animation range
+    // Mobile: flip happens slowly in the middle of the animation range
     // This means the flip triggers when the user is viewing the middle of the section
-    flipStart = animationRange[0] + (animationDuration * 0.4); // Start flip at 40% of animation
-    flipEnd = animationRange[0] + (animationDuration * 0.7); // End flip at 70% of animation
+    // Wider range = slower flip animation
+    flipStart = animationRange[0] + (animationDuration * 0.3); // Start flip at 30% of animation
+    flipEnd = animationRange[0] + (animationDuration * 0.9); // End flip at 90% of animation
   } else {
     // Desktop: flip happens near the end
     flipStart = animationRange[1] - (animationDuration * 0.05); // Start flip at 95% (just as lines finish)
@@ -120,6 +121,11 @@ function TransitionBox({
     [0, 1]
   );
 
+  // Mobile-specific sizing
+  const fontSize = isMobile ? '20px' : '16px';
+  const meWeWidth = isMobile ? '36px' : '28px';
+  const meWeHeight = isMobile ? '30px' : '24px';
+
   return (
     <motion.div
       style={{
@@ -141,10 +147,12 @@ function TransitionBox({
           justifyContent: 'center',
           gap: '8px',
           fontFamily: 'monospace',
-          fontSize: '16px',
+          fontSize,
           fontWeight: 'bold',
-          color: 'rgba(255, 255, 255, 0.9)',
-          textShadow: '0 0 10px rgba(255, 255, 255, 0.5)',
+          color: isMobile ? 'rgba(255, 255, 255, 1)' : 'rgba(255, 255, 255, 0.9)',
+          textShadow: isMobile
+            ? '0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.4)'
+            : '0 0 10px rgba(255, 255, 255, 0.5)',
           whiteSpace: 'nowrap',
         }}
       >
@@ -152,8 +160,8 @@ function TransitionBox({
         <div
           style={{
             position: 'relative',
-            width: '28px',
-            height: '24px',
+            width: meWeWidth,
+            height: meWeHeight,
             perspective: 400,
             transformStyle: 'preserve-3d',
           }}
