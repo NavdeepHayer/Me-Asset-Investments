@@ -332,6 +332,23 @@ export function Hero() {
         </motion.svg>
       </div>
 
+      {/* Bridge line - continues from SVG bottom to hero section bottom */}
+      <motion.div
+        className="absolute left-1/2 -translate-x-1/2 bottom-0 w-[2px] h-[15vh] sm:h-[12vh] md:h-[10vh] pointer-events-none"
+        style={{
+          transformOrigin: 'top',
+          background: 'rgba(255,255,255,0.5)',
+          boxShadow: '0 0 8px rgba(255,255,255,0.3)',
+        }}
+        initial={{ scaleY: 0 }}
+        animate={{ scaleY: 1 }}
+        transition={{
+          duration: 0.3,
+          delay: LINE_DURATION * 0.95,
+          ease: "linear"
+        }}
+      />
+
       {/* Content - Logo fades in when line reaches center */}
       <div className="container-wide relative z-10 text-center px-4 sm:px-6 pb-[25vh] sm:pb-[22vh] md:pb-[18vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div

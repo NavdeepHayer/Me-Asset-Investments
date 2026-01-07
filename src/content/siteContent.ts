@@ -79,7 +79,7 @@ export const siteContent = {
       {
         name: "Verender S. Badial",
         role: "CEO",
-        bio: "Since 2015, funded and developed over £150 million across 500,000 sq ft of UK real estate. Verender was Co-Founder, Sponsor, and CFO of JATT Acquisition Corp, a New York listed SPAC, and a key architect in ~US$300 million of Nasdaq fundraising. Away from business, is patron of a charitable college in North India offering science studies to women and girls.",
+        bio: "Strategic advisor and former investment banker with over 20 years’ leadership in global capital markets, track record spanning technology and large-scale real estate consistently scaled high-growth ventures and delivered long-term shareholder value.  Since 2015, funded and developed over £150 million across 500,000 sq ft of UK real estate.  He is Co-Founder, Sponsor, and CFO of JATT Acquisition Corp, a New York listed SPAC, and a key architect in ~US$300 million of Nasdaq fundraising, and fund investments across biotech, technology, and real estate.  Away from business, Verender volunteers as Director for a college in North India offering science and nursing studies to women and girls.",
       },
       {
         name: "Tarvy Gosal & Jas Randhawa",

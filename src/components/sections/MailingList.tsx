@@ -24,8 +24,8 @@ export function MailingList() {
   };
 
   return (
-    <section className="section-spacing">
-      <div className="container-editorial">
+    <section className="section-spacing" data-mailing-section>
+      <div className="container-editorial" data-mailing-content>
         <ScrollReveal>
           <p className="text-body-large text-center mb-16">
             {mailingList.headline}

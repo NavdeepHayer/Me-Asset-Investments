@@ -8,20 +8,92 @@ interface GraphicPosition {
   bottom: number;
 }
 
+interface TeamMemberPosition {
+  index: number;
+  centerX: number;
+  centerY: number;
+  isLeft: boolean; // true if on left side of grid (desktop)
+}
+
+interface TeamPosition {
+  sectionTop: number;
+  sectionBottom: number;
+  headingTop: number;
+  headingBottom: number;
+  centerX: number;
+  members: TeamMemberPosition[];
+}
+
+interface MailingPosition {
+  sectionTop: number;
+  sectionBottom: number;
+  centerX: number;
+  leftEdge: number;
+  rightEdge: number;
+}
+
 interface Positions {
   heroBottom: number;
   heroCenter: number;
   documentHeight: number;
   viewportHeight: number;
   graphics: GraphicPosition[];
+  team: TeamPosition | null;
+  mailing: MailingPosition | null;
   isDesktop: boolean;
+}
+
+// Component for team member branch lines - short animated stubs
+function TeamBranch({
+  member,
+  centerX,
+  scrollYProgress,
+  viewportHeight,
+  scrollableHeight
+}: {
+  member: TeamMemberPosition;
+  centerX: number;
+  scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress'];
+  viewportHeight: number;
+  scrollableHeight: number;
+}) {
+  // Short stub line - 30px in the direction of the member
+  const stubLength = 30;
+  // Determine direction based on member position relative to center line
+  const direction = member.centerX > centerX ? 1 : -1;
+  const branchEndX = centerX + (stubLength * direction);
+
+  // Calculate scroll position when this member's Y enters the viewport
+  const memberScrollY = member.centerY - viewportHeight * 0.6;
+  const branchStart = Math.max(0, Math.min(1, memberScrollY / scrollableHeight));
+  const branchEnd = Math.min(1, branchStart + 0.04); // Animate over 4% of page scroll
+
+  // Animate the end X position from center to full extension
+  const animatedEndX = useTransform(
+    scrollYProgress,
+    [branchStart, branchEnd],
+    [centerX, branchEndX]
+  );
+
+  return (
+    <motion.line
+      x1={centerX}
+      y1={member.centerY}
+      x2={animatedEndX}
+      y2={member.centerY}
+      stroke="rgba(255,255,255,0.5)"
+      strokeWidth="2"
+      strokeLinecap="round"
+      filter="url(#glow-flow)"
+    />
+  );
 }
 
 // Child component that handles the scroll-linked animations
 // This ensures hooks are always called consistently
 function FlowLines({ positions }: { positions: Positions }) {
-  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, isDesktop } = positions;
-  const [crane, blueprint, framework, skyline] = graphics;
+  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, team, mailing, isDesktop } = positions;
+  const [crane, blueprint, framework, skyline, completed] = graphics;
   const scrollableHeight = documentHeight - viewportHeight;
 
   const { scrollYProgress } = useScroll();
@@ -34,25 +106,72 @@ function FlowLines({ positions }: { positions: Positions }) {
     return Math.max(0, Math.min(1, scrollY / scrollableHeight));
   }, [viewportHeight, scrollableHeight]);
 
+  // Helper: convert team section scroll to global percentage
+  const teamToGlobal = useCallback((localScroll: number) => {
+    if (!team) return 0;
+    const sectionHeight = team.sectionBottom - team.sectionTop;
+    const scrollRange = sectionHeight + viewportHeight;
+    const scrollY = localScroll * scrollRange + (team.sectionTop - viewportHeight);
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  }, [team, viewportHeight, scrollableHeight]);
+
+  // Helper: convert mailing section scroll to global percentage
+  const mailingToGlobal = useCallback((localScroll: number) => {
+    if (!mailing) return 0;
+    const sectionHeight = mailing.sectionBottom - mailing.sectionTop;
+    const scrollRange = sectionHeight + viewportHeight;
+    const scrollY = localScroll * scrollRange + (mailing.sectionTop - viewportHeight);
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  }, [mailing, viewportHeight, scrollableHeight]);
+
   // Calculate scroll ranges - line completes just before internal flow starts (local 0.10)
+  // All segments use consistent timing: start slightly before element, complete at 0.08
   const ranges = useMemo(() => ({
     heroToCrane: [localToGlobal(crane, -0.05), localToGlobal(crane, 0.08)] as [number, number],
     craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
     blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
     frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
-  }), [localToGlobal, crane, blueprint, framework, skyline]);
+    // Skyline to completed: start after skyline internal flow completes (0.78), end at completed entry
+    skylineToCompleted: [localToGlobal(skyline, 0.78), localToGlobal(completed, 0.08)] as [number, number],
+    // Completed to Team: start after completed internal flow completes, draw through Team section
+    completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
+    // Team to Mailing box: start after team section, both sides animate together
+    teamToMailingBox: [teamToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
+  }), [localToGlobal, teamToGlobal, mailingToGlobal, crane, blueprint, framework, skyline, completed]);
 
   // Animated segments - tied to destination graphic's scroll position
   const heroToCrane = useTransform(scrollYProgress, ranges.heroToCrane, [0, 1]);
   const craneToBlueprint = useTransform(scrollYProgress, ranges.craneToBlueprint, [0, 1]);
   const blueprintToFramework = useTransform(scrollYProgress, ranges.blueprintToFramework, [0, 1]);
   const frameworkToSkyline = useTransform(scrollYProgress, ranges.frameworkToSkyline, [0, 1]);
+  const skylineToCompleted = useTransform(scrollYProgress, ranges.skylineToCompleted, [0, 1]);
+  const completedToTeam = useTransform(scrollYProgress, ranges.completedToTeam, [0, 1]);
+  const teamToMailingBox = useTransform(scrollYProgress, ranges.teamToMailingBox, [0, 1]);
 
   // Calculate turn points for 90° turns
   const heroToCraneTurnY = crane.top - 50;
   const craneToBlueprintTurnY = blueprint.top - 50;
   const blueprintToFrameworkTurnY = framework.top - 50;
   const frameworkToSkylineTurnY = skyline.top - 50;
+
+  // For skyline to completed: route down the right side, around Projects
+  const sideMarginX = window.innerWidth - 80; // Right edge of viewport
+  const skylineToCompletedTurnY1 = skyline.bottom + 30; // First turn - go right
+  const skylineToCompletedTurnY2 = completed.top - 50; // Second turn - go left toward completed
+
+  // For completed to team: go down center, around heading, then through team section
+  const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
+  const headingAvoidX = teamCenterX + 120; // Go right just enough to clear heading
+  const completedToTeamTurnY1 = team ? team.headingTop - 30 : 0; // Above heading - go right
+  const completedToTeamTurnY2 = team ? team.headingBottom + 40 : 0; // Below heading - go back to center
+  const teamSectionBottom = team ? team.sectionBottom - 50 : 0; // End point in team section
+
+  // For mailing list box: line splits at top, goes around both sides, meets at bottom center
+  const mailingCenterX = mailing ? mailing.centerX : heroCenter;
+  const mailingTop = mailing ? mailing.sectionTop + 5 : 0; // Split 5px from top
+  const mailingBottom = mailing ? mailing.sectionBottom - (isDesktop ? 80 : 40) : 0; // End higher
+  const mailingLeftX = mailing ? mailing.leftEdge : 40;
+  const mailingRightX = mailing ? mailing.rightEdge : window.innerWidth - 40;
 
   return (
     <svg
@@ -128,6 +247,88 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: frameworkToSkyline }}
           />
+          {/* Skyline to Completed - goes down right side, around Projects */}
+          <motion.path
+            d={`M ${skyline.centerX} ${skyline.bottom}
+                L ${skyline.centerX} ${skylineToCompletedTurnY1}
+                L ${sideMarginX} ${skylineToCompletedTurnY1}
+                L ${sideMarginX} ${skylineToCompletedTurnY2}
+                L ${completed.centerX} ${skylineToCompletedTurnY2}
+                L ${completed.centerX} ${completed.top}`}
+            fill="none"
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: skylineToCompleted }}
+          />
+          {/* Completed to Team - goes down center, around heading, through team section */}
+          {team && (
+            <>
+              <motion.path
+                d={`M ${completed.centerX} ${completed.bottom}
+                    L ${completed.centerX} ${completedToTeamTurnY1}
+                    L ${headingAvoidX} ${completedToTeamTurnY1}
+                    L ${headingAvoidX} ${completedToTeamTurnY2}
+                    L ${teamCenterX} ${completedToTeamTurnY2}
+                    L ${teamCenterX} ${teamSectionBottom}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: completedToTeam }}
+              />
+              {/* Branch lines to each team member */}
+              {team.members.map((member) => (
+                <TeamBranch
+                  key={member.index}
+                  member={member}
+                  centerX={teamCenterX}
+                  scrollYProgress={scrollYProgress}
+                  viewportHeight={viewportHeight}
+                  scrollableHeight={scrollableHeight}
+                />
+              ))}
+            </>
+          )}
+          {/* Mailing List Box - line splits and goes around both sides */}
+          {mailing && (
+            <>
+              {/* Left side of box: center → left → down → center */}
+              <motion.path
+                d={`M ${mailingCenterX} ${teamSectionBottom}
+                    L ${mailingCenterX} ${mailingTop}
+                    L ${mailingLeftX} ${mailingTop}
+                    L ${mailingLeftX} ${mailingBottom}
+                    L ${mailingCenterX} ${mailingBottom}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: teamToMailingBox }}
+              />
+              {/* Right side of box: center → right → down → center */}
+              <motion.path
+                d={`M ${mailingCenterX} ${teamSectionBottom}
+                    L ${mailingCenterX} ${mailingTop}
+                    L ${mailingRightX} ${mailingTop}
+                    L ${mailingRightX} ${mailingBottom}
+                    L ${mailingCenterX} ${mailingBottom}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: teamToMailingBox }}
+              />
+            </>
+          )}
         </>
       ) : (
         <>
@@ -167,6 +368,74 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: frameworkToSkyline }}
           />
+          <motion.line
+            x1={skyline.centerX} y1={skyline.bottom}
+            x2={completed.centerX} y2={completed.top}
+            stroke="rgba(255,255,255,0.5)"
+            strokeWidth="2"
+            strokeLinecap="round"
+            filter="url(#glow-flow)"
+            style={{ pathLength: skylineToCompleted }}
+          />
+          {team && (
+            <>
+              <motion.line
+                x1={completed.centerX} y1={completed.bottom}
+                x2={teamCenterX} y2={teamSectionBottom}
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: completedToTeam }}
+              />
+              {/* Branch lines to each team member */}
+              {team.members.map((member) => (
+                <TeamBranch
+                  key={member.index}
+                  member={member}
+                  centerX={teamCenterX}
+                  scrollYProgress={scrollYProgress}
+                  viewportHeight={viewportHeight}
+                  scrollableHeight={scrollableHeight}
+                />
+              ))}
+            </>
+          )}
+          {/* Mailing List Box - line splits and goes around both sides (mobile) */}
+          {mailing && (
+            <>
+              {/* Left side of box */}
+              <motion.path
+                d={`M ${mailingCenterX} ${teamSectionBottom}
+                    L ${mailingCenterX} ${mailingTop}
+                    L ${mailingLeftX} ${mailingTop}
+                    L ${mailingLeftX} ${mailingBottom}
+                    L ${mailingCenterX} ${mailingBottom}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: teamToMailingBox }}
+              />
+              {/* Right side of box */}
+              <motion.path
+                d={`M ${mailingCenterX} ${teamSectionBottom}
+                    L ${mailingCenterX} ${mailingTop}
+                    L ${mailingRightX} ${mailingTop}
+                    L ${mailingRightX} ${mailingBottom}
+                    L ${mailingCenterX} ${mailingBottom}`}
+                fill="none"
+                stroke="rgba(255,255,255,0.5)"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                filter="url(#glow-flow)"
+                style={{ pathLength: teamToMailingBox }}
+              />
+            </>
+          )}
         </>
       )}
     </svg>
@@ -206,7 +475,7 @@ export function PageFlowLine() {
     const isDesktop = window.innerWidth >= 1024;
 
     // Find all graphics in order
-    const graphicIds = ['crane', 'blueprint', 'framework', 'skyline'];
+    const graphicIds = ['crane', 'blueprint', 'framework', 'skyline', 'completed'];
     const graphics: GraphicPosition[] = [];
 
     graphicIds.forEach(id => {
@@ -233,12 +502,114 @@ export function PageFlowLine() {
       });
     });
 
+    // Find Team section and heading
+    let team: TeamPosition | null = null;
+    const teamSection = document.querySelector('[data-team-section]') as HTMLElement;
+    const teamHeading = document.querySelector('[data-team-heading]') as HTMLElement;
+
+    if (teamSection && teamHeading) {
+      // Get section position
+      let sectionOffsetTop = 0;
+      let current: HTMLElement | null = teamSection;
+      while (current) {
+        sectionOffsetTop += current.offsetTop;
+        current = current.offsetParent as HTMLElement;
+      }
+
+      // Get heading position
+      let headingOffsetTop = 0;
+      current = teamHeading;
+      while (current) {
+        headingOffsetTop += current.offsetTop;
+        current = current.offsetParent as HTMLElement;
+      }
+
+      // Get horizontal center
+      const sectionRect = teamSection.getBoundingClientRect();
+      const centerX = sectionRect.left + sectionRect.width / 2 + window.scrollX;
+
+      // Find all team members
+      const members: TeamMemberPosition[] = [];
+      const memberElements = document.querySelectorAll('[data-team-member]');
+      memberElements.forEach((el) => {
+        const memberEl = el as HTMLElement;
+        const index = parseInt(memberEl.getAttribute('data-team-member') || '0', 10);
+
+        // Get position
+        let memberOffsetTop = 0;
+        let curr: HTMLElement | null = memberEl;
+        while (curr) {
+          memberOffsetTop += curr.offsetTop;
+          curr = curr.offsetParent as HTMLElement;
+        }
+
+        const memberRect = memberEl.getBoundingClientRect();
+        const memberCenterX = memberRect.left + memberRect.width / 2 + window.scrollX;
+        const memberCenterY = memberOffsetTop + memberEl.offsetHeight / 2;
+
+        // On desktop 2-col grid: even indices are left (0, 2, 4), odd are right (1, 3, 5)
+        // But we need to check actual position relative to center
+        const isLeft = memberCenterX < centerX;
+
+        members.push({
+          index,
+          centerX: memberCenterX,
+          centerY: memberCenterY,
+          isLeft
+        });
+      });
+
+      // Sort by index
+      members.sort((a, b) => a.index - b.index);
+
+      team = {
+        sectionTop: sectionOffsetTop,
+        sectionBottom: sectionOffsetTop + teamSection.offsetHeight,
+        headingTop: headingOffsetTop,
+        headingBottom: headingOffsetTop + teamHeading.offsetHeight,
+        centerX,
+        members
+      };
+    }
+
+    // Find Mailing List section and content container
+    let mailing: MailingPosition | null = null;
+    const mailingSection = document.querySelector('[data-mailing-section]') as HTMLElement;
+    const mailingContent = document.querySelector('[data-mailing-content]') as HTMLElement;
+
+    if (mailingSection && mailingContent) {
+      let mailingOffsetTop = 0;
+      let current: HTMLElement | null = mailingSection;
+      while (current) {
+        mailingOffsetTop += current.offsetTop;
+        current = current.offsetParent as HTMLElement;
+      }
+
+      // Use content container for box width
+      const contentRect = mailingContent.getBoundingClientRect();
+      const centerX = contentRect.left + contentRect.width / 2 + window.scrollX;
+      // On mobile, inset the box so it's visible on screen
+      const mobileInset = isDesktop ? 0 : 15;
+      const leftEdge = contentRect.left + window.scrollX + mobileInset;
+      const rightEdge = contentRect.right + window.scrollX - mobileInset;
+
+      mailing = {
+        sectionTop: mailingOffsetTop,
+        sectionBottom: mailingOffsetTop + mailingSection.offsetHeight,
+        centerX,
+        leftEdge,
+        rightEdge
+      };
+    }
+
     setPositions({
       heroBottom,
       heroCenter,
       documentHeight,
       viewportHeight,
       graphics,
+      team,
+      mailing,
       isDesktop
     });
   }, []);
@@ -264,7 +635,7 @@ export function PageFlowLine() {
     };
   }, [calculate]);
 
-  if (!positions || positions.graphics.length < 4) return null;
+  if (!positions || positions.graphics.length < 5) return null;
 
   return <FlowLines positions={positions} />;
 }
