@@ -13,13 +13,13 @@ export function Header() {
           transition={{ duration: 1.2, ease: "easeOut" }}
           className="flex items-center justify-between"
         >
-          {/* Logo */}
-          <a href="/" className="inline-flex items-baseline gap-1 group">
-            <span className="text-lg md:text-xl font-semibold text-white tracking-wide">
+          {/* Logo - always on one line */}
+          <a href="/" className="inline-flex items-baseline gap-0.5 md:gap-1 group whitespace-nowrap">
+            <span className="text-lg min-[400px]:text-xl min-[500px]:text-2xl md:text-3xl lg:text-4xl font-semibold text-white tracking-wide">
               {company.prefix}
             </span>
-            <span className="text-white/30 mx-1">|</span>
-            <span className="text-xs md:text-sm tracking-[0.15em] uppercase text-white/50 group-hover:text-white/70 transition-colors duration-300">
+            <span className="text-white/30 mx-0.5 min-[400px]:mx-1 md:mx-2">|</span>
+            <span className="text-[8px] min-[400px]:text-[10px] min-[500px]:text-xs md:text-lg lg:text-xl tracking-[0.08em] min-[500px]:tracking-[0.12em] md:tracking-[0.15em] uppercase text-white/50 group-hover:text-white/70 transition-colors duration-300">
               {company.name}
             </span>
           </a>
