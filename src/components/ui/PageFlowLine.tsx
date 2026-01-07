@@ -64,8 +64,7 @@ function TransitionBox({
 }) {
   const { label, centerX, centerY } = config;
 
-  // Box dimensions
-  const boxWidth = 220;
+  // Box dimensions - height is fixed, width is auto based on content
   const boxHeight = 50;
 
   // Animation timing:
@@ -109,17 +108,17 @@ function TransitionBox({
     <motion.div
       style={{
         position: 'absolute',
-        left: centerX - boxWidth / 2,
+        left: centerX,
         top: centerY - boxHeight / 2,
-        width: boxWidth,
+        transform: 'translateX(-50%)', // Center horizontally
         height: boxHeight,
         opacity: boxOpacity,
         zIndex: 10,
+        padding: '0 16px', // Padding for the content
       }}
     >
       <div
         style={{
-          width: '100%',
           height: '100%',
           display: 'flex',
           alignItems: 'center',
@@ -239,10 +238,12 @@ function FlowLines({ positions }: { positions: Positions }) {
 
   const { scrollYProgress } = useScroll();
 
-  // Transition box dimensions
-  const boxWidth = 180;
+  // Transition box dimensions - width should accommodate longest label
+  // "Service provider" is longest at ~15 chars, plus "WE | " prefix (~5 chars) = ~20 chars
+  // At ~10px per char in monospace = ~200px, plus padding
+  const boxWidth = 240;
   const boxHeight = 50;
-  const boxPadding = 15; // Padding around the text for the line path
+  const boxPadding = 20; // Padding around the text for the line path
 
   // Helper: convert destination element's local scroll to global scroll percentage
   const localToGlobal = useCallback((element: GraphicPosition, localScroll: number) => {
