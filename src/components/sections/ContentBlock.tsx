@@ -119,13 +119,21 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - enters top, goes through crane, exits bottom */}
+      {/* Flow line - enters top via king post, follows boom, down cable, along hook, down tower, exits bottom */}
       <motion.path
         d="M 100 0
-           L 100 15
-           L 80 15
-           L 80 35
-           L 100 35
+           L 100 10
+           L 175 22
+           L 149 26
+           L 149 100
+           L 149 118
+           L 144 124
+           L 140 120
+           L 140 128
+           L 130 128
+           L 130 153
+           L 125 160
+           L 125 185
            L 100 185
            L 100 200"
         fill="none"
@@ -579,26 +587,11 @@ function RenovationGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - traces from old side through scaffolding to new side */}
+      {/* Flow line - enters from top center (scaffolding), flows straight down */}
       <motion.path
-        d="M 40 0
-           L 40 30
-           L 60 30
-           L 60 60
-           L 80 60
-           L 80 90
-           L 100 90
-           L 100 120
-           L 140 120
-           L 140 90
-           L 160 90
-           L 160 60
-           L 220 60
-           L 220 90
-           L 260 90
-           L 260 185
-           L 160 185
-           L 160 200"
+        d="M 155 0
+           L 155 185
+           L 155 200"
         fill="none"
         stroke="rgba(255,255,255,0.5)"
         strokeWidth="2"
