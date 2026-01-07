@@ -358,11 +358,11 @@ export function Hero() {
         >
           {/* ME | Asset Management logo treatment - stacked on mobile */}
           <h1 className="mb-5 sm:mb-6 lg:mb-8">
-            <span className="block sm:inline text-6xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white tracking-normal sm:tracking-wide">
+            <span className="block sm:inline text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white tracking-normal sm:tracking-wide">
               {company.prefix}
             </span>
-            <span className="hidden sm:inline text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/30 mx-3 lg:mx-4 font-light">|</span>
-            <span className="block sm:inline mt-2 sm:mt-0 text-sm sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.06em] sm:tracking-[0.1em] uppercase font-light">
+            <span className="hidden sm:inline text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/60 mx-3 lg:mx-4 font-light">|</span>
+            <span className="block sm:inline mt-2 sm:mt-0 text-[11px] sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.04em] sm:tracking-[0.1em] uppercase font-light">
               {company.name}
             </span>
           </h1>
