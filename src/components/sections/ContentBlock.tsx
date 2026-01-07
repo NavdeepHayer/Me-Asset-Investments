@@ -874,10 +874,20 @@ function CompletedBuildingGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - enters from top center, goes through building, exits bottom */}
+      {/* Flow line - enters from top, flows through building structure, exits at entrance */}
       <motion.path
         d="M 160 0
-           L 160 25
+           L 160 30
+           L 140 30
+           L 140 55
+           L 180 55
+           L 180 80
+           L 140 80
+           L 140 105
+           L 180 105
+           L 180 130
+           L 160 130
+           L 160 155
            L 160 185
            L 160 200"
         fill="none"
