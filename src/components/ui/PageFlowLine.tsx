@@ -80,11 +80,10 @@ function TransitionBox({
   let flipEnd: number;
 
   if (isMobile) {
-    // Mobile: flip happens slowly in the middle of the animation range
-    // This means the flip triggers when the user is viewing the middle of the section
-    // Wider range = slower flip animation
-    flipStart = animationRange[0] + (animationDuration * 0.3); // Start flip at 30% of animation
-    flipEnd = animationRange[0] + (animationDuration * 0.9); // End flip at 90% of animation
+    // Mobile: flip happens very slowly so user can see the full animation
+    // Start much later and extend well past the animation end
+    flipStart = animationRange[0] + (animationDuration * 0.6); // Start flip at 60% of animation
+    flipEnd = animationRange[1] + (animationDuration * 0.5); // End flip 50% past animation end
   } else {
     // Desktop: flip happens near the end
     flipStart = animationRange[1] - (animationDuration * 0.05); // Start flip at 95% (just as lines finish)
