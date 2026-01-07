@@ -587,11 +587,21 @@ function RenovationGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - enters from top center (scaffolding), flows straight down */}
+      {/* Flow line - enters from top, flows through scaffolding, across to new building, ends at entrance */}
       <motion.path
         d="M 155 0
-           L 155 185
-           L 155 200"
+           L 155 50
+           L 167 50
+           L 167 85
+           L 143 85
+           L 143 120
+           L 167 120
+           L 167 155
+           L 170 155
+           L 170 160
+           L 280 160
+           L 280 185
+           L 230 185"
         fill="none"
         stroke="rgba(255,255,255,0.5)"
         strokeWidth="2"
