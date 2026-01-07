@@ -53,15 +53,16 @@ function FlowLines({ positions }: { positions: Positions }) {
   }, [team, viewportHeight, scrollableHeight]);
 
   // Calculate scroll ranges - line completes just before internal flow starts (local 0.10)
+  // All segments use consistent timing: start slightly before element, complete at 0.08
   const ranges = useMemo(() => ({
     heroToCrane: [localToGlobal(crane, -0.05), localToGlobal(crane, 0.08)] as [number, number],
     craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
     blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
     frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
-    // Start drawing when leaving skyline, complete when reaching completed (flows through Projects)
-    skylineToCompleted: [localToGlobal(skyline, 0.6), localToGlobal(completed, 0.08)] as [number, number],
-    // Start after completed flow finishes, draw through Team section
-    completedToTeam: [localToGlobal(completed, 0.6), teamToGlobal(0.8)] as [number, number],
+    // Skyline to completed: start after skyline internal flow completes (0.78), end at completed entry
+    skylineToCompleted: [localToGlobal(skyline, 0.78), localToGlobal(completed, 0.08)] as [number, number],
+    // Completed to Team: start after completed internal flow completes, draw through Team section
+    completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
   }), [localToGlobal, teamToGlobal, crane, blueprint, framework, skyline, completed]);
 
   // Animated segments - tied to destination graphic's scroll position
@@ -83,12 +84,11 @@ function FlowLines({ positions }: { positions: Positions }) {
   const skylineToCompletedTurnY1 = skyline.bottom + 30; // First turn - go right
   const skylineToCompletedTurnY2 = completed.top - 50; // Second turn - go left toward completed
 
-  // For completed to team: route around the heading, then through the center
-  const leftMarginX = 80; // Left edge margin
-  const completedToTeamTurnY1 = completed.bottom + 30; // First turn - go left
-  const completedToTeamTurnY2 = team ? team.headingTop - 20 : 0; // Above heading
-  const completedToTeamTurnY3 = team ? team.headingBottom + 30 : 0; // Below heading
+  // For completed to team: go down center, around heading, then through team section
   const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
+  const headingAvoidX = teamCenterX + 250; // Go right to avoid heading
+  const completedToTeamTurnY1 = team ? team.headingTop - 30 : 0; // Above heading - go right
+  const completedToTeamTurnY2 = team ? team.headingBottom + 40 : 0; // Below heading - go back to center
   const teamSectionBottom = team ? team.sectionBottom - 50 : 0; // End point in team section
 
   return (
@@ -181,15 +181,14 @@ function FlowLines({ positions }: { positions: Positions }) {
             filter="url(#glow-flow)"
             style={{ pathLength: skylineToCompleted }}
           />
-          {/* Completed to Team - goes down left side, around heading, through center */}
+          {/* Completed to Team - goes down center, around heading, through team section */}
           {team && (
             <motion.path
               d={`M ${completed.centerX} ${completed.bottom}
                   L ${completed.centerX} ${completedToTeamTurnY1}
-                  L ${leftMarginX} ${completedToTeamTurnY1}
-                  L ${leftMarginX} ${completedToTeamTurnY2}
+                  L ${headingAvoidX} ${completedToTeamTurnY1}
+                  L ${headingAvoidX} ${completedToTeamTurnY2}
                   L ${teamCenterX} ${completedToTeamTurnY2}
-                  L ${teamCenterX} ${completedToTeamTurnY3}
                   L ${teamCenterX} ${teamSectionBottom}`}
               fill="none"
               stroke="rgba(255,255,255,0.5)"
