@@ -662,51 +662,153 @@ function FlowLines({ positions }: { positions: Positions }) {
             style={{ pathLength: skylineToCompleted }}
           />
 
-          {/* Mobile box continuation lines - small lines extending from bottom of each box */}
-          {mobileBox1 && (
-            <motion.line
-              x1={mobileBox1.centerX} y1={mobileBox1.centerY + 25}
-              x2={mobileBox1.centerX} y2={mobileBox1.centerY + 65}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: craneToBlueprint }}
-            />
-          )}
-          {mobileBox2 && (
-            <motion.line
-              x1={mobileBox2.centerX} y1={mobileBox2.centerY + 25}
-              x2={mobileBox2.centerX} y2={mobileBox2.centerY + 65}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: blueprintToFramework }}
-            />
-          )}
-          {mobileBox3 && (
-            <motion.line
-              x1={mobileBox3.centerX} y1={mobileBox3.centerY + 25}
-              x2={mobileBox3.centerX} y2={mobileBox3.centerY + 65}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: frameworkToSkyline }}
-            />
-          )}
-          {mobileBox4 && (
-            <motion.line
-              x1={mobileBox4.centerX} y1={mobileBox4.centerY + 25}
-              x2={mobileBox4.centerX} y2={mobileBox4.centerY + 65}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: skylineToCompleted }}
-            />
-          )}
+          {/* Mobile box outlines - line splits, draws box around text, continues */}
+          {mobileBox1 && (() => {
+            const boxHalfWidth = 120; // Half width of box
+            const boxHalfHeight = 25; // Half height of box
+            const tailLength = 40; // Continuation line length
+            return (
+              <>
+                {/* Left side of box + continuation */}
+                <motion.path
+                  d={`M ${mobileBox1.centerX} ${mobileBox1.centerY - boxHalfHeight}
+                      L ${mobileBox1.centerX - boxHalfWidth} ${mobileBox1.centerY - boxHalfHeight}
+                      L ${mobileBox1.centerX - boxHalfWidth} ${mobileBox1.centerY + boxHalfHeight}
+                      L ${mobileBox1.centerX} ${mobileBox1.centerY + boxHalfHeight}
+                      L ${mobileBox1.centerX} ${mobileBox1.centerY + boxHalfHeight + tailLength}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: craneToBlueprint }}
+                />
+                {/* Right side of box */}
+                <motion.path
+                  d={`M ${mobileBox1.centerX} ${mobileBox1.centerY - boxHalfHeight}
+                      L ${mobileBox1.centerX + boxHalfWidth} ${mobileBox1.centerY - boxHalfHeight}
+                      L ${mobileBox1.centerX + boxHalfWidth} ${mobileBox1.centerY + boxHalfHeight}
+                      L ${mobileBox1.centerX} ${mobileBox1.centerY + boxHalfHeight}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: craneToBlueprint }}
+                />
+              </>
+            );
+          })()}
+          {mobileBox2 && (() => {
+            const boxHalfWidth = 120;
+            const boxHalfHeight = 25;
+            const tailLength = 40;
+            return (
+              <>
+                <motion.path
+                  d={`M ${mobileBox2.centerX} ${mobileBox2.centerY - boxHalfHeight}
+                      L ${mobileBox2.centerX - boxHalfWidth} ${mobileBox2.centerY - boxHalfHeight}
+                      L ${mobileBox2.centerX - boxHalfWidth} ${mobileBox2.centerY + boxHalfHeight}
+                      L ${mobileBox2.centerX} ${mobileBox2.centerY + boxHalfHeight}
+                      L ${mobileBox2.centerX} ${mobileBox2.centerY + boxHalfHeight + tailLength}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: blueprintToFramework }}
+                />
+                <motion.path
+                  d={`M ${mobileBox2.centerX} ${mobileBox2.centerY - boxHalfHeight}
+                      L ${mobileBox2.centerX + boxHalfWidth} ${mobileBox2.centerY - boxHalfHeight}
+                      L ${mobileBox2.centerX + boxHalfWidth} ${mobileBox2.centerY + boxHalfHeight}
+                      L ${mobileBox2.centerX} ${mobileBox2.centerY + boxHalfHeight}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: blueprintToFramework }}
+                />
+              </>
+            );
+          })()}
+          {mobileBox3 && (() => {
+            const boxHalfWidth = 120;
+            const boxHalfHeight = 25;
+            const tailLength = 40;
+            return (
+              <>
+                <motion.path
+                  d={`M ${mobileBox3.centerX} ${mobileBox3.centerY - boxHalfHeight}
+                      L ${mobileBox3.centerX - boxHalfWidth} ${mobileBox3.centerY - boxHalfHeight}
+                      L ${mobileBox3.centerX - boxHalfWidth} ${mobileBox3.centerY + boxHalfHeight}
+                      L ${mobileBox3.centerX} ${mobileBox3.centerY + boxHalfHeight}
+                      L ${mobileBox3.centerX} ${mobileBox3.centerY + boxHalfHeight + tailLength}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: frameworkToSkyline }}
+                />
+                <motion.path
+                  d={`M ${mobileBox3.centerX} ${mobileBox3.centerY - boxHalfHeight}
+                      L ${mobileBox3.centerX + boxHalfWidth} ${mobileBox3.centerY - boxHalfHeight}
+                      L ${mobileBox3.centerX + boxHalfWidth} ${mobileBox3.centerY + boxHalfHeight}
+                      L ${mobileBox3.centerX} ${mobileBox3.centerY + boxHalfHeight}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: frameworkToSkyline }}
+                />
+              </>
+            );
+          })()}
+          {mobileBox4 && (() => {
+            const boxHalfWidth = 120;
+            const boxHalfHeight = 25;
+            const tailLength = 40;
+            return (
+              <>
+                <motion.path
+                  d={`M ${mobileBox4.centerX} ${mobileBox4.centerY - boxHalfHeight}
+                      L ${mobileBox4.centerX - boxHalfWidth} ${mobileBox4.centerY - boxHalfHeight}
+                      L ${mobileBox4.centerX - boxHalfWidth} ${mobileBox4.centerY + boxHalfHeight}
+                      L ${mobileBox4.centerX} ${mobileBox4.centerY + boxHalfHeight}
+                      L ${mobileBox4.centerX} ${mobileBox4.centerY + boxHalfHeight + tailLength}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: skylineToCompleted }}
+                />
+                <motion.path
+                  d={`M ${mobileBox4.centerX} ${mobileBox4.centerY - boxHalfHeight}
+                      L ${mobileBox4.centerX + boxHalfWidth} ${mobileBox4.centerY - boxHalfHeight}
+                      L ${mobileBox4.centerX + boxHalfWidth} ${mobileBox4.centerY + boxHalfHeight}
+                      L ${mobileBox4.centerX} ${mobileBox4.centerY + boxHalfHeight}`}
+                  fill="none"
+                  stroke="rgba(255,255,255,0.5)"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow-flow)"
+                  style={{ pathLength: skylineToCompleted }}
+                />
+              </>
+            );
+          })()}
           {team && (
             <>
               <motion.line
