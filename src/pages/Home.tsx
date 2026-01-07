@@ -1,4 +1,4 @@
-import { Hero, ContentBlock, TextSection, Team, MailingList, Footer } from "../components/sections";
+import { Hero, ContentBlock, TextSection, Projects, Team, MailingList, Footer } from "../components/sections";
 import { FloatingSocial } from "../components/ui/FloatingSocial";
 import { Header } from "../components/ui/Header";
 import { PageFlowLine } from "../components/ui/PageFlowLine";
@@ -17,7 +17,7 @@ export function Home() {
         {/* Hero with ME branding */}
         <Hero />
 
-        {/* Intro - with construction crane graphic */}
+        {/* Intro - with crane graphic */}
         <ContentBlock text={intro.text} graphic="crane" graphicPosition="right" />
 
         {/* Investment Focus */}
@@ -32,8 +32,11 @@ export function Home() {
         {/* Mission/ESG */}
         <TextSection text={mission.text} />
 
-        {/* City skyline - full width */}
+        {/* Building Renovation - full width */}
         <ContentBlock text="" graphic="skyline" graphicPosition="right" />
+
+        {/* Projects Section */}
+        <Projects />
 
         {/* Team Section */}
         <Team />

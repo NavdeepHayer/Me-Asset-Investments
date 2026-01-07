@@ -35,6 +35,16 @@ export function Team() {
                 <p className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl text-white/60 leading-relaxed font-light">
                   {member.bio}
                 </p>
+                {"link" in member && member.link && (
+                  <a
+                    href={member.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block mt-4 text-sm sm:text-base text-white/50 hover:text-white/80 transition-colors duration-300 underline underline-offset-4"
+                  >
+                    Visit website
+                  </a>
+                )}
               </motion.div>
             </ScrollReveal>
           ))}

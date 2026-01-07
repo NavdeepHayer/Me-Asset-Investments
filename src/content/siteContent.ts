@@ -1,6 +1,6 @@
 export const siteContent = {
   meta: {
-    title: "ME Asset Management | Strategic Property Investment",
+    title: "ME | Asset Management - Strategic Property Investment",
     description:
       "A discretionary investment firm specializing in income-producing real estate assets across hotels, student housing, and commercial properties.",
   },
@@ -13,7 +13,7 @@ export const siteContent = {
 
   // Main intro text block
   intro: {
-    text: "ME Asset Management is a discretionary investment firm focused on acquiring, enhancing, and managing income-producing real estate assets. We take a hands-on approach to value creation, working closely with our partners to unlock the full potential of every property in our portfolio.",
+    text: "ME | Asset Management is a discretionary investment firm focused on acquiring, enhancing, and managing income-producing real estate assets. We take a hands-on approach to value creation, working closely with our partners to unlock the full potential of every property in our portfolio.",
   },
 
   // Investment focus
@@ -36,6 +36,37 @@ export const siteContent = {
     text: "We are committed to responsible investing and sustainable value creation. Our focus on Environmental, Social, and Governance principles ensures that our investments deliver returns while contributing positively to communities and the environment.",
   },
 
+  // Projects
+  projects: {
+    headline: "Our Portfolio",
+    items: [
+      {
+        name: "ME | Swansea Ltd",
+        location: "Swansea, Wales",
+        type: "132-Bed Premier Inn Hotel",
+        status: "Acquired",
+        description: "Investment grade covenant with excellent location and strong demand drivers. Remediation works underway.",
+        image: "/images/projects/swansea.jpg",
+      },
+      {
+        name: "Confidential",
+        location: "Details on Request",
+        type: "",
+        status: "Coming Soon",
+        description: "",
+        image: null,
+      },
+      {
+        name: "Confidential",
+        location: "Details on Request",
+        type: "",
+        status: "Coming Soon",
+        description: "",
+        image: null,
+      },
+    ],
+  },
+
   // Team
   team: {
     headline: "Our Team",
@@ -48,17 +79,19 @@ export const siteContent = {
       {
         name: "Verender S. Badial",
         role: "CEO",
-        bio: "Strategic advisor and former investment banker with over 20 years' leadership in global capital markets. Track record spanning technology and large-scale real estate, consistently scaling high-growth ventures and delivering long-term shareholder value.",
+        bio: "Since 2015, funded and developed over £150 million across 500,000 sq ft of UK real estate. Verender was Co-Founder, Sponsor, and CFO of JATT Acquisition Corp, a New York listed SPAC, and a key architect in ~US$300 million of Nasdaq fundraising. Away from business, is patron of a charitable college in North India offering science studies to women and girls.",
       },
       {
         name: "Tarvy Gosal & Jas Randhawa",
         role: "Managing Directors, Fleetwood Architectural Aluminium",
-        bio: "Fleetwood Architectural Aluminium are experts and one of the UK leaders in recladding non-compliant buildings and deliver high-quality building envelopes, on time every time. FAA is on track to exceed £40+ million revenues by end of 2025.",
+        bio: "Fleetwood Architectural Aluminium are experts and one of the UK leaders in recladding non-compliant buildings and deliver high-quality building envelopes, on time every time. FAA has developed over XXX,000 square foot of facades and cladding in 2025.",
+        link: "https://www.faa-group.co.uk/our-services/cladding-remediation/",
       },
       {
         name: "Michael Mirelman & Daniel Benton",
-        role: "Directors, GRE Finance",
+        role: "Directors, GRE Capital",
         bio: "Each having had 20+ years' experience working across the finance, banking, and real estate sectors, and alongside property developers, investors, and family offices. Recently, both have led over £150+ million real estate finance, development and portfolio management.",
+        link: "https://www.grecapital.com",
       },
     ],
   },
@@ -73,7 +106,7 @@ export const siteContent = {
   },
 
   footer: {
-    copyright: "ME Asset Management",
+    copyright: "ME | Asset Management",
     contact: {
       email: "verender@meassetmanagement.com",
       person: "Verender Badial",

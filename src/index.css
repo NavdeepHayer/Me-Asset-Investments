@@ -14,7 +14,12 @@
 
   body {
     @apply font-serif leading-relaxed;
-    background: #3A4539;
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%),
+      radial-gradient(ellipse 80% 60% at 85% 100%, rgba(0, 0, 0, 0.3) 0%, transparent 60%),
+      radial-gradient(ellipse 100% 80% at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
+      linear-gradient(180deg, #424f41 0%, #3A4539 25%, #2d382c 60%, #252e24 100%);
+    background-attachment: fixed;
     color: #e8e6e3;
     min-height: 100vh;
   }

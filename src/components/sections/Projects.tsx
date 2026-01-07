@@ -1,0 +1,109 @@
+import { motion } from "framer-motion";
+import { ScrollReveal } from "../ui/ScrollReveal";
+import { siteContent } from "../../content/siteContent";
+
+export function Projects() {
+  const { projects } = siteContent;
+
+  return (
+    <section className="section-spacing">
+      <div className="container-wide">
+        {/* Section Header */}
+        <ScrollReveal>
+          <div className="text-center mb-16 sm:mb-20 md:mb-24">
+            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-white/40 mb-4 sm:mb-6">
+              Investment Portfolio
+            </p>
+            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-white/90 tracking-wide">
+              {projects.headline}
+            </h2>
+          </div>
+        </ScrollReveal>
+
+        {/* Project Grid - scales with any number of projects */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {projects.items.map((project, index) => (
+            <ScrollReveal key={project.name + index} delay={index * 0.1}>
+              <motion.div
+                className="h-full"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <div className="group h-full border border-white/10 hover:border-white/25 transition-all duration-500 overflow-hidden">
+                  {/* Image area */}
+                  <div className="relative aspect-[4/3] overflow-hidden bg-white/5">
+                    {project.image ? (
+                      <>
+                        <img
+                          src={project.image}
+                          alt={project.name}
+                          className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                        />
+                        {/* Subtle overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#3A4539]/60 to-transparent" />
+                      </>
+                    ) : (
+                      // Placeholder for coming soon
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-white/[0.03] to-transparent">
+                        <div className="text-center">
+                          <div className="w-12 h-12 mx-auto mb-4 rounded-full border border-white/15 flex items-center justify-center">
+                            <svg
+                              className="w-5 h-5 text-white/25"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Status badge */}
+                    <div className="absolute top-4 right-4">
+                      <span
+                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] sm:text-xs tracking-[0.15em] uppercase font-medium ${
+                          project.status === "Acquired"
+                            ? "bg-white text-[#3A4539]"
+                            : "bg-white/10 text-white/70 backdrop-blur-sm border border-white/10"
+                        }`}
+                      >
+                        {project.status === "Acquired" && (
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                        )}
+                        {project.status}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-5 sm:p-6">
+                    <h3 className="font-serif text-xl sm:text-2xl font-light text-white/90 mb-2 tracking-wide">
+                      {project.name}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-white/40 tracking-wider uppercase">
+                      {project.location}
+                    </p>
+                    {project.type && (
+                      <p className="text-sm text-white/50 mt-3 font-light">
+                        {project.type}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
