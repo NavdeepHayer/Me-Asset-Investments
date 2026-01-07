@@ -324,6 +324,10 @@ function FlowLines({ positions }: { positions: Positions }) {
   const mobileHalfBoxWidth = mobileBoxWidth / 2 + mobileBoxPadding;
   const mobileHalfBoxHeight = mobileBoxHeight / 2 + mobileBoxPadding;
 
+  // Mobile side margins for routing around text sections
+  const mobileLeftMargin = 20;
+  const mobileRightMargin = window.innerWidth - 20;
+
   // Box edge calculations for path splitting
   const halfBoxWidth = boxWidth / 2 + boxPadding;
   const halfBoxHeight = boxHeight / 2 + boxPadding;
@@ -633,16 +637,18 @@ function FlowLines({ positions }: { positions: Positions }) {
             style={{ pathLength: heroToCrane }}
           />
 
-          {/* Crane to Blueprint - with transition box */}
+          {/* Crane to Blueprint - with transition box, routes via left margin */}
           {mobileBox1 ? (
             <>
-              {/* Left path: crane → down → left side of box → down → blueprint */}
+              {/* Left path: crane → box left → left margin → down → blueprint */}
               <motion.path
                 d={`M ${crane.centerX} ${crane.bottom}
                     L ${crane.centerX} ${mobileBox1.centerY - mobileHalfBoxHeight}
                     L ${mobileBox1.centerX - mobileHalfBoxWidth} ${mobileBox1.centerY - mobileHalfBoxHeight}
                     L ${mobileBox1.centerX - mobileHalfBoxWidth} ${mobileBox1.centerY + mobileHalfBoxHeight}
-                    L ${blueprint.centerX} ${mobileBox1.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${mobileBox1.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${blueprint.top - 30}
+                    L ${blueprint.centerX} ${blueprint.top - 30}
                     L ${blueprint.centerX} ${blueprint.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -652,13 +658,15 @@ function FlowLines({ positions }: { positions: Positions }) {
                 filter="url(#glow-flow)"
                 style={{ pathLength: craneToBlueprint }}
               />
-              {/* Right path: crane → down → right side of box → down → blueprint */}
+              {/* Right path: crane → box right → left margin → down → blueprint */}
               <motion.path
                 d={`M ${crane.centerX} ${crane.bottom}
                     L ${crane.centerX} ${mobileBox1.centerY - mobileHalfBoxHeight}
                     L ${mobileBox1.centerX + mobileHalfBoxWidth} ${mobileBox1.centerY - mobileHalfBoxHeight}
                     L ${mobileBox1.centerX + mobileHalfBoxWidth} ${mobileBox1.centerY + mobileHalfBoxHeight}
-                    L ${blueprint.centerX} ${mobileBox1.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${mobileBox1.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${blueprint.top - 30}
+                    L ${blueprint.centerX} ${blueprint.top - 30}
                     L ${blueprint.centerX} ${blueprint.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -681,16 +689,18 @@ function FlowLines({ positions }: { positions: Positions }) {
             />
           )}
 
-          {/* Blueprint to Framework - with transition box */}
+          {/* Blueprint to Framework - with transition box, routes via right margin */}
           {mobileBox2 ? (
             <>
-              {/* Left path */}
+              {/* Left path: blueprint → box left → right margin → down → framework */}
               <motion.path
                 d={`M ${blueprint.centerX} ${blueprint.bottom}
                     L ${blueprint.centerX} ${mobileBox2.centerY - mobileHalfBoxHeight}
                     L ${mobileBox2.centerX - mobileHalfBoxWidth} ${mobileBox2.centerY - mobileHalfBoxHeight}
                     L ${mobileBox2.centerX - mobileHalfBoxWidth} ${mobileBox2.centerY + mobileHalfBoxHeight}
-                    L ${framework.centerX} ${mobileBox2.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${mobileBox2.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${framework.top - 30}
+                    L ${framework.centerX} ${framework.top - 30}
                     L ${framework.centerX} ${framework.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -700,13 +710,15 @@ function FlowLines({ positions }: { positions: Positions }) {
                 filter="url(#glow-flow)"
                 style={{ pathLength: blueprintToFramework }}
               />
-              {/* Right path */}
+              {/* Right path: blueprint → box right → right margin → down → framework */}
               <motion.path
                 d={`M ${blueprint.centerX} ${blueprint.bottom}
                     L ${blueprint.centerX} ${mobileBox2.centerY - mobileHalfBoxHeight}
                     L ${mobileBox2.centerX + mobileHalfBoxWidth} ${mobileBox2.centerY - mobileHalfBoxHeight}
                     L ${mobileBox2.centerX + mobileHalfBoxWidth} ${mobileBox2.centerY + mobileHalfBoxHeight}
-                    L ${framework.centerX} ${mobileBox2.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${mobileBox2.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${framework.top - 30}
+                    L ${framework.centerX} ${framework.top - 30}
                     L ${framework.centerX} ${framework.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -729,16 +741,18 @@ function FlowLines({ positions }: { positions: Positions }) {
             />
           )}
 
-          {/* Framework to Skyline - with transition box */}
+          {/* Framework to Skyline - with transition box, routes via left margin */}
           {mobileBox3 ? (
             <>
-              {/* Left path */}
+              {/* Left path: framework → box left → left margin → down → skyline */}
               <motion.path
                 d={`M ${framework.centerX} ${framework.bottom}
                     L ${framework.centerX} ${mobileBox3.centerY - mobileHalfBoxHeight}
                     L ${mobileBox3.centerX - mobileHalfBoxWidth} ${mobileBox3.centerY - mobileHalfBoxHeight}
                     L ${mobileBox3.centerX - mobileHalfBoxWidth} ${mobileBox3.centerY + mobileHalfBoxHeight}
-                    L ${skyline.centerX} ${mobileBox3.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${mobileBox3.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${skyline.top - 30}
+                    L ${skyline.centerX} ${skyline.top - 30}
                     L ${skyline.centerX} ${skyline.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -748,13 +762,15 @@ function FlowLines({ positions }: { positions: Positions }) {
                 filter="url(#glow-flow)"
                 style={{ pathLength: frameworkToSkyline }}
               />
-              {/* Right path */}
+              {/* Right path: framework → box right → left margin → down → skyline */}
               <motion.path
                 d={`M ${framework.centerX} ${framework.bottom}
                     L ${framework.centerX} ${mobileBox3.centerY - mobileHalfBoxHeight}
                     L ${mobileBox3.centerX + mobileHalfBoxWidth} ${mobileBox3.centerY - mobileHalfBoxHeight}
                     L ${mobileBox3.centerX + mobileHalfBoxWidth} ${mobileBox3.centerY + mobileHalfBoxHeight}
-                    L ${skyline.centerX} ${mobileBox3.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${mobileBox3.centerY + mobileHalfBoxHeight}
+                    L ${mobileLeftMargin} ${skyline.top - 30}
+                    L ${skyline.centerX} ${skyline.top - 30}
                     L ${skyline.centerX} ${skyline.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -777,16 +793,18 @@ function FlowLines({ positions }: { positions: Positions }) {
             />
           )}
 
-          {/* Skyline to Completed - with transition box */}
+          {/* Skyline to Completed - with transition box, routes via right margin */}
           {mobileBox4 ? (
             <>
-              {/* Left path */}
+              {/* Left path: skyline → box left → right margin → down → completed */}
               <motion.path
                 d={`M ${skyline.centerX} ${skyline.bottom}
                     L ${skyline.centerX} ${mobileBox4.centerY - mobileHalfBoxHeight}
                     L ${mobileBox4.centerX - mobileHalfBoxWidth} ${mobileBox4.centerY - mobileHalfBoxHeight}
                     L ${mobileBox4.centerX - mobileHalfBoxWidth} ${mobileBox4.centerY + mobileHalfBoxHeight}
-                    L ${completed.centerX} ${mobileBox4.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${mobileBox4.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${completed.top - 30}
+                    L ${completed.centerX} ${completed.top - 30}
                     L ${completed.centerX} ${completed.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -796,13 +814,15 @@ function FlowLines({ positions }: { positions: Positions }) {
                 filter="url(#glow-flow)"
                 style={{ pathLength: skylineToCompleted }}
               />
-              {/* Right path */}
+              {/* Right path: skyline → box right → right margin → down → completed */}
               <motion.path
                 d={`M ${skyline.centerX} ${skyline.bottom}
                     L ${skyline.centerX} ${mobileBox4.centerY - mobileHalfBoxHeight}
                     L ${mobileBox4.centerX + mobileHalfBoxWidth} ${mobileBox4.centerY - mobileHalfBoxHeight}
                     L ${mobileBox4.centerX + mobileHalfBoxWidth} ${mobileBox4.centerY + mobileHalfBoxHeight}
-                    L ${completed.centerX} ${mobileBox4.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${mobileBox4.centerY + mobileHalfBoxHeight}
+                    L ${mobileRightMargin} ${completed.top - 30}
+                    L ${completed.centerX} ${completed.top - 30}
                     L ${completed.centerX} ${completed.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
