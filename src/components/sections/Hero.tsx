@@ -350,7 +350,7 @@ export function Hero() {
       />
 
       {/* Content - Desktop: rises up from behind skyline, Mobile: positioned above skyline */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[32vh]" style={{ transform: 'translateZ(0)' }}>
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
