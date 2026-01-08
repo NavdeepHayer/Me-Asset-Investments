@@ -59,14 +59,14 @@ export function Hero() {
       <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[10vh]">
         <motion.svg
           viewBox="0 0 400 280"
-          className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto"
+          className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto gpu-accelerated"
           initial={{ opacity: 1 }}
           preserveAspectRatio="xMidYMax meet"
         >
           {/* Glow filter for the drawing line */}
           <defs>
-            <filter id="glow-line" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <filter id="glow-line" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
               <feMerge>
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>

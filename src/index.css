@@ -7,21 +7,32 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    /* Note: scroll-behavior: smooth removed - conflicts with scroll-linked animations */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
   body {
     @apply font-serif leading-relaxed;
+    background: linear-gradient(180deg, #424f41 0%, #3A4539 25%, #2d382c 60%, #252e24 100%);
+    color: #e8e6e3;
+    min-height: 100vh;
+  }
+
+  /* Fixed background overlay using pseudo-element for better scroll performance */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background:
       radial-gradient(ellipse 80% 50% at 20% 0%, rgba(255, 255, 255, 0.08) 0%, transparent 60%),
       radial-gradient(ellipse 80% 60% at 85% 100%, rgba(0, 0, 0, 0.3) 0%, transparent 60%),
-      radial-gradient(ellipse 100% 80% at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%),
-      linear-gradient(180deg, #424f41 0%, #3A4539 25%, #2d382c 60%, #252e24 100%);
-    background-attachment: fixed;
-    color: #e8e6e3;
-    min-height: 100vh;
+      radial-gradient(ellipse 100% 80% at 50% 50%, rgba(255, 255, 255, 0.03) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
   }
 
   ::selection {
@@ -97,5 +108,12 @@
 
   .section-spacing-sm {
     @apply py-12 sm:py-16 md:py-20 lg:py-28;
+  }
+
+  /* Performance optimization for animated SVG elements */
+  .gpu-accelerated {
+    will-change: transform;
+    transform: translateZ(0);
+    contain: layout style paint;
   }
 }
