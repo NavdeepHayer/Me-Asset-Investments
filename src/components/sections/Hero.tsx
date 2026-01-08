@@ -65,8 +65,8 @@ export function Hero() {
         >
           {/* Glow filter for the drawing line */}
           <defs>
-            <filter id="glow-line" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+            <filter id="glow-line" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
               <feMerge>
                 <feMergeNode in="coloredBlur"/>
                 <feMergeNode in="SourceGraphic"/>

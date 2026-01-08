@@ -124,8 +124,8 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
     <motion.svg viewBox="0 0 200 200" className="w-full h-full gpu-accelerated">
       {/* Glow filter for flow line */}
       <defs>
-        <filter id="glow-crane" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <filter id="glow-crane" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>
@@ -353,8 +353,8 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full gpu-accelerated">
       <defs>
-        <filter id="glow-blueprint" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <filter id="glow-blueprint" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>
@@ -506,8 +506,8 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
   return (
     <motion.svg viewBox="0 0 200 200" className="w-full h-full gpu-accelerated">
       <defs>
-        <filter id="glow-framework" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <filter id="glow-framework" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>
@@ -631,8 +631,8 @@ function RenovationGraphic({ scrollProgress }: GraphicProps) {
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full gpu-accelerated">
       <defs>
-        <filter id="glow-reno" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <filter id="glow-reno" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>
@@ -865,8 +865,8 @@ function CompletedBuildingGraphic({ scrollProgress }: GraphicProps) {
   return (
     <motion.svg viewBox="0 0 320 200" className="w-full h-full gpu-accelerated">
       <defs>
-        <filter id="glow-completed" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <filter id="glow-completed" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>

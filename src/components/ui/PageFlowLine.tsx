@@ -425,8 +425,8 @@ function FlowLines({ positions }: { positions: Positions }) {
       preserveAspectRatio="none"
     >
       <defs>
-        <filter id="glow-flow" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+        <filter id="glow-flow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
           <feMerge>
             <feMergeNode in="coloredBlur"/>
             <feMergeNode in="SourceGraphic"/>

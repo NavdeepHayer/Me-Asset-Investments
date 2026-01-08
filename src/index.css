@@ -7,7 +7,7 @@
 
 @layer base {
   html {
-    scroll-behavior: smooth;
+    /* Note: scroll-behavior: smooth removed - conflicts with scroll-linked animations */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -114,5 +114,6 @@
   .gpu-accelerated {
     will-change: transform;
     transform: translateZ(0);
+    contain: layout style paint;
   }
 }
