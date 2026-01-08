@@ -1,5 +1,5 @@
 import { motion, useScroll, useTransform, MotionValue } from "framer-motion";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 
 interface GraphicPosition {
   id: string;
@@ -57,7 +57,7 @@ interface Positions {
 // Component for the ME → WE flip animation text box
 function TransitionBox({
   config,
-  scrollYProgress,
+  scrollYProgress: globalScrollYProgress,
   animationRange,
 }: {
   config: TransitionBoxConfig;
@@ -65,68 +65,71 @@ function TransitionBox({
   animationRange: [number, number];
 }) {
   const { label, centerX, centerY, isMobile } = config;
+  const ref = useRef<HTMLDivElement>(null);
 
   // Box dimensions - height is fixed, width is auto based on content
   const boxHeight = 50;
 
-  // Animation timing:
-  // - Box fades in at start of animation
-  // - ME is visible from start
-  // - Desktop: Flip happens AFTER the box lines connect (starts at 95%, continues past animation end)
-  // - Mobile: Flip happens in the MIDDLE of scroll so user can see it better
+  // For mobile: use element-specific scroll tracking (more reliable)
+  // For desktop: use global scroll progress with animation ranges
+  const { scrollYProgress: elementScrollProgress } = useScroll({
+    target: ref,
+    offset: ["start end", "end start"] // Track from when element enters to when it leaves
+  });
+
+  // Choose which scroll progress to use
+  const scrollYProgress = isMobile ? elementScrollProgress : globalScrollYProgress;
+
+  // Animation timing - different for mobile vs desktop
   const animationDuration = animationRange[1] - animationRange[0];
 
   let flipStart: number;
   let flipEnd: number;
 
   if (isMobile) {
-    // Mobile: flip happens within the visible range so user can see it
-    // Start at 30% and end at 90% of the animation range
-    flipStart = animationRange[0] + (animationDuration * 0.3); // Start flip at 30% of animation
-    flipEnd = animationRange[0] + (animationDuration * 0.9); // End flip at 90% of animation
+    // Mobile: use element-specific progress (0-1 based on element visibility)
+    // Flip happens when element is in the middle of viewport
+    flipStart = 0.3; // Start flip at 30% through element's viewport journey
+    flipEnd = 0.6;   // End flip at 60%
   } else {
-    // Desktop: flip happens near the end
-    flipStart = animationRange[1] - (animationDuration * 0.05); // Start flip at 95% (just as lines finish)
-    flipEnd = animationRange[1] + (animationDuration * 0.15); // End flip after animation completes
+    // Desktop: flip happens near the end of global animation range
+    flipStart = animationRange[1] - (animationDuration * 0.05);
+    flipEnd = animationRange[1] + (animationDuration * 0.15);
   }
 
   const flipMidpoint = (flipStart + flipEnd) / 2;
 
-  // Rotate from 0 to 180 degrees (front to back) - only for ME/WE text (desktop only)
+  // Rotate from 0 to 180 degrees for 3D flip effect
   const rotateX = useTransform(
     scrollYProgress,
     [flipStart, flipEnd],
-    [0, isMobile ? 0 : 180] // No rotation on mobile, just crossfade
+    [0, 180]
   );
 
-  // ME is visible from the very start until flip
-  // Mobile: gradual fade out over the flip duration
-  // Desktop: quick switch at midpoint
+  // ME opacity - visible until flip midpoint
   const meOpacity = useTransform(
     scrollYProgress,
     isMobile
-      ? [animationRange[0], flipStart, flipEnd]
+      ? [0, flipStart, flipMidpoint]
       : [animationRange[0], flipMidpoint - 0.01, flipMidpoint],
-    isMobile
-      ? [1, 1, 0]
-      : [1, 1, 0]
+    [1, 1, 0]
   );
 
-  // WE appears during/after flip and stays visible
-  // Mobile: gradual fade in over the flip duration
-  // Desktop: quick switch at midpoint
+  // WE opacity - visible after flip midpoint
   const weOpacity = useTransform(
     scrollYProgress,
     isMobile
-      ? [flipStart, flipEnd, 1]
+      ? [flipMidpoint, flipEnd, 1]
       : [flipMidpoint, flipMidpoint + 0.01, 1],
     [0, 1, 1]
   );
 
-  // Overall box opacity (fade in as box is drawn)
+  // Overall box opacity
   const boxOpacity = useTransform(
     scrollYProgress,
-    [animationRange[0], animationRange[0] + 0.02],
+    isMobile
+      ? [0, 0.1]
+      : [animationRange[0], animationRange[0] + 0.02],
     [0, 1]
   );
 
@@ -138,6 +141,7 @@ function TransitionBox({
 
   return (
     <motion.div
+      ref={ref}
       style={{
         position: 'absolute',
         left: centerX,
@@ -172,7 +176,7 @@ function TransitionBox({
             position: 'relative',
             width: meWeWidth,
             height: meWeHeight,
-            perspective: 400,
+            perspective: 1000,
             transformStyle: 'preserve-3d',
             fontSize: meWeFontSize,
           }}
