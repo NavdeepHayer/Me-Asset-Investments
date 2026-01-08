@@ -1185,7 +1185,7 @@ export function PageFlowLine() {
     const mobileTransitionBoxes: TransitionBoxConfig[] = [];
 
     if (graphics.length >= 5 && !isDesktop) {
-      const [crane, blueprint, framework, skyline, completed] = graphics;
+      const [crane, blueprint, framework, skyline] = graphics;
 
       // Mobile boxes positioned just below each graphic (within same section)
       // This creates flow: graphic → box → exits section → next section
