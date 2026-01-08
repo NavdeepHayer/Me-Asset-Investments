@@ -416,7 +416,7 @@ function FlowLines({ positions }: { positions: Positions }) {
   return (
     <>
     <svg
-      className="pointer-events-none absolute left-0 top-0"
+      className="pointer-events-none absolute left-0 top-0 gpu-accelerated"
       style={{
         width: '100%',
         height: documentHeight,
@@ -1270,16 +1270,24 @@ export function PageFlowLine() {
     const t3 = setTimeout(calculate, 1000);
     const t4 = setTimeout(calculate, 2000);
 
-    window.addEventListener('resize', calculate);
-    window.addEventListener('orientationchange', calculate);
+    // Debounced resize handler to prevent excessive recalculations
+    let resizeTimeout: ReturnType<typeof setTimeout>;
+    const debouncedCalculate = () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(calculate, 150);
+    };
+
+    window.addEventListener('resize', debouncedCalculate);
+    window.addEventListener('orientationchange', debouncedCalculate);
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
       clearTimeout(t3);
       clearTimeout(t4);
-      window.removeEventListener('resize', calculate);
-      window.removeEventListener('orientationchange', calculate);
+      clearTimeout(resizeTimeout);
+      window.removeEventListener('resize', debouncedCalculate);
+      window.removeEventListener('orientationchange', debouncedCalculate);
     };
   }, [calculate]);
 

@@ -59,7 +59,7 @@ export function Hero() {
       <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[10vh]">
         <motion.svg
           viewBox="0 0 400 280"
-          className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto"
+          className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto gpu-accelerated"
           initial={{ opacity: 1 }}
           preserveAspectRatio="xMidYMax meet"
         >

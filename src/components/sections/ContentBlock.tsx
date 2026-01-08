@@ -121,7 +121,7 @@ function CraneGraphic({ scrollProgress }: GraphicProps) {
   const ground = useScrollTransform(scrollProgress, 0.68, 0.78);
 
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full gpu-accelerated">
       {/* Glow filter for flow line */}
       <defs>
         <filter id="glow-crane" x="-50%" y="-50%" width="200%" height="200%">
@@ -351,7 +351,7 @@ function BlueprintGraphic({ scrollProgress }: GraphicProps) {
   const scale = useScrollTransform(scrollProgress, 0.68, 0.78);
 
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full gpu-accelerated">
       <defs>
         <filter id="glow-blueprint" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -504,7 +504,7 @@ function FrameworkGraphic({ scrollProgress }: GraphicProps) {
   const ground = useScrollTransform(scrollProgress, 0.68, 0.78);
 
   return (
-    <motion.svg viewBox="0 0 200 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 200 200" className="w-full h-full gpu-accelerated">
       <defs>
         <filter id="glow-framework" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -629,7 +629,7 @@ function RenovationGraphic({ scrollProgress }: GraphicProps) {
   const workers = useScrollTransform(scrollProgress, 0.64, 0.78);
 
   return (
-    <motion.svg viewBox="0 0 320 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 320 200" className="w-full h-full gpu-accelerated">
       <defs>
         <filter id="glow-reno" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
@@ -863,7 +863,7 @@ function CompletedBuildingGraphic({ scrollProgress }: GraphicProps) {
   const finishing = useScrollTransform(scrollProgress, 0.64, 0.78);
 
   return (
-    <motion.svg viewBox="0 0 320 200" className="w-full h-full">
+    <motion.svg viewBox="0 0 320 200" className="w-full h-full gpu-accelerated">
       <defs>
         <filter id="glow-completed" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
