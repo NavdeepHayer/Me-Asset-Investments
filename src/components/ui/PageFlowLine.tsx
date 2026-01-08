@@ -356,6 +356,13 @@ function FlowLines({ positions }: { positions: Positions }) {
   const completedToTeam = useTransform(scrollYProgress, ranges.completedToTeam, [0, 1]);
   const teamToMailingBox = useTransform(scrollYProgress, ranges.teamToMailingBox, [0, 1]);
 
+  // Mobile box path animations - synced with flip timing
+  // Box drawing completes at 30%, then flip happens 30-60%
+  const mobileBoxPath1 = useTransform(scrollYProgress, [ranges.mobileBox1[0], ranges.mobileBox1[0] + (ranges.mobileBox1[1] - ranges.mobileBox1[0]) * 0.3], [0, 1]);
+  const mobileBoxPath2 = useTransform(scrollYProgress, [ranges.mobileBox2[0], ranges.mobileBox2[0] + (ranges.mobileBox2[1] - ranges.mobileBox2[0]) * 0.3], [0, 1]);
+  const mobileBoxPath3 = useTransform(scrollYProgress, [ranges.mobileBox3[0], ranges.mobileBox3[0] + (ranges.mobileBox3[1] - ranges.mobileBox3[0]) * 0.3], [0, 1]);
+  const mobileBoxPath4 = useTransform(scrollYProgress, [ranges.mobileBox4[0], ranges.mobileBox4[0] + (ranges.mobileBox4[1] - ranges.mobileBox4[0]) * 0.3], [0, 1]);
+
   // Calculate turn points for 90° turns
   const heroToCraneTurnY = crane.top - 50;
   const craneToBlueprintTurnY = blueprint.top - 50;
@@ -686,6 +693,7 @@ function FlowLines({ positions }: { positions: Positions }) {
           />
 
           {/* Mobile box outlines - connects from graphic, splits around text, continues */}
+          {/* Box drawing synced with flip: box draws 0-30%, flip happens 30-60% */}
           {mobileBox1 && (() => {
             const boxHalfWidth = 120;
             const boxHalfHeight = 25;
@@ -706,7 +714,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: craneToBlueprint }}
+                  style={{ pathLength: mobileBoxPath1 }}
                 />
                 {/* Right side of box */}
                 <motion.path
@@ -720,7 +728,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: craneToBlueprint }}
+                  style={{ pathLength: mobileBoxPath1 }}
                 />
               </>
             );
@@ -744,7 +752,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: blueprintToFramework }}
+                  style={{ pathLength: mobileBoxPath2 }}
                 />
                 <motion.path
                   d={`M ${mobileBox2.centerX} ${mobileBox2.centerY - boxHalfHeight}
@@ -757,7 +765,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: blueprintToFramework }}
+                  style={{ pathLength: mobileBoxPath2 }}
                 />
               </>
             );
@@ -781,7 +789,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: frameworkToSkyline }}
+                  style={{ pathLength: mobileBoxPath3 }}
                 />
                 <motion.path
                   d={`M ${mobileBox3.centerX} ${mobileBox3.centerY - boxHalfHeight}
@@ -794,7 +802,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: frameworkToSkyline }}
+                  style={{ pathLength: mobileBoxPath3 }}
                 />
               </>
             );
@@ -818,7 +826,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: skylineToCompleted }}
+                  style={{ pathLength: mobileBoxPath4 }}
                 />
                 <motion.path
                   d={`M ${mobileBox4.centerX} ${mobileBox4.centerY - boxHalfHeight}
@@ -831,7 +839,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   filter="url(#glow-flow)"
-                  style={{ pathLength: skylineToCompleted }}
+                  style={{ pathLength: mobileBoxPath4 }}
                 />
               </>
             );
