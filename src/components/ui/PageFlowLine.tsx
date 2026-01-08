@@ -80,10 +80,10 @@ function TransitionBox({
   let flipEnd: number;
 
   if (isMobile) {
-    // Mobile: flip happens very slowly so user can see the full animation
-    // Start much later and extend well past the animation end
-    flipStart = animationRange[0] + (animationDuration * 0.6); // Start flip at 60% of animation
-    flipEnd = animationRange[1] + (animationDuration * 0.5); // End flip 50% past animation end
+    // Mobile: flip happens within the visible range so user can see it
+    // Start at 30% and end at 90% of the animation range
+    flipStart = animationRange[0] + (animationDuration * 0.3); // Start flip at 30% of animation
+    flipEnd = animationRange[0] + (animationDuration * 0.9); // End flip at 90% of animation
   } else {
     // Desktop: flip happens near the end
     flipStart = animationRange[1] - (animationDuration * 0.05); // Start flip at 95% (just as lines finish)
@@ -324,12 +324,12 @@ function FlowLines({ positions }: { positions: Positions }) {
       completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
       // Team to Mailing box: start after team section, both sides animate together
       teamToMailingBox: [teamToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
-      // Mobile box animation ranges - based on when BOX is visible, not next section
-      // Box appears when it enters viewport, flip happens while viewing it
-      mobileBox1: [yToScrollProgress(mobileBox1Y) - 0.05, yToScrollProgress(mobileBox1Y) + 0.15] as [number, number],
-      mobileBox2: [yToScrollProgress(mobileBox2Y) - 0.05, yToScrollProgress(mobileBox2Y) + 0.15] as [number, number],
-      mobileBox3: [yToScrollProgress(mobileBox3Y) - 0.05, yToScrollProgress(mobileBox3Y) + 0.15] as [number, number],
-      mobileBox4: [yToScrollProgress(mobileBox4Y) - 0.05, yToScrollProgress(mobileBox4Y) + 0.15] as [number, number],
+      // Mobile box animation ranges - wide range so flip completes while box is visible
+      // Start when box enters viewport, end well after so flip animation completes
+      mobileBox1: [yToScrollProgress(mobileBox1Y) - 0.08, yToScrollProgress(mobileBox1Y) + 0.25] as [number, number],
+      mobileBox2: [yToScrollProgress(mobileBox2Y) - 0.08, yToScrollProgress(mobileBox2Y) + 0.25] as [number, number],
+      mobileBox3: [yToScrollProgress(mobileBox3Y) - 0.08, yToScrollProgress(mobileBox3Y) + 0.25] as [number, number],
+      mobileBox4: [yToScrollProgress(mobileBox4Y) - 0.08, yToScrollProgress(mobileBox4Y) + 0.25] as [number, number],
     };
   }, [localToGlobal, teamToGlobal, mailingToGlobal, yToScrollProgress, crane, blueprint, framework, skyline, completed]);
 
