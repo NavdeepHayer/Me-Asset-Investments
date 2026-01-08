@@ -55,11 +55,11 @@ export function Hero() {
         className="absolute left-1/2 -translate-x-1/2 bottom-[15vh] sm:bottom-[12vh] md:bottom-[10vh] w-1 h-1"
       />
 
-      {/* UK City Skyline background - desktop: pushed down, mobile: original position */}
-      <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[3vh] z-[5]">
+      {/* UK City Skyline background - desktop: pushed down, mobile: closer to content */}
+      <div className="absolute inset-0 flex items-end justify-center pb-[8vh] sm:pb-[6vh] md:pb-[2vh] z-[5]">
         <motion.svg
           viewBox="0 0 400 280"
-          className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[65vw] lg:max-w-[60vw] xl:max-w-[55vw] 2xl:max-w-[50vw] h-auto gpu-accelerated"
+          className="w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[58vw] lg:max-w-[52vw] xl:max-w-[48vw] 2xl:max-w-[44vw] h-auto gpu-accelerated"
           initial={{ opacity: 1 }}
           preserveAspectRatio="xMidYMax meet"
         >
@@ -349,8 +349,8 @@ export function Hero() {
         }}
       />
 
-      {/* Content - Desktop: rises up from behind skyline, Mobile: centered */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 md:mb-[28vh]" style={{ transform: 'translateZ(0)' }}>
+      {/* Content - Desktop: rises up from behind skyline, Mobile: positioned above skyline */}
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[32vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
