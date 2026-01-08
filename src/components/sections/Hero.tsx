@@ -55,11 +55,11 @@ export function Hero() {
         className="absolute left-1/2 -translate-x-1/2 bottom-[15vh] sm:bottom-[12vh] md:bottom-[10vh] w-1 h-1"
       />
 
-      {/* UK City Skyline background - shrunk to avoid overlap */}
-      <div className="absolute inset-0 flex items-start justify-center pt-[8vh] sm:pt-[10vh] md:pt-[12vh]">
+      {/* UK City Skyline background - positioned lower, in front */}
+      <div className="absolute inset-0 flex items-end justify-center pb-[10vh] sm:pb-[8vh] md:pb-[6vh] z-[5]">
         <motion.svg
           viewBox="0 0 400 280"
-          className="w-full max-w-[80vw] sm:max-w-[70vw] md:max-w-[60vw] lg:max-w-[55vw] xl:max-w-[50vw] 2xl:max-w-[45vw] h-auto gpu-accelerated"
+          className="w-full max-w-[85vw] sm:max-w-[75vw] md:max-w-[65vw] lg:max-w-[60vw] xl:max-w-[55vw] 2xl:max-w-[50vw] h-auto gpu-accelerated"
           initial={{ opacity: 1 }}
           preserveAspectRatio="xMidYMax meet"
         >
@@ -349,12 +349,12 @@ export function Hero() {
         }}
       />
 
-      {/* Content - Logo positioned below skyline with clear separation */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mt-[45vh] sm:mt-[48vh] md:mt-[50vh]" style={{ transform: 'translateZ(0)' }}>
+      {/* Content - Logo rises up from behind skyline */}
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[15vh] sm:mb-[18vh] md:mb-[20vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: logoDelay, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.5, delay: logoDelay, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* ME | Asset Management logo - always on one line */}
           <h1 className="mb-5 sm:mb-6 lg:mb-8 whitespace-nowrap">
@@ -369,9 +369,9 @@ export function Hero() {
         </motion.div>
         <motion.p
           className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
-          initial={{ opacity: 0, y: 15 }}
+          initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 1.2, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}
         >
           Strategic property investment and asset management
         </motion.p>
