@@ -350,7 +350,7 @@ export function Hero() {
       />
 
       {/* Content - Logo fades in when line reaches center */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 pb-[25vh] sm:pb-[22vh] md:pb-[18vh]" style={{ transform: 'translateZ(0)' }}>
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6 pt-[15vh] md:pt-[18vh] lg:pt-[20vh] pb-[25vh] sm:pb-[22vh] md:pb-[18vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -368,7 +368,7 @@ export function Hero() {
           </h1>
         </motion.div>
         <motion.p
-          className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl text-white/40 font-light tracking-wide max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto"
+          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}

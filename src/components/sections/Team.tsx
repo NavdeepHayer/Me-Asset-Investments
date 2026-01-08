@@ -39,14 +39,14 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
       style={{ opacity, x }}
     >
       <div className="mb-3 sm:mb-4 lg:mb-6 xl:mb-8">
-        <h3 className="text-xl sm:text-2xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-white mb-1.5 sm:mb-2 lg:mb-3">
+        <h3 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white mb-1.5 sm:mb-2 lg:mb-3">
           {name}
         </h3>
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg xl:text-xl text-white/40 tracking-wide uppercase">
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/40 tracking-wide uppercase">
           {role}
         </p>
       </div>
-      <p className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl text-white/60 leading-relaxed font-light">
+      <p className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-2xl text-white/60 leading-relaxed font-light">
         {bio}
       </p>
       {link && (
@@ -72,7 +72,7 @@ export function Team() {
         <ScrollReveal>
           <h2
             data-team-heading
-            className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white/90 mb-10 sm:mb-14 md:mb-20 lg:mb-24 xl:mb-28 text-center tracking-wide"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-white/90 mb-10 sm:mb-14 md:mb-20 lg:mb-24 xl:mb-28 text-center tracking-wide"
           >
             {team.headline}
           </h2>
