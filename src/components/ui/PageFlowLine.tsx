@@ -356,12 +356,19 @@ function FlowLines({ positions }: { positions: Positions }) {
   const completedToTeam = useTransform(scrollYProgress, ranges.completedToTeam, [0, 1]);
   const teamToMailingBox = useTransform(scrollYProgress, ranges.teamToMailingBox, [0, 1]);
 
-  // Mobile box path animations - synced with flip timing
-  // Box drawing completes at 30%, then flip happens 30-60%
-  const mobileBoxPath1 = useTransform(scrollYProgress, [ranges.mobileBox1[0], ranges.mobileBox1[0] + (ranges.mobileBox1[1] - ranges.mobileBox1[0]) * 0.3], [0, 1]);
-  const mobileBoxPath2 = useTransform(scrollYProgress, [ranges.mobileBox2[0], ranges.mobileBox2[0] + (ranges.mobileBox2[1] - ranges.mobileBox2[0]) * 0.3], [0, 1]);
-  const mobileBoxPath3 = useTransform(scrollYProgress, [ranges.mobileBox3[0], ranges.mobileBox3[0] + (ranges.mobileBox3[1] - ranges.mobileBox3[0]) * 0.3], [0, 1]);
-  const mobileBoxPath4 = useTransform(scrollYProgress, [ranges.mobileBox4[0], ranges.mobileBox4[0] + (ranges.mobileBox4[1] - ranges.mobileBox4[0]) * 0.3], [0, 1]);
+  // Mobile box path animations - start AFTER the graphic above finishes
+  // This creates continuous flow: graphic completes → line flows to box → box draws → flip
+  const mobileBoxPath1Start = localToGlobal(crane, 0.5); // Start after crane's internal animation
+  const mobileBoxPath2Start = localToGlobal(blueprint, 0.5);
+  const mobileBoxPath3Start = localToGlobal(framework, 0.5);
+  const mobileBoxPath4Start = localToGlobal(skyline, 0.5);
+
+  const mobileBoxPathDuration = 0.08; // How long the box takes to draw
+
+  const mobileBoxPath1 = useTransform(scrollYProgress, [mobileBoxPath1Start, mobileBoxPath1Start + mobileBoxPathDuration], [0, 1]);
+  const mobileBoxPath2 = useTransform(scrollYProgress, [mobileBoxPath2Start, mobileBoxPath2Start + mobileBoxPathDuration], [0, 1]);
+  const mobileBoxPath3 = useTransform(scrollYProgress, [mobileBoxPath3Start, mobileBoxPath3Start + mobileBoxPathDuration], [0, 1]);
+  const mobileBoxPath4 = useTransform(scrollYProgress, [mobileBoxPath4Start, mobileBoxPath4Start + mobileBoxPathDuration], [0, 1]);
 
   // Calculate turn points for 90° turns
   const heroToCraneTurnY = crane.top - 50;
