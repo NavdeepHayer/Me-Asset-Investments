@@ -69,7 +69,7 @@ export const siteContent = {
 
   // Team
   team: {
-    headline: "Our Team",
+    headline: "ME | Team",
     members: [
       {
         name: "Paul Thandi",

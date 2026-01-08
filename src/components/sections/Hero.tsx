@@ -55,11 +55,11 @@ export function Hero() {
         className="absolute left-1/2 -translate-x-1/2 bottom-[15vh] sm:bottom-[12vh] md:bottom-[10vh] w-1 h-1"
       />
 
-      {/* UK City Skyline background */}
-      <div className="absolute inset-0 flex items-end justify-center pb-[15vh] sm:pb-[12vh] md:pb-[10vh]">
+      {/* UK City Skyline background - desktop: pushed down, mobile: closer to content */}
+      <div className="absolute inset-0 flex items-end justify-center pb-[8vh] sm:pb-[6vh] md:pb-[2vh] z-[5]">
         <motion.svg
           viewBox="0 0 400 280"
-          className="w-full max-w-[90vw] sm:max-w-[85vw] md:max-w-[80vw] lg:max-w-[75vw] xl:max-w-[70vw] 2xl:max-w-[65vw] h-auto gpu-accelerated"
+          className="w-full max-w-[95vw] sm:max-w-[90vw] md:max-w-[58vw] lg:max-w-[52vw] xl:max-w-[48vw] 2xl:max-w-[44vw] h-auto gpu-accelerated"
           initial={{ opacity: 1 }}
           preserveAspectRatio="xMidYMax meet"
         >
@@ -349,27 +349,27 @@ export function Hero() {
         }}
       />
 
-      {/* Content - Logo fades in when line reaches center */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 pb-[25vh] sm:pb-[22vh] md:pb-[18vh]" style={{ transform: 'translateZ(0)' }}>
+      {/* Content - Desktop: rises up from behind skyline, Mobile: positioned above skyline */}
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[32vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: logoDelay, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* ME | Asset Management logo - always on one line */}
           <h1 className="mb-5 sm:mb-6 lg:mb-8 whitespace-nowrap">
-            <span className="text-4xl min-[400px]:text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white tracking-normal sm:tracking-wide">
+            <span className="text-4xl min-[400px]:text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white md:text-[#f5f0e8] tracking-normal sm:tracking-wide">
               {company.prefix}
             </span>
-            <span className="text-xl min-[400px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/60 mx-2 min-[400px]:mx-3 lg:mx-4 font-light">|</span>
-            <span className="text-[9px] min-[400px]:text-[11px] sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.04em] sm:tracking-[0.1em] uppercase font-light">
+            <span className="text-xl min-[400px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/60 md:text-[#f5f0e8]/50 mx-2 min-[400px]:mx-3 lg:mx-4 font-light">|</span>
+            <span className="text-[9px] min-[400px]:text-[11px] sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 md:text-[#f5f0e8]/80 tracking-[0.04em] sm:tracking-[0.1em] uppercase font-light">
               {company.name}
             </span>
           </h1>
         </motion.div>
         <motion.p
-          className="text-base sm:text-lg md:text-lg lg:text-xl xl:text-2xl text-white/40 font-light tracking-wide max-w-xs sm:max-w-md lg:max-w-lg xl:max-w-xl mx-auto"
-          initial={{ opacity: 0, y: 15 }}
+          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}
         >

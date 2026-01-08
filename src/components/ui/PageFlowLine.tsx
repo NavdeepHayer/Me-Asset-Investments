@@ -54,7 +54,7 @@ interface Positions {
   mobileTransitionBoxes: TransitionBoxConfig[];
 }
 
-// Component for the ME → WE flip animation text box
+// Component for the ME text box (static, no flip)
 function TransitionBox({
   config,
   scrollYProgress: globalScrollYProgress,
@@ -80,50 +80,6 @@ function TransitionBox({
   // Choose which scroll progress to use
   const scrollYProgress = isMobile ? elementScrollProgress : globalScrollYProgress;
 
-  // Animation timing - different for mobile vs desktop
-  const animationDuration = animationRange[1] - animationRange[0];
-
-  let flipStart: number;
-  let flipEnd: number;
-
-  if (isMobile) {
-    // Mobile: use element-specific progress (0-1 based on element visibility)
-    // Flip happens when element is in the middle of viewport
-    flipStart = 0.3; // Start flip at 30% through element's viewport journey
-    flipEnd = 0.6;   // End flip at 60%
-  } else {
-    // Desktop: flip happens near the end of global animation range
-    flipStart = animationRange[1] - (animationDuration * 0.05);
-    flipEnd = animationRange[1] + (animationDuration * 0.15);
-  }
-
-  const flipMidpoint = (flipStart + flipEnd) / 2;
-
-  // Rotate from 0 to 180 degrees for 3D flip effect
-  const rotateX = useTransform(
-    scrollYProgress,
-    [flipStart, flipEnd],
-    [0, 180]
-  );
-
-  // ME opacity - visible until flip midpoint
-  const meOpacity = useTransform(
-    scrollYProgress,
-    isMobile
-      ? [0, flipStart, flipMidpoint]
-      : [animationRange[0], flipMidpoint - 0.01, flipMidpoint],
-    [1, 1, 0]
-  );
-
-  // WE opacity - visible after flip midpoint
-  const weOpacity = useTransform(
-    scrollYProgress,
-    isMobile
-      ? [flipMidpoint, flipEnd, 1]
-      : [flipMidpoint, flipMidpoint + 0.01, 1],
-    [0, 1, 1]
-  );
-
   // Overall box opacity
   const boxOpacity = useTransform(
     scrollYProgress,
@@ -133,11 +89,9 @@ function TransitionBox({
     [0, 1]
   );
 
-  // Mobile-specific sizing - ME/WE stays prominent, label is smaller to fit
-  const meWeFontSize = isMobile ? '18px' : '16px';
+  // Mobile-specific sizing - ME stays prominent, label is smaller to fit
+  const meFontSize = isMobile ? '18px' : '16px';
   const labelFontSize = isMobile ? '12px' : '16px';
-  const meWeWidth = isMobile ? '32px' : '28px';
-  const meWeHeight = isMobile ? '26px' : '24px';
 
   return (
     <motion.div
@@ -170,49 +124,8 @@ function TransitionBox({
           whiteSpace: 'nowrap',
         }}
       >
-        {/* ME/WE flip container - only this part flips */}
-        <div
-          style={{
-            position: 'relative',
-            width: meWeWidth,
-            height: meWeHeight,
-            perspective: 1000,
-            transformStyle: 'preserve-3d',
-            fontSize: meWeFontSize,
-          }}
-        >
-          {/* ME text (front side) - visible from start, flips away */}
-          <motion.span
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              rotateX,
-              opacity: meOpacity,
-              backfaceVisibility: 'hidden',
-              transformStyle: 'preserve-3d',
-              display: 'block',
-            }}
-          >
-            ME
-          </motion.span>
-
-          {/* WE text (back side - starts rotated, flips into view) */}
-          <motion.span
-            style={{
-              position: 'absolute',
-              left: 0,
-              top: 0,
-              rotateX: useTransform(rotateX, (r) => r + 180),
-              opacity: weOpacity,
-              backfaceVisibility: 'hidden',
-              transformStyle: 'preserve-3d',
-              display: 'block',
-            }}
-          >
-            WE
-          </motion.span>
-        </div>
+        {/* Static ME text */}
+        <span style={{ fontSize: meFontSize }}>ME</span>
 
         {/* Static label part */}
         <span style={{ opacity: 0.6, fontSize: labelFontSize }}>|</span>
@@ -338,8 +251,8 @@ function FlowLines({ positions }: { positions: Positions }) {
       completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
       // Team to Mailing box: start after team section, both sides animate together
       teamToMailingBox: [teamToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
-      // Mobile box animation ranges - wide range so flip completes while box is visible
-      // Start when box enters viewport, end well after so flip animation completes
+      // Mobile box animation ranges
+      // Start when box enters viewport
       mobileBox1: [yToScrollProgress(mobileBox1Y) - 0.08, yToScrollProgress(mobileBox1Y) + 0.25] as [number, number],
       mobileBox2: [yToScrollProgress(mobileBox2Y) - 0.08, yToScrollProgress(mobileBox2Y) + 0.25] as [number, number],
       mobileBox3: [yToScrollProgress(mobileBox3Y) - 0.08, yToScrollProgress(mobileBox3Y) + 0.25] as [number, number],
@@ -357,7 +270,7 @@ function FlowLines({ positions }: { positions: Positions }) {
   const teamToMailingBox = useTransform(scrollYProgress, ranges.teamToMailingBox, [0, 1]);
 
   // Mobile box path animations - start AFTER the graphic above finishes
-  // This creates continuous flow: graphic completes → line flows to box → box draws → flip
+  // This creates continuous flow: graphic completes → line flows to box → box draws
   const mobileBoxPath1Start = localToGlobal(crane, 0.5); // Start after crane's internal animation
   const mobileBoxPath2Start = localToGlobal(blueprint, 0.5);
   const mobileBoxPath3Start = localToGlobal(framework, 0.5);
@@ -401,7 +314,7 @@ function FlowLines({ positions }: { positions: Positions }) {
 
   // For completed to team: go down center, around heading, then through team section
   const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
-  const headingAvoidX = teamCenterX + 120; // Go right just enough to clear heading
+  const headingAvoidX = teamCenterX + 220; // Go right to clear ME | Team heading
   const completedToTeamTurnY1 = team ? team.headingTop - 30 : 0; // Above heading - go right
   const completedToTeamTurnY2 = team ? team.headingBottom + 40 : 0; // Below heading - go back to center
   const teamSectionBottom = team ? team.sectionBottom - 50 : 0; // End point in team section
@@ -700,7 +613,6 @@ function FlowLines({ positions }: { positions: Positions }) {
           />
 
           {/* Mobile box outlines - connects from graphic, splits around text, continues */}
-          {/* Box drawing synced with flip: box draws 0-30%, flip happens 30-60% */}
           {mobileBox1 && (() => {
             const boxHalfWidth = 120;
             const boxHalfHeight = 25;
@@ -914,7 +826,7 @@ function FlowLines({ positions }: { positions: Positions }) {
       )}
     </svg>
 
-    {/* Transition Boxes with ME → WE flip animation */}
+    {/* Transition Boxes with ME branding */}
     {isDesktop && (
       <>
         {craneToBoxConfig && (
@@ -948,7 +860,7 @@ function FlowLines({ positions }: { positions: Positions }) {
       </>
     )}
 
-    {/* Mobile Transition Boxes with ME → WE flip animation */}
+    {/* Mobile Transition Boxes with ME branding */}
     {/* Uses mobile-specific ranges based on when BOX is visible, not next section */}
     {!isDesktop && (
       <>

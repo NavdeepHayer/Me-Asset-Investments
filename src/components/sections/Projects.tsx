@@ -11,10 +11,10 @@ export function Projects() {
         {/* Section Header */}
         <ScrollReveal>
           <div className="text-center mb-16 sm:mb-20 md:mb-24">
-            <p className="text-xs sm:text-sm tracking-[0.3em] uppercase text-white/40 mb-4 sm:mb-6">
+            <p className="text-sm sm:text-base md:text-lg tracking-[0.3em] uppercase text-white/40 mb-4 sm:mb-6">
               Investment Portfolio
             </p>
-            <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-light text-white/90 tracking-wide">
+            <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white/90 tracking-wide">
               {projects.headline}
             </h2>
           </div>
@@ -86,14 +86,14 @@ export function Projects() {
 
                   {/* Content */}
                   <div className="p-5 sm:p-6">
-                    <h3 className="font-serif text-xl sm:text-2xl font-light text-white/90 mb-2 tracking-wide">
+                    <h3 className="font-serif text-2xl sm:text-3xl font-light text-white/90 mb-2 tracking-wide">
                       {project.name}
                     </h3>
-                    <p className="text-xs sm:text-sm text-white/40 tracking-wider uppercase">
+                    <p className="text-sm sm:text-base text-white/40 tracking-wider uppercase">
                       {project.location}
                     </p>
                     {project.type && (
-                      <p className="text-sm text-white/50 mt-3 font-light">
+                      <p className="text-base sm:text-lg text-white/50 mt-3 font-light">
                         {project.type}
                       </p>
                     )}
