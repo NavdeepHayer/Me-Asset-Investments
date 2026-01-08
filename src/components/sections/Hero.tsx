@@ -56,7 +56,7 @@ export function Hero() {
       />
 
       {/* UK City Skyline background - positioned lower, in front */}
-      <div className="absolute inset-0 flex items-end justify-center pb-[10vh] sm:pb-[8vh] md:pb-[6vh] z-[5]">
+      <div className="absolute inset-0 flex items-end justify-center pb-[5vh] sm:pb-[4vh] md:pb-[3vh] z-[5]">
         <motion.svg
           viewBox="0 0 400 280"
           className="w-full max-w-[85vw] sm:max-w-[75vw] md:max-w-[65vw] lg:max-w-[60vw] xl:max-w-[55vw] 2xl:max-w-[50vw] h-auto gpu-accelerated"
@@ -350,7 +350,7 @@ export function Hero() {
       />
 
       {/* Content - Logo rises up from behind skyline */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[15vh] sm:mb-[18vh] md:mb-[20vh]" style={{ transform: 'translateZ(0)' }}>
+      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[22vh] sm:mb-[25vh] md:mb-[28vh]" style={{ transform: 'translateZ(0)' }}>
         <motion.div
           initial={{ opacity: 0, y: 60 }}
           animate={{ opacity: 1, y: 0 }}
@@ -358,17 +358,17 @@ export function Hero() {
         >
           {/* ME | Asset Management logo - always on one line */}
           <h1 className="mb-5 sm:mb-6 lg:mb-8 whitespace-nowrap">
-            <span className="text-4xl min-[400px]:text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-white tracking-normal sm:tracking-wide">
+            <span className="text-4xl min-[400px]:text-5xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl 2xl:text-9xl font-semibold text-[#f5f0e8] tracking-normal sm:tracking-wide">
               {company.prefix}
             </span>
-            <span className="text-xl min-[400px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/60 mx-2 min-[400px]:mx-3 lg:mx-4 font-light">|</span>
-            <span className="text-[9px] min-[400px]:text-[11px] sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 tracking-[0.04em] sm:tracking-[0.1em] uppercase font-light">
+            <span className="text-xl min-[400px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-[#f5f0e8]/50 mx-2 min-[400px]:mx-3 lg:mx-4 font-light">|</span>
+            <span className="text-[9px] min-[400px]:text-[11px] sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-[#f5f0e8]/80 tracking-[0.04em] sm:tracking-[0.1em] uppercase font-light">
               {company.name}
             </span>
           </h1>
         </motion.div>
         <motion.p
-          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
+          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}
