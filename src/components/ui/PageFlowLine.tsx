@@ -92,24 +92,34 @@ function TransitionBox({
 
   const flipMidpoint = (flipStart + flipEnd) / 2;
 
-  // Rotate from 0 to 180 degrees (front to back) - only for ME/WE text
+  // Rotate from 0 to 180 degrees (front to back) - only for ME/WE text (desktop only)
   const rotateX = useTransform(
     scrollYProgress,
     [flipStart, flipEnd],
-    [0, 180]
+    [0, isMobile ? 0 : 180] // No rotation on mobile, just crossfade
   );
 
-  // ME is visible from the very start until flip midpoint
+  // ME is visible from the very start until flip
+  // Mobile: gradual fade out over the flip duration
+  // Desktop: quick switch at midpoint
   const meOpacity = useTransform(
     scrollYProgress,
-    [animationRange[0], flipMidpoint - 0.01, flipMidpoint],
-    [1, 1, 0]
+    isMobile
+      ? [animationRange[0], flipStart, flipEnd]
+      : [animationRange[0], flipMidpoint - 0.01, flipMidpoint],
+    isMobile
+      ? [1, 1, 0]
+      : [1, 1, 0]
   );
 
-  // WE appears after flip midpoint and stays visible
+  // WE appears during/after flip and stays visible
+  // Mobile: gradual fade in over the flip duration
+  // Desktop: quick switch at midpoint
   const weOpacity = useTransform(
     scrollYProgress,
-    [flipMidpoint, flipMidpoint + 0.01, 1],
+    isMobile
+      ? [flipStart, flipEnd, 1]
+      : [flipMidpoint, flipMidpoint + 0.01, 1],
     [0, 1, 1]
   );
 
