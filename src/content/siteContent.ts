@@ -38,7 +38,7 @@ export const siteContent = {
 
   // Projects
   projects: {
-    headline: "Our Portfolio",
+    headline: "ME | Portfolio",
     items: [
       {
         name: "ME | Swansea Ltd",
