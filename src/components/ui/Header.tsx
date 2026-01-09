@@ -19,7 +19,7 @@ export function Header() {
               {company.prefix}
             </span>
             <span className="text-white/30 mx-0.5 min-[400px]:mx-1 md:mx-2">|</span>
-            <span className="text-[8px] min-[400px]:text-[10px] min-[500px]:text-xs md:text-lg lg:text-xl tracking-[0.08em] min-[500px]:tracking-[0.12em] md:tracking-[0.15em] uppercase text-white/50 group-hover:text-white/70 transition-colors duration-300">
+            <span className="text-[10px] min-[400px]:text-xs min-[500px]:text-sm md:text-lg lg:text-xl tracking-[0.08em] min-[500px]:tracking-[0.12em] md:tracking-[0.15em] uppercase text-white/50 group-hover:text-white/70 transition-colors duration-300">
               {company.name}
             </span>
           </a>
