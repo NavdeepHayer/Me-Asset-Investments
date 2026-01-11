@@ -9,7 +9,7 @@ This document outlines the plan for integrating Supabase as the backend for the 
 - User profile data storage
 - Session management
 
-**Current Status:** Login modal UI is complete, connected to simulated API calls.
+**Current Status:** Frontend integration complete. Awaiting Supabase project setup.
 
 ## Architecture
 
@@ -157,6 +157,14 @@ VITE_SUPABASE_ANON_KEY=your-anon-key
 
 ## Security Considerations
 
+### Password Security (Handled by Supabase)
+- **Hashing:** Passwords are hashed using bcrypt before storage
+- **Salting:** Each password gets a unique salt (built into bcrypt)
+- **No raw passwords:** Raw passwords never stored in the database
+- **Transport:** All API calls are over HTTPS (encrypted in transit)
+- **Rate limiting:** Built-in protection against brute force attacks
+
+### Database Security
 - Row Level Security (RLS) enabled on all tables
 - Users can only access their own data
 - API keys are anon (safe for frontend)
@@ -176,25 +184,28 @@ VITE_SUPABASE_ANON_KEY=eyJhbGci...
 |-------|--------|
 | Login Modal UI | Complete |
 | Sign Up UI | Complete (hidden) |
+| Frontend Integration | Complete |
 | Supabase Project Setup | Pending |
 | Database Schema | Pending |
-| Frontend Integration | Pending |
 | Testing | Pending |
 | Deployment | Pending |
 
-## Files to Create/Modify
+## Files Created/Modified
 
 ```
 src/
 ├── lib/
-│   └── supabase.ts          # Supabase client
+│   └── supabase.ts          # Supabase client [CREATED]
 ├── contexts/
-│   └── AuthContext.tsx      # Auth state management
+│   └── AuthContext.tsx      # Auth state management [CREATED]
 ├── components/
 │   └── ui/
-│       └── InvestorLoginModal.tsx  # Update with real auth
+│       └── InvestorLoginModal.tsx  # Updated with Supabase auth [MODIFIED]
+├── App.tsx                  # Wrapped with AuthProvider [MODIFIED]
 └── pages/
     └── Dashboard.tsx        # Future: investor dashboard
+
+.env.example                 # Environment variables template [CREATED]
 ```
 
 ## Notes

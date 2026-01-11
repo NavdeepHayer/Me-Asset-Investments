@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useEffect, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "./Toast";
+import { useAuth } from "../../contexts/AuthContext";
 
 type View = "login" | "signup" | "forgot";
 // type Tab = "login" | "signup"; // TODO: Re-enable when signup is ready
@@ -82,6 +83,7 @@ function InputField({
 
 export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps) {
   const { showToast } = useToast();
+  const { signIn, resetPassword } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState(0);
 
@@ -167,8 +169,20 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
     if (!validateLoginForm()) return;
 
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { error } = await signIn(loginEmail, loginPassword);
     setIsLoading(false);
+
+    if (error) {
+      // Handle specific error messages
+      if (error.message.includes('Invalid login credentials')) {
+        showToast("Invalid email or password", "error");
+      } else if (error.message.includes('Email not confirmed')) {
+        showToast("Please check your email to confirm your account", "error");
+      } else {
+        showToast(error.message || "Login failed", "error");
+      }
+      return;
+    }
 
     showToast("Successfully logged in", "success");
     handleClose();
@@ -182,8 +196,13 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
     if (!validateForgotForm()) return;
 
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { error } = await resetPassword(forgotEmail);
     setIsLoading(false);
+
+    if (error) {
+      showToast(error.message || "Failed to send reset link", "error");
+      return;
+    }
 
     showToast("Password reset link sent to your email", "success");
     handleClose();
