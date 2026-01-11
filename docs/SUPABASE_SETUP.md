@@ -187,8 +187,88 @@ VITE_SUPABASE_ANON_KEY=eyJhbGci...
 | Frontend Integration | Complete |
 | Supabase Project Setup | Pending |
 | Database Schema | Pending |
+| Admin Panel | Complete |
 | Testing | Pending |
 | Deployment | Pending |
+
+---
+
+## Phase 4: Admin Panel Setup
+
+### 4.1 Add Admin Column to Profiles
+
+Run this SQL in Supabase SQL Editor:
+
+```sql
+-- Add is_admin column to profiles table
+ALTER TABLE public.profiles
+ADD COLUMN IF NOT EXISTS is_admin boolean DEFAULT false;
+
+-- Update RLS policies for admin access
+
+-- Drop existing policies first (if they exist)
+DROP POLICY IF EXISTS "Users can view own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can view all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Admins can update all profiles" ON public.profiles;
+
+-- Users can view their own profile, admins can view all
+CREATE POLICY "Users can view own profile or admins can view all"
+  ON public.profiles FOR SELECT
+  USING (
+    auth.uid() = id
+    OR
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+  );
+
+-- Users can update their own profile (except is_admin field)
+CREATE POLICY "Users can update own profile"
+  ON public.profiles FOR UPDATE
+  USING (auth.uid() = id)
+  WITH CHECK (
+    auth.uid() = id
+    AND (
+      -- If user is not admin, they cannot change is_admin field
+      is_admin = (SELECT is_admin FROM public.profiles WHERE id = auth.uid())
+      OR
+      -- Admins can change anything
+      (SELECT is_admin FROM public.profiles WHERE id = auth.uid()) = true
+    )
+  );
+
+-- Admins can update any profile
+CREATE POLICY "Admins can update all profiles"
+  ON public.profiles FOR UPDATE
+  USING (
+    EXISTS (SELECT 1 FROM public.profiles WHERE id = auth.uid() AND is_admin = true)
+  );
+```
+
+### 4.2 Set Yourself as Admin
+
+After running the above, set yourself as admin:
+
+```sql
+-- Replace 'your-email@example.com' with your actual email
+UPDATE public.profiles
+SET is_admin = true
+WHERE email = 'your-email@example.com';
+```
+
+### 4.3 Create Edge Function
+
+1. Go to **Supabase Dashboard** → **Edge Functions**
+2. Click **Create a new function**
+3. Name it: `admin-user-management`
+4. Paste the code from `docs/EDGE_FUNCTION_CODE.md`
+5. Save and deploy
+
+### 4.4 Add Edge Function Secret
+
+1. Go to **Project Settings** → **Edge Functions**
+2. Under **Edge Function Secrets**, click **Add new secret**
+3. Name: `SERVICE_ROLE_KEY`
+4. Value: Copy from **Settings** → **API** → `service_role` key
 
 ## Files Created/Modified
 
