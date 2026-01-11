@@ -325,8 +325,8 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
                     <AnimatedHeader />
                   </motion.div>
 
-                  {/* Tabs for login/signup */}
-                  {currentView !== "forgot" && (
+                  {/* Tabs for login/signup - HIDDEN: Set to false to hide signup tab */}
+                  {false && currentView !== "forgot" && (
                     <motion.div
                       className="flex justify-center gap-8 mb-6"
                       initial={{ opacity: 0 }}
