@@ -86,7 +86,7 @@ export function Team() {
               name={member.name}
               role={member.role}
               bio={member.bio}
-              link={"link" in member ? member.link : undefined}
+              link={"link" in member ? (member.link as string) : undefined}
               index={index}
             />
           ))}
