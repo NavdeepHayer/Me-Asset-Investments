@@ -39,6 +39,7 @@ export const siteContent = {
   // Projects
   projects: {
     headline: "ME | Group Projects",
+    initialVisibleCount: 6, // Number of projects to show initially
     items: [
       // Current Projects
       {
@@ -135,13 +136,11 @@ export const siteContent = {
         name: "Tarvy Gosal & Jas Randhawa",
         role: "Managing Directors, Fleetwood Architectural Aluminium",
         bio: "Tarvy holds a degree in Civil Engineering and brings over two decades of senior leadership experience in the construction sector. After early career roles with a range of construction companies, he co-founded Fleetwood Architectural Aluminium Limited in 2003 and has served as Managing Director since inception. Under his stewardship, FAA has developed into a nationally operating specialist building envelope contractor with annual revenues of approximately £40 million. Tarvy has also invested in a number of early-stage businesses.",
-        link: "https://www.faa-group.co.uk/our-services/cladding-remediation/",
       },
       {
         name: "Michael Mirelman & Daniel Benton",
         role: "Directors, GRE Capital",
         bio: "Each having had 20+ years' experience working across the finance, banking, and real estate sectors, and alongside property developers, investors, and family offices. Recently, both have led over £150+ million real estate finance, development and portfolio management.",
-        link: "https://www.grecapital.com",
       },
     ],
   },
