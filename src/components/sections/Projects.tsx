@@ -71,12 +71,14 @@ export function Projects() {
                     <div className="absolute top-4 right-4">
                       <span
                         className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[10px] sm:text-xs tracking-[0.15em] uppercase font-medium ${
-                          project.status === "Acquired"
+                          project.status === "Current"
                             ? "bg-white text-[#3A4539]"
+                            : project.status === "Completed"
+                            ? "bg-emerald-600/90 text-white"
                             : "bg-white/10 text-white/70 backdrop-blur-sm border border-white/10"
                         }`}
                       >
-                        {project.status === "Acquired" && (
+                        {project.status === "Current" && (
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
                         )}
                         {project.status}
