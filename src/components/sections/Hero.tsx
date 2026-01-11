@@ -362,7 +362,7 @@ export function Hero() {
               {company.prefix}
             </span>
             <span className="text-xl min-[400px]:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-white/60 md:text-[#f5f0e8]/50 mx-2 min-[400px]:mx-3 lg:mx-4 font-light">|</span>
-            <span className="text-sm min-[400px]:text-base sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-white/70 md:text-[#f5f0e8]/80 tracking-[0.04em] sm:tracking-[0.1em] uppercase font-light">
+            <span className="text-base min-[400px]:text-lg sm:text-2xl md:text-4xl lg:text-5xl xl:text-6xl text-white/90 md:text-[#f5f0e8] tracking-[0.04em] sm:tracking-[0.1em] uppercase font-medium">
               {company.name}
             </span>
           </h1>
