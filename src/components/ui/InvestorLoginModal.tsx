@@ -3,13 +3,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "./Toast";
 
 type View = "login" | "signup" | "forgot";
-type Tab = "login" | "signup";
+// type Tab = "login" | "signup"; // TODO: Re-enable when signup is ready
 
 interface FormErrors {
   email?: string;
   password?: string;
-  confirmPassword?: string;
-  fullName?: string;
 }
 
 interface InvestorLoginModalProps {
@@ -31,20 +29,9 @@ const validatePassword = (password: string): string | undefined => {
   return undefined;
 };
 
-const validateConfirmPassword = (
-  password: string,
-  confirmPassword: string
-): string | undefined => {
-  if (!confirmPassword) return "Please confirm your password";
-  if (password !== confirmPassword) return "Passwords do not match";
-  return undefined;
-};
-
-const validateFullName = (name: string): string | undefined => {
-  if (!name) return "Full name is required";
-  if (name.length < 2) return "Name must be at least 2 characters";
-  return undefined;
-};
+// TODO: Re-enable signup validators when ready
+// const validateConfirmPassword = ...
+// const validateFullName = ...
 
 // Input field component - defined outside to prevent re-creation on every render
 function InputField({
@@ -100,23 +87,23 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
 
   // View state
   const [currentView, setCurrentView] = useState<View>("login");
-  const [activeTab, setActiveTab] = useState<Tab>("login");
 
   // Form states
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const [signupFullName, setSignupFullName] = useState("");
-  const [signupEmail, setSignupEmail] = useState("");
-  const [signupPassword, setSignupPassword] = useState("");
-  const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+  // TODO: Re-enable signup state when ready
+  // const [signupFullName, setSignupFullName] = useState("");
+  // const [signupEmail, setSignupEmail] = useState("");
+  // const [signupPassword, setSignupPassword] = useState("");
+  // const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
 
   const [forgotEmail, setForgotEmail] = useState("");
 
   // Error states
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
-  const [signupErrors, setSignupErrors] = useState<FormErrors>({});
+  // const [signupErrors, setSignupErrors] = useState<FormErrors>({});
   const [forgotErrors, setForgotErrors] = useState<FormErrors>({});
 
   // Loading states
@@ -138,26 +125,14 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
   // Reset form when modal closes
   const handleClose = useCallback(() => {
     setCurrentView("login");
-    setActiveTab("login");
     setLoginEmail("");
     setLoginPassword("");
     setRememberMe(false);
-    setSignupFullName("");
-    setSignupEmail("");
-    setSignupPassword("");
-    setSignupConfirmPassword("");
     setForgotEmail("");
     setLoginErrors({});
-    setSignupErrors({});
     setForgotErrors({});
     onClose();
   }, [onClose]);
-
-  // Tab switching
-  const handleTabChange = (tab: Tab) => {
-    setActiveTab(tab);
-    setCurrentView(tab);
-  };
 
   // Login validation
   const validateLoginForm = (): boolean => {
@@ -172,22 +147,8 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
     return Object.keys(errors).length === 0;
   };
 
-  // Signup validation
-  const validateSignupForm = (): boolean => {
-    const errors: FormErrors = {};
-    const nameError = validateFullName(signupFullName);
-    const emailError = validateEmail(signupEmail);
-    const passwordError = validatePassword(signupPassword);
-    const confirmError = validateConfirmPassword(signupPassword, signupConfirmPassword);
-
-    if (nameError) errors.fullName = nameError;
-    if (emailError) errors.email = emailError;
-    if (passwordError) errors.password = passwordError;
-    if (confirmError) errors.confirmPassword = confirmError;
-
-    setSignupErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
+  // TODO: Re-enable signup validation when ready
+  // const validateSignupForm = (): boolean => { ... };
 
   // Forgot password validation
   const validateForgotForm = (): boolean => {
@@ -213,17 +174,8 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
     handleClose();
   };
 
-  const handleSignupSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (!validateSignupForm()) return;
-
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsLoading(false);
-
-    showToast("Account created successfully", "success");
-    handleClose();
-  };
+  // TODO: Re-enable signup submit when ready
+  // const handleSignupSubmit = async (e: FormEvent) => { ... };
 
   const handleForgotSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -305,52 +257,8 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
                     <AnimatedHeader />
                   </motion.div>
 
-                  {/* Tabs (only show when not on forgot password) */}
-                  {currentView !== "forgot" && (
-                    <motion.div
-                      className="relative mb-8"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: 0.6, duration: 0.4 }}
-                    >
-                      <div className="flex justify-center gap-8 md:gap-12">
-                        <button
-                          onClick={() => handleTabChange("login")}
-                          className={`
-                            pb-2 text-sm tracking-[0.2em] uppercase transition-colors duration-300
-                            focus:outline-none focus:ring-0 border-none bg-transparent
-                            ${activeTab === "login" ? "text-white" : "text-white/40 hover:text-white/60"}
-                          `}
-                        >
-                          Log In
-                        </button>
-                        <button
-                          onClick={() => handleTabChange("signup")}
-                          className={`
-                            pb-2 text-sm tracking-[0.2em] uppercase transition-colors duration-300
-                            focus:outline-none focus:ring-0 border-none bg-transparent
-                            ${activeTab === "signup" ? "text-white" : "text-white/40 hover:text-white/60"}
-                          `}
-                        >
-                          Sign Up
-                        </button>
-                      </div>
-
-                      {/* Animated underline */}
-                      <div className="absolute bottom-0 left-0 right-0 h-px bg-white/10">
-                        <motion.div
-                          className="h-full bg-white/50"
-                          initial={false}
-                          animate={{
-                            left: activeTab === "login" ? "calc(50% - 80px)" : "calc(50% + 20px)",
-                            width: activeTab === "login" ? "60px" : "70px",
-                          }}
-                          transition={{ duration: 0.3, ease: "easeInOut" }}
-                          style={{ position: "absolute" }}
-                        />
-                      </div>
-                    </motion.div>
-                  )}
+                  {/* TODO: Re-enable tabs when sign up is ready */}
+                  {/* Tabs hidden for now - only showing login */}
 
                   {/* Back button for forgot password */}
                   {currentView === "forgot" && (
@@ -486,81 +394,7 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
                       </motion.form>
                     )}
 
-                    {currentView === "signup" && (
-                      <motion.form
-                        key="signup"
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.3 }}
-                        onSubmit={handleSignupSubmit}
-                        className="space-y-6"
-                      >
-                        <InputField
-                          value={signupFullName}
-                          onChange={setSignupFullName}
-                          placeholder="Full Name"
-                          error={signupErrors.fullName}
-                          disabled={isLoading}
-                        />
-                        <InputField
-                          type="email"
-                          value={signupEmail}
-                          onChange={setSignupEmail}
-                          placeholder="Email"
-                          error={signupErrors.email}
-                          disabled={isLoading}
-                        />
-                        <InputField
-                          type="password"
-                          value={signupPassword}
-                          onChange={setSignupPassword}
-                          placeholder="Password"
-                          error={signupErrors.password}
-                          disabled={isLoading}
-                        />
-                        <InputField
-                          type="password"
-                          value={signupConfirmPassword}
-                          onChange={setSignupConfirmPassword}
-                          placeholder="Confirm Password"
-                          error={signupErrors.confirmPassword}
-                          disabled={isLoading}
-                        />
-
-                        {/* Submit button */}
-                        <div className="pt-4">
-                          <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="w-full py-3 text-sm tracking-[0.2em] uppercase text-white/60 hover:text-white/90 border border-white/20 hover:border-white/40 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
-                          >
-                            {isLoading ? (
-                              <span className="flex items-center justify-center gap-2">
-                                <LoadingSpinner />
-                                Creating account...
-                              </span>
-                            ) : (
-                              "Create Account"
-                            )}
-                          </button>
-                        </div>
-
-                        {/* Login link */}
-                        <div className="text-center pt-2">
-                          <span className="text-sm text-white/40">
-                            Already have an account?{" "}
-                            <button
-                              type="button"
-                              onClick={() => handleTabChange("login")}
-                              className="text-white/60 hover:text-white/90 transition-colors"
-                            >
-                              Log in
-                            </button>
-                          </span>
-                        </div>
-                      </motion.form>
-                    )}
+                    {/* TODO: Re-enable signup form when ready */}
 
                     {currentView === "forgot" && (
                       <motion.form
