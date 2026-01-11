@@ -31,13 +31,18 @@ export function Header() {
             {/* Investor Log-In Button */}
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 border border-white/20 hover:border-white/40 transition-all duration-300 group"
+              className="inline-flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 border border-white/20 hover:border-white/40 transition-all duration-300 group"
             >
-              <span className="text-sm md:text-base font-semibold text-white/70 group-hover:text-white tracking-wide">
+              {/* Mobile: compact version */}
+              <span className="md:hidden text-[10px] tracking-[0.1em] uppercase text-white/50 group-hover:text-white/80 transition-colors">
+                Login
+              </span>
+              {/* Desktop: full version */}
+              <span className="hidden md:inline text-base font-semibold text-white/70 group-hover:text-white tracking-wide">
                 ME
               </span>
-              <span className="text-white/30">|</span>
-              <span className="text-[10px] md:text-xs tracking-[0.15em] uppercase text-white/50 group-hover:text-white/80 transition-colors">
+              <span className="hidden md:inline text-white/30">|</span>
+              <span className="hidden md:inline text-xs tracking-[0.15em] uppercase text-white/50 group-hover:text-white/80 transition-colors">
                 Investor Login
               </span>
             </button>
