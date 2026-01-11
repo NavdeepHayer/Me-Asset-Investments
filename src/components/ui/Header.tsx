@@ -31,9 +31,15 @@ export function Header() {
             {/* Investor Log-In Button */}
             <button
               onClick={() => setIsLoginModalOpen(true)}
-              className="px-4 py-2 text-xs tracking-[0.15em] uppercase text-white/50 hover:text-white border border-white/20 hover:border-white/40 transition-all duration-300"
+              className="inline-flex items-center gap-1.5 md:gap-2 px-3 md:px-4 py-2 border border-white/20 hover:border-white/40 transition-all duration-300 group"
             >
-              Investor Log-In
+              <span className="text-sm md:text-base font-semibold text-white/70 group-hover:text-white tracking-wide">
+                ME
+              </span>
+              <span className="text-white/30">|</span>
+              <span className="text-[10px] md:text-xs tracking-[0.15em] uppercase text-white/50 group-hover:text-white/80 transition-colors">
+                Investor Login
+              </span>
             </button>
           </motion.div>
         </div>

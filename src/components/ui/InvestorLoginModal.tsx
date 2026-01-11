@@ -578,12 +578,12 @@ function AnimatedHeader() {
     <div className="relative flex items-center justify-center">
       {/* SVG lines with glow effect */}
       <svg
-        className="absolute inset-0 w-full h-12 overflow-visible"
+        className="absolute inset-0 w-full h-14 overflow-visible"
         preserveAspectRatio="xMidYMid meet"
       >
         <defs>
           <filter id="glow-modal" x="-50%" y="-50%" width="200%" height="200%">
-            <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+            <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
             <feMerge>
               <feMergeNode in="coloredBlur" />
               <feMergeNode in="SourceGraphic" />
@@ -595,10 +595,10 @@ function AnimatedHeader() {
         <motion.line
           x1="0%"
           y1="50%"
-          x2="30%"
+          x2="25%"
           y2="50%"
-          stroke="rgba(255,255,255,0.4)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="2"
           strokeLinecap="round"
           filter="url(#glow-modal)"
           initial={{ pathLength: 0 }}
@@ -608,12 +608,12 @@ function AnimatedHeader() {
 
         {/* Right line */}
         <motion.line
-          x1="70%"
+          x1="75%"
           y1="50%"
           x2="100%"
           y2="50%"
-          stroke="rgba(255,255,255,0.4)"
-          strokeWidth="1"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth="2"
           strokeLinecap="round"
           filter="url(#glow-modal)"
           initial={{ pathLength: 0 }}
@@ -622,18 +622,22 @@ function AnimatedHeader() {
         />
       </svg>
 
-      {/* Text */}
+      {/* Text - matching site branding style */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="relative flex items-center gap-2 md:gap-3 px-4 bg-black/90"
+        className="relative flex items-baseline gap-2 md:gap-3 px-6"
+        style={{ background: 'linear-gradient(to right, transparent, rgba(0,0,0,0.95) 20%, rgba(0,0,0,0.95) 80%, transparent)' }}
       >
-        <span className="text-lg md:text-xl font-semibold text-white tracking-wide">
+        <span
+          className="text-2xl md:text-3xl font-semibold text-white tracking-wide"
+          style={{ fontFamily: 'var(--font-serif)' }}
+        >
           ME
         </span>
-        <span className="text-white/30">|</span>
-        <span className="text-sm md:text-base tracking-[0.15em] uppercase text-white/60">
+        <span className="text-xl md:text-2xl text-white/40 font-light">|</span>
+        <span className="text-sm md:text-lg tracking-[0.12em] md:tracking-[0.15em] uppercase text-white/70 font-medium">
           Investor Login
         </span>
       </motion.div>
