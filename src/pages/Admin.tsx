@@ -8,17 +8,18 @@ import { ContentManagement } from '../components/admin/ContentManagement';
 type Tab = 'users' | 'projects' | 'content';
 
 export function Admin() {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, isAdmin, loading, adminChecked } = useAuth();
   const [activeTab, setActiveTab] = useState<Tab>('users');
 
-  // Redirect if not admin
+  // Redirect if not admin (only after admin status is checked)
   useEffect(() => {
-    if (!loading && (!user || !isAdmin)) {
+    if (!loading && adminChecked && (!user || !isAdmin)) {
       window.location.href = '/';
     }
-  }, [user, isAdmin, loading]);
+  }, [user, isAdmin, loading, adminChecked]);
 
-  if (loading) {
+  // Show loading while checking auth and admin status
+  if (loading || !adminChecked) {
     return (
       <div className="min-h-screen bg-[#2d382c] flex items-center justify-center">
         <div className="text-white/60">Loading...</div>
