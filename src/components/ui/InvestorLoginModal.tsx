@@ -261,7 +261,7 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
           >
             <div className="relative w-full max-w-xl pointer-events-auto">
               {/* Animated border box */}
-              <AnimatedBox isOpen={isOpen} contentHeight={contentHeight} />
+              <AnimatedBox contentHeight={contentHeight} />
 
               {/* Close button */}
               <motion.button
@@ -318,6 +318,7 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
                           onClick={() => handleTabChange("login")}
                           className={`
                             pb-2 text-sm tracking-[0.2em] uppercase transition-colors duration-300
+                            focus:outline-none focus:ring-0 border-none bg-transparent
                             ${activeTab === "login" ? "text-white" : "text-white/40 hover:text-white/60"}
                           `}
                         >
@@ -327,6 +328,7 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
                           onClick={() => handleTabChange("signup")}
                           className={`
                             pb-2 text-sm tracking-[0.2em] uppercase transition-colors duration-300
+                            focus:outline-none focus:ring-0 border-none bg-transparent
                             ${activeTab === "signup" ? "text-white" : "text-white/40 hover:text-white/60"}
                           `}
                         >
@@ -624,20 +626,18 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
 }
 
 // Animated box that draws from top center, splits, and meets at bottom
-function AnimatedBox({ isOpen, contentHeight }: { isOpen: boolean; contentHeight: number }) {
-  const boxRef = useRef<SVGSVGElement>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+function AnimatedBox({ contentHeight }: { contentHeight: number }) {
+  const [dimensions, setDimensions] = useState({ width: 576, height: 500 }); // Default max-w-xl
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateDimensions = () => {
-      if (boxRef.current) {
-        const parent = boxRef.current.parentElement;
-        if (parent) {
-          setDimensions({
-            width: parent.offsetWidth,
-            height: contentHeight || parent.offsetHeight,
-          });
-        }
+      if (containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        setDimensions({
+          width: rect.width,
+          height: contentHeight || rect.height,
+        });
       }
     };
 
@@ -648,67 +648,61 @@ function AnimatedBox({ isOpen, contentHeight }: { isOpen: boolean; contentHeight
 
   const { width, height } = dimensions;
   const strokeWidth = 2;
-  const padding = strokeWidth / 2;
+
+  // Don't render if dimensions aren't set yet
+  if (width === 0 || height === 0) return <div ref={containerRef} className="absolute inset-0" />;
 
   // Path from top center, split left and right, down sides, meet at bottom center
-  const leftPath = `
-    M ${width / 2} ${padding}
-    L ${padding} ${padding}
-    L ${padding} ${height - padding}
-    L ${width / 2} ${height - padding}
-  `;
-
-  const rightPath = `
-    M ${width / 2} ${padding}
-    L ${width - padding} ${padding}
-    L ${width - padding} ${height - padding}
-    L ${width / 2} ${height - padding}
-  `;
+  const leftPath = `M ${width / 2} 0 L 0 0 L 0 ${height} L ${width / 2} ${height}`;
+  const rightPath = `M ${width / 2} 0 L ${width} 0 L ${width} ${height} L ${width / 2} ${height}`;
 
   return (
-    <svg
-      ref={boxRef}
-      className="absolute inset-0 w-full h-full pointer-events-none"
-      style={{ zIndex: 1 }}
-    >
-      <defs>
-        <filter id="glow-box" x="-50%" y="-50%" width="200%" height="200%">
-          <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
-          <feMerge>
-            <feMergeNode in="coloredBlur" />
-            <feMergeNode in="SourceGraphic" />
-          </feMerge>
-        </filter>
-      </defs>
+    <div ref={containerRef} className="absolute inset-0 pointer-events-none" style={{ zIndex: 10 }}>
+      <svg
+        width={width}
+        height={height}
+        className="absolute inset-0"
+        style={{ overflow: 'visible' }}
+      >
+        <defs>
+          <filter id="glow-box" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="1.5" result="coloredBlur" />
+            <feMerge>
+              <feMergeNode in="coloredBlur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-      {/* Left side path */}
-      <motion.path
-        d={leftPath}
-        fill="none"
-        stroke="rgba(255,255,255,0.5)"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        filter="url(#glow-box)"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: isOpen ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-      />
+        {/* Left side path */}
+        <motion.path
+          d={leftPath}
+          fill="none"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          filter="url(#glow-box)"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+        />
 
-      {/* Right side path */}
-      <motion.path
-        d={rightPath}
-        fill="none"
-        stroke="rgba(255,255,255,0.5)"
-        strokeWidth={strokeWidth}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        filter="url(#glow-box)"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: isOpen ? 1 : 0 }}
-        transition={{ duration: 0.8, ease: "easeInOut" }}
-      />
-    </svg>
+        {/* Right side path */}
+        <motion.path
+          d={rightPath}
+          fill="none"
+          stroke="rgba(255,255,255,0.5)"
+          strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          filter="url(#glow-box)"
+          initial={{ pathLength: 0 }}
+          animate={{ pathLength: 1 }}
+          transition={{ duration: 0.8, ease: "easeInOut" }}
+        />
+      </svg>
+    </div>
   );
 }
 
@@ -767,8 +761,7 @@ function AnimatedHeader() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.2 }}
-        className="relative flex items-baseline gap-2 md:gap-3 px-6"
-        style={{ background: 'linear-gradient(to right, transparent, #3A4539 20%, #3A4539 80%, transparent)' }}
+        className="relative flex items-baseline gap-2 md:gap-3"
       >
         <span
           className="text-2xl md:text-3xl font-semibold text-white tracking-wide"
