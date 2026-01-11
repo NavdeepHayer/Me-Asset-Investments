@@ -1,13 +1,16 @@
 import { useState, useCallback, useRef, useEffect, type FormEvent } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToast } from "./Toast";
+import { useAuth } from "../../contexts/AuthContext";
 
 type View = "login" | "signup" | "forgot";
-// type Tab = "login" | "signup"; // TODO: Re-enable when signup is ready
+type Tab = "login" | "signup";
 
 interface FormErrors {
   email?: string;
   password?: string;
+  confirmPassword?: string;
+  fullName?: string;
 }
 
 interface InvestorLoginModalProps {
@@ -29,9 +32,17 @@ const validatePassword = (password: string): string | undefined => {
   return undefined;
 };
 
-// TODO: Re-enable signup validators when ready
-// const validateConfirmPassword = ...
-// const validateFullName = ...
+const validateConfirmPassword = (password: string, confirmPassword: string): string | undefined => {
+  if (!confirmPassword) return "Please confirm your password";
+  if (password !== confirmPassword) return "Passwords do not match";
+  return undefined;
+};
+
+const validateFullName = (name: string): string | undefined => {
+  if (!name) return "Full name is required";
+  if (name.length < 2) return "Name must be at least 2 characters";
+  return undefined;
+};
 
 // Input field component - defined outside to prevent re-creation on every render
 function InputField({
@@ -82,28 +93,30 @@ function InputField({
 
 export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps) {
   const { showToast } = useToast();
+  const { signIn, signUp, resetPassword } = useAuth();
   const contentRef = useRef<HTMLDivElement>(null);
   const [contentHeight, setContentHeight] = useState(0);
 
   // View state
   const [currentView, setCurrentView] = useState<View>("login");
+  const [activeTab, setActiveTab] = useState<Tab>("login");
 
   // Form states
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // TODO: Re-enable signup state when ready
-  // const [signupFullName, setSignupFullName] = useState("");
-  // const [signupEmail, setSignupEmail] = useState("");
-  // const [signupPassword, setSignupPassword] = useState("");
-  // const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
+  // Signup state
+  const [signupFullName, setSignupFullName] = useState("");
+  const [signupEmail, setSignupEmail] = useState("");
+  const [signupPassword, setSignupPassword] = useState("");
+  const [signupConfirmPassword, setSignupConfirmPassword] = useState("");
 
   const [forgotEmail, setForgotEmail] = useState("");
 
   // Error states
   const [loginErrors, setLoginErrors] = useState<FormErrors>({});
-  // const [signupErrors, setSignupErrors] = useState<FormErrors>({});
+  const [signupErrors, setSignupErrors] = useState<FormErrors>({});
   const [forgotErrors, setForgotErrors] = useState<FormErrors>({});
 
   // Loading states
@@ -125,11 +138,17 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
   // Reset form when modal closes
   const handleClose = useCallback(() => {
     setCurrentView("login");
+    setActiveTab("login");
     setLoginEmail("");
     setLoginPassword("");
     setRememberMe(false);
+    setSignupFullName("");
+    setSignupEmail("");
+    setSignupPassword("");
+    setSignupConfirmPassword("");
     setForgotEmail("");
     setLoginErrors({});
+    setSignupErrors({});
     setForgotErrors({});
     onClose();
   }, [onClose]);
@@ -147,8 +166,22 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
     return Object.keys(errors).length === 0;
   };
 
-  // TODO: Re-enable signup validation when ready
-  // const validateSignupForm = (): boolean => { ... };
+  // Signup validation
+  const validateSignupForm = (): boolean => {
+    const errors: FormErrors = {};
+    const fullNameError = validateFullName(signupFullName);
+    const emailError = validateEmail(signupEmail);
+    const passwordError = validatePassword(signupPassword);
+    const confirmPasswordError = validateConfirmPassword(signupPassword, signupConfirmPassword);
+
+    if (fullNameError) errors.fullName = fullNameError;
+    if (emailError) errors.email = emailError;
+    if (passwordError) errors.password = passwordError;
+    if (confirmPasswordError) errors.confirmPassword = confirmPasswordError;
+
+    setSignupErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   // Forgot password validation
   const validateForgotForm = (): boolean => {
@@ -167,23 +200,58 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
     if (!validateLoginForm()) return;
 
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { error } = await signIn(loginEmail, loginPassword);
     setIsLoading(false);
+
+    if (error) {
+      // Handle specific error messages
+      if (error.message.includes('Invalid login credentials')) {
+        showToast("Invalid email or password", "error");
+      } else if (error.message.includes('Email not confirmed')) {
+        showToast("Please check your email to confirm your account", "error");
+      } else {
+        showToast(error.message || "Login failed", "error");
+      }
+      return;
+    }
 
     showToast("Successfully logged in", "success");
     handleClose();
   };
 
-  // TODO: Re-enable signup submit when ready
-  // const handleSignupSubmit = async (e: FormEvent) => { ... };
+  const handleSignupSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!validateSignupForm()) return;
+
+    setIsLoading(true);
+    const { error } = await signUp(signupEmail, signupPassword, signupFullName);
+    setIsLoading(false);
+
+    if (error) {
+      if (error.message.includes('already registered')) {
+        showToast("This email is already registered", "error");
+      } else {
+        showToast(error.message || "Sign up failed", "error");
+      }
+      return;
+    }
+
+    showToast("Account created! Check your email to confirm.", "success");
+    handleClose();
+  };
 
   const handleForgotSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateForgotForm()) return;
 
     setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { error } = await resetPassword(forgotEmail);
     setIsLoading(false);
+
+    if (error) {
+      showToast(error.message || "Failed to send reset link", "error");
+      return;
+    }
 
     showToast("Password reset link sent to your email", "success");
     handleClose();
@@ -257,8 +325,46 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
                     <AnimatedHeader />
                   </motion.div>
 
-                  {/* TODO: Re-enable tabs when sign up is ready */}
-                  {/* Tabs hidden for now - only showing login */}
+                  {/* Tabs for login/signup - HIDDEN: Set to false to hide signup tab */}
+                  {false && currentView !== "forgot" && (
+                    <motion.div
+                      className="flex justify-center gap-8 mb-6"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ delay: 0.6, duration: 0.4 }}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab("login");
+                          setCurrentView("login");
+                          setSignupErrors({});
+                        }}
+                        className={`text-sm tracking-[0.15em] uppercase transition-colors duration-300 pb-1 border-b-2 ${
+                          activeTab === "login"
+                            ? "text-white/80 border-white/40"
+                            : "text-white/40 border-transparent hover:text-white/60"
+                        }`}
+                      >
+                        Login
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setActiveTab("signup");
+                          setCurrentView("signup");
+                          setLoginErrors({});
+                        }}
+                        className={`text-sm tracking-[0.15em] uppercase transition-colors duration-300 pb-1 border-b-2 ${
+                          activeTab === "signup"
+                            ? "text-white/80 border-white/40"
+                            : "text-white/40 border-transparent hover:text-white/60"
+                        }`}
+                      >
+                        Sign Up
+                      </button>
+                    </motion.div>
+                  )}
 
                   {/* Back button for forgot password */}
                   {currentView === "forgot" && (
@@ -394,7 +500,68 @@ export function InvestorLoginModal({ isOpen, onClose }: InvestorLoginModalProps)
                       </motion.form>
                     )}
 
-                    {/* TODO: Re-enable signup form when ready */}
+                    {currentView === "signup" && (
+                      <motion.form
+                        key="signup"
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                        onSubmit={handleSignupSubmit}
+                        className="space-y-6"
+                      >
+                        <InputField
+                          type="text"
+                          value={signupFullName}
+                          onChange={setSignupFullName}
+                          placeholder="Full Name"
+                          error={signupErrors.fullName}
+                          disabled={isLoading}
+                        />
+                        <InputField
+                          type="email"
+                          value={signupEmail}
+                          onChange={setSignupEmail}
+                          placeholder="Email"
+                          error={signupErrors.email}
+                          disabled={isLoading}
+                        />
+                        <InputField
+                          type="password"
+                          value={signupPassword}
+                          onChange={setSignupPassword}
+                          placeholder="Password"
+                          error={signupErrors.password}
+                          disabled={isLoading}
+                        />
+                        <InputField
+                          type="password"
+                          value={signupConfirmPassword}
+                          onChange={setSignupConfirmPassword}
+                          placeholder="Confirm Password"
+                          error={signupErrors.confirmPassword}
+                          disabled={isLoading}
+                        />
+
+                        {/* Submit button */}
+                        <div className="pt-4">
+                          <button
+                            type="submit"
+                            disabled={isLoading}
+                            className="w-full py-3 text-sm tracking-[0.2em] uppercase text-white/60 hover:text-white/90 border border-white/20 hover:border-white/40 transition-all duration-300 disabled:opacity-40 disabled:cursor-not-allowed"
+                          >
+                            {isLoading ? (
+                              <span className="flex items-center justify-center gap-2">
+                                <LoadingSpinner />
+                                Creating account...
+                              </span>
+                            ) : (
+                              "Sign Up"
+                            )}
+                          </button>
+                        </div>
+                      </motion.form>
+                    )}
 
                     {currentView === "forgot" && (
                       <motion.form
