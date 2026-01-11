@@ -17,7 +17,6 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isAdmin: boolean;
-  adminChecked: boolean;
   signIn: (email: string, password: string) => Promise<{ error: AuthError | null }>;
   signUp: (email: string, password: string, fullName?: string) => Promise<{ error: AuthError | null }>;
   signOut: () => Promise<{ error: AuthError | null }>;
@@ -46,7 +45,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [adminChecked, setAdminChecked] = useState(false);
 
   // Check admin status when user changes
   const checkAdminStatus = async (userId: string) => {
@@ -66,34 +64,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (err) {
       console.error('Error checking admin status:', err);
       setIsAdmin(false);
-    } finally {
-      setAdminChecked(true);
     }
   };
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        await checkAdminStatus(session.user.id);
-      } else {
-        setAdminChecked(true);
+        checkAdminStatus(session.user.id);
       }
       setLoading(false);
     });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         if (session?.user) {
-          await checkAdminStatus(session.user.id);
+          checkAdminStatus(session.user.id);
         } else {
           setIsAdmin(false);
-          setAdminChecked(true);
         }
         setLoading(false);
       }
@@ -202,7 +195,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     session,
     loading,
     isAdmin,
-    adminChecked,
     signIn,
     signUp,
     signOut,
