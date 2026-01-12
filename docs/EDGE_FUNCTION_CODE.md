@@ -91,7 +91,11 @@ Deno.serve(async (req) => {
           )
         }
 
-        const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email)
+        // Get redirect URL from request origin or use default
+        const origin = req.headers.get('origin') || 'https://yourdomain.com'
+        const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+          redirectTo: `${origin}/set-password`,
+        })
 
         if (inviteError) {
           return new Response(
@@ -340,7 +344,11 @@ Deno.serve(async (req) => {
           )
         }
 
-        const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email)
+        // Get redirect URL from request origin or use default
+        const origin = req.headers.get('origin') || 'https://yourdomain.com'
+        const { data: inviteData, error: inviteError } = await supabaseAdmin.auth.admin.inviteUserByEmail(email, {
+          redirectTo: `${origin}/set-password`,
+        })
 
         if (inviteError) {
           return new Response(
