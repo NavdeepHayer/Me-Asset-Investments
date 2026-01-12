@@ -10,6 +10,53 @@
     /* Note: scroll-behavior: smooth removed - conflicts with scroll-linked animations */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    color-scheme: dark;
+  }
+
+  /* Style select dropdowns to match dark theme */
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='rgba(255,255,255,0.5)'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.25rem;
+    padding-right: 2.5rem;
+  }
+
+  select option {
+    background-color: #2d382c;
+    color: #e8e6e3;
+    padding: 0.5rem;
+  }
+
+  select option:checked {
+    background-color: #3d4a3c;
+  }
+
+  /* Style input placeholders */
+  input::placeholder,
+  textarea::placeholder {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  /* Fix browser autofill styling to match dark theme */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px #2d382c inset !important;
+    -webkit-text-fill-color: #e8e6e3 !important;
+    caret-color: #e8e6e3 !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  /* Ensure form inputs have dark background */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea {
+    background-color: transparent;
   }
 
   body {
