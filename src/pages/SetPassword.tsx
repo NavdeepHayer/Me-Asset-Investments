@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 type AuthEvent = 'invite' | 'recovery' | 'unknown';
 
 export function SetPassword() {
+  const [fullName, setFullName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -84,6 +85,12 @@ export function SetPassword() {
     e.preventDefault();
     setError(null);
 
+    // Validate full name for invite flow
+    if (authEvent === 'invite' && fullName.trim().length < 2) {
+      setError('Please enter your full name');
+      return;
+    }
+
     if (password.length < 6) {
       setError('Password must be at least 6 characters');
       return;
@@ -97,13 +104,28 @@ export function SetPassword() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.updateUser({
+      // Build update data - include full name for invite flow
+      const updateData: { password: string; data?: { full_name: string } } = {
         password: password,
-      });
+      };
+
+      if (authEvent === 'invite' && fullName.trim()) {
+        updateData.data = { full_name: fullName.trim() };
+      }
+
+      const { data: userData, error } = await supabase.auth.updateUser(updateData);
 
       if (error) {
         setError(error.message);
       } else {
+        // If this is an invite flow, also update the profile with the full name
+        if (authEvent === 'invite' && fullName.trim() && userData?.user?.id) {
+          await supabase
+            .from('profiles')
+            .update({ full_name: fullName.trim() })
+            .eq('id', userData.user.id);
+        }
+
         setSuccess(true);
         // Redirect to home after a short delay
         setTimeout(() => {
@@ -190,6 +212,26 @@ export function SetPassword() {
 
           {!error && (
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Show full name field for invite flow only */}
+            {authEvent === 'invite' && (
+              <div>
+                <label htmlFor="fullName" className="block text-sm font-medium text-white/80 mb-2">
+                  Full Name
+                </label>
+                <input
+                  id="fullName"
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-white/40 focus:outline-none focus:border-white/30 transition-colors"
+                  placeholder="Enter your full name"
+                  required
+                  minLength={2}
+                  autoFocus
+                />
+              </div>
+            )}
+
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-2">
                 New Password
@@ -203,7 +245,7 @@ export function SetPassword() {
                 placeholder="Enter new password"
                 required
                 minLength={6}
-                autoFocus
+                autoFocus={authEvent !== 'invite'}
               />
             </div>
 
