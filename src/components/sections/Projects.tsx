@@ -1,16 +1,22 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { supabase } from "../../lib/supabase";
 import { siteContent } from "../../content/siteContent";
 
+interface Project {
+  id?: string;
+  name: string;
+  location: string;
+  type: string;
+  status: string;
+  description: string;
+  image: string | null;
+  display_order?: number;
+  visible?: boolean;
+}
+
 interface ProjectCardProps {
-  project: {
-    name: string;
-    location: string;
-    type: string;
-    status: string;
-    description: string;
-    image: string | null;
-  };
+  project: Project;
   index: number;
 }
 
@@ -122,14 +128,43 @@ function ProjectCard({ project, index }: ProjectCardProps) {
 }
 
 export function Projects() {
-  const { projects } = siteContent;
-  const initialCount = projects.initialVisibleCount || 6;
+  const { projects: staticProjects } = siteContent;
+  const initialCount = staticProjects.initialVisibleCount || 6;
   const [showAll, setShowAll] = useState(false);
+  const [projects, setProjects] = useState<Project[]>(staticProjects.items);
+  const [_loading, setLoading] = useState(true);
+
+  // Fetch projects from database
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('visible', true)
+          .order('display_order', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching projects:', error);
+          // Keep using static content as fallback
+        } else if (data && data.length > 0) {
+          setProjects(data);
+        }
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        // Keep using static content as fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
 
   const visibleProjects = showAll
-    ? projects.items
-    : projects.items.slice(0, initialCount);
-  const hasMoreProjects = projects.items.length > initialCount;
+    ? projects
+    : projects.slice(0, initialCount);
+  const hasMoreProjects = projects.length > initialCount;
 
   const headingRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: headingProgress } = useScroll({
@@ -152,7 +187,7 @@ export function Projects() {
             Investment Portfolio
           </p>
           <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light text-white/90 tracking-wide">
-            {projects.headline}
+            {staticProjects.headline}
           </h2>
         </motion.div>
 
@@ -161,7 +196,7 @@ export function Projects() {
           <AnimatePresence mode="popLayout">
             {visibleProjects.map((project, index) => (
               <ProjectCard
-                key={project.name + index}
+                key={project.id || project.name + index}
                 project={project}
                 index={index}
               />
@@ -195,7 +230,7 @@ export function Projects() {
             </button>
             {!showAll && (
               <p className="mt-4 text-sm text-white/30">
-                Showing {visibleProjects.length} of {projects.items.length} projects
+                Showing {visibleProjects.length} of {projects.length} projects
               </p>
             )}
           </div>
