@@ -57,7 +57,7 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
           {role}
         </p>
       </div>
-      <p className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-2xl text-white/60 leading-relaxed font-light">
+      <p className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-2xl text-white/60 leading-relaxed font-light whitespace-pre-line">
         {bio}
       </p>
       {link && (
