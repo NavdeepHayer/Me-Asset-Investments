@@ -5,7 +5,8 @@ import { useToast } from '../ui/Toast';
 
 interface SiteContent {
   id: string;
-  content: string;
+  key: string;
+  value: string;
 }
 
 interface TeamMember {
@@ -73,7 +74,7 @@ export function ContentManagement() {
       // Initialize edited content
       const initial: Record<string, string> = {};
       data?.forEach(item => {
-        initial[item.id] = item.content;
+        initial[item.key] = item.value;
       });
       setEditedContent(initial);
     }
@@ -103,16 +104,16 @@ export function ContentManagement() {
   }, []);
 
   // Save content item
-  const handleSaveContent = async (id: string) => {
-    setSavingContent(id);
+  const handleSaveContent = async (key: string) => {
+    setSavingContent(key);
 
     const { error } = await supabase
       .from('site_content')
       .update({
-        content: editedContent[id],
+        value: editedContent[key],
         updated_at: new Date().toISOString(),
       })
-      .eq('id', id);
+      .eq('key', key);
 
     if (error) {
       showToast('Failed to save content', 'error');
@@ -121,16 +122,16 @@ export function ContentManagement() {
       showToast('Content saved', 'success');
       // Update local state
       setSiteContent(siteContent.map(item =>
-        item.id === id ? { ...item, content: editedContent[id] } : item
+        item.key === key ? { ...item, value: editedContent[key] } : item
       ));
     }
     setSavingContent(null);
   };
 
   // Check if content has changed
-  const hasContentChanged = (id: string) => {
-    const original = siteContent.find(item => item.id === id);
-    return original?.content !== editedContent[id];
+  const hasContentChanged = (key: string) => {
+    const original = siteContent.find(item => item.key === key);
+    return original?.value !== editedContent[key];
   };
 
   // Save team member
@@ -248,24 +249,24 @@ export function ContentManagement() {
               <div key={item.id} className="border border-white/10 p-4">
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-sm font-medium text-white">
-                    {contentLabels[item.id] || item.id}
+                    {contentLabels[item.key] || item.key}
                   </label>
-                  {hasContentChanged(item.id) && (
+                  {hasContentChanged(item.key) && (
                     <span className="text-xs text-yellow-400">Unsaved changes</span>
                   )}
                 </div>
                 <textarea
-                  value={editedContent[item.id] || ''}
-                  onChange={(e) => setEditedContent({ ...editedContent, [item.id]: e.target.value })}
-                  rows={item.id.startsWith('footer_') ? 1 : 4}
+                  value={editedContent[item.key] || ''}
+                  onChange={(e) => setEditedContent({ ...editedContent, [item.key]: e.target.value })}
+                  rows={item.key.startsWith('footer_') ? 1 : 4}
                   className="w-full px-3 py-2 bg-white/5 border border-white/20 text-white text-sm focus:outline-none focus:border-white/40 resize-none mb-3"
                 />
                 <button
-                  onClick={() => handleSaveContent(item.id)}
-                  disabled={!hasContentChanged(item.id) || savingContent === item.id}
+                  onClick={() => handleSaveContent(item.key)}
+                  disabled={!hasContentChanged(item.key) || savingContent === item.key}
                   className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {savingContent === item.id ? 'Saving...' : 'Save'}
+                  {savingContent === item.key ? 'Saving...' : 'Save'}
                 </button>
               </div>
             ))
