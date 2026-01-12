@@ -23,7 +23,7 @@ export const siteContent = {
 
   // SAVE philosophy - Stranded Assets Value Enhancement
   savePhilosophy: {
-    text: "Through our SAVE approach – Stranded Assets Value Enhancement – we specialize in repositioning properties that have been overlooked or underperforming. By integrating ESG principles and asset improvement strategies, we transform these opportunities into high-performing investments.",
+    text: "Through our SAVE approach – Stranded Assets Value Enhancement – we specialize in repositioning overlooked or underperforming properties through strategic capital investment and asset enhancement, creating high-performing investments with ESG principles embedded to strengthen long-term performance.",
   },
 
   // Investment approach - the 3 buckets
@@ -133,14 +133,24 @@ export const siteContent = {
         bio: "Strategic advisor and former investment banker with over 20 years’ leadership in global capital markets, track record spanning technology and large-scale real estate consistently scaled high-growth ventures and delivered long-term shareholder value.  Since 2015, funded and developed over £150 million across 500,000 sq ft of UK real estate.  He is Co-Founder, Sponsor, and CFO of JATT Acquisition Corp, a New York listed SPAC, and a key architect in ~US$300 million of Nasdaq fundraising, and fund investments across biotech, technology, and real estate.  Away from business, Verender volunteers as Director for a college in North India offering science and nursing studies to women and girls.",
       },
       {
-        name: "Tarvy Gosal & Jas Randhawa",
-        role: "Managing Directors, Fleetwood Architectural Aluminium",
-        bio: "Tarvy holds a degree in Civil Engineering and brings over two decades of senior leadership experience in the construction sector. After early career roles with a range of construction companies, he co-founded Fleetwood Architectural Aluminium Limited in 2003 and has served as Managing Director since inception. Under his stewardship, FAA has developed into a nationally operating specialist building envelope contractor with annual revenues of approximately £40 million. Tarvy has also invested in a number of early-stage businesses.",
+        name: "Tarvy Gosal",
+        role: "Managing Director, Fleetwood Architectural Aluminium",
+        bio: "Tarvy holds a degree in Civil Engineering and brings over two decades of senior leadership experience in the construction sector. After early career roles with a range of construction companies, he co-founded Fleetwood Architectural Aluminium Limited in 2003 and has served as Managing Director since inception. Under his stewardship, FAA has developed into a nationally operating specialist building envelope contractor with annual revenues of approximately £40 million. Tarvy has also invested in a number of early-stage businesses.\n\nCo-founders of FLEETWOOD ARCHITECTURAL ALUMINIUM\nFleetwood Architectural Aluminium Limited (FAA), one of the UK's leading specialist contractors in the recladding of non-compliant buildings and the delivery of high-quality building envelope solutions. FAA operates nationally and is recognised for delivering complex façade and cladding projects reliably and on time. FAA have delivered over 1 million square feet of façade and cladding works.",
       },
       {
-        name: "Michael Mirelman & Daniel Benton",
-        role: "Directors, GRE Capital",
-        bio: "Each having had 20+ years' experience working across the finance, banking, and real estate sectors, and alongside property developers, investors, and family offices. Recently, both have led over £150+ million real estate finance, development and portfolio management.",
+        name: "Jas Randhawa",
+        role: "Managing Director, Fleetwood Architectural Aluminium",
+        bio: "Jas brings over two decades of experience as an entrepreneur, investor, and senior executive across construction, real assets, and private businesses. Following early career roles within the construction and property sectors, Jas went on to co-found, invest in, and advise a diversified portfolio spanning property, hospitality, healthcare, and alternative investments. His work is characterised by disciplined capital allocation, rigorous risk management, and a long-term focus on sustainable value creation.\n\nCo-founders of FLEETWOOD ARCHITECTURAL ALUMINIUM\nFleetwood Architectural Aluminium Limited (FAA), one of the UK's leading specialist contractors in the recladding of non-compliant buildings and the delivery of high-quality building envelope solutions. FAA operates nationally and is recognised for delivering complex façade and cladding projects reliably and on time. FAA have delivered over 1 million square feet of façade and cladding works.",
+      },
+      {
+        name: "Michael Mirelman",
+        role: "Director, GRE Capital",
+        bio: "Michael has over 15 years of real estate finance and banking experience, beginning his career as a credit analyst at Sumitomo Mitsui and Barclays, where he executed transactions for major listed property companies. Michael then joined Topland Group, where he helped expand the loan book from £85m to £500m and oversaw significant portfolio acquisitions. Before co-founding GRE, he founded Stonegrove Capital, completing over £350m in debt and equity deals.\n\nCo-founders of GRE CAPITAL\nGRE Capital is a real estate lender focused on transactions involving planning risk, asset repositioning and value enhancement, areas avoided by traditional lenders but rich with opportunity. Their expertise in managing complexity and working with best-in-class operators enables them to structure deals that create value for both investors and borrowers. GRE has lent over £200 million using a capital preservation strategy alongside disciplined lending decisions, producing a comprehensive track record of superior risk-adjusted returns.",
+      },
+      {
+        name: "Daniel Benton",
+        role: "Director, GRE Capital",
+        bio: "Daniel brings over two decades of real estate expertise spanning agency, investment, development, and structured finance. After founding and scaling a successful West London estate agency, he co-founded Greymax Limited, building a £250m London-focused portfolio of prime mixed-use assets. Following a full divestment, Daniel transitioned into real estate credit, leveraging hands-on asset management and development experience to structure bespoke lending solutions. His broad sector knowledge underpins GRE's ability to identify value and manage risk through complex real estate cycles.\n\nCo-founders of GRE CAPITAL\nGRE Capital is a real estate lender focused on transactions involving planning risk, asset repositioning and value enhancement, areas avoided by traditional lenders but rich with opportunity. Their expertise in managing complexity and working with best-in-class operators enables them to structure deals that create value for both investors and borrowers. GRE has lent over £200 million using a capital preservation strategy alongside disciplined lending decisions, producing a comprehensive track record of superior risk-adjusted returns.",
       },
     ],
   },

@@ -1092,7 +1092,7 @@ export function PageFlowLine() {
       // Box 3: Framework to Skyline (turns LEFT)
       transitionBoxes.push({
         id: 'framework-to-skyline',
-        label: 'Income player',
+        label: 'Income-driven Strategy',
         centerX: (framework.centerX + skyline.centerX) / 2,
         centerY: frameworkToSkylineTurnY,
         turnDirection: 'left'
@@ -1142,7 +1142,7 @@ export function PageFlowLine() {
       // Box 3: After Framework (within framework section)
       mobileTransitionBoxes.push({
         id: 'mobile-framework-to-skyline',
-        label: 'Income player',
+        label: 'Income-driven Strategy',
         centerX: pageCenter,
         centerY: framework.bottom + boxOffset,
         turnDirection: 'left',

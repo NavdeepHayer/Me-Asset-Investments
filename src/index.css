@@ -163,4 +163,18 @@
     transform: translateZ(0);
     contain: layout style paint;
   }
+
+  /* Gold shimmer animation for Investor Login */
+  .animate-shimmer {
+    animation: shimmer 3s ease-in-out infinite;
+  }
+}
+
+@keyframes shimmer {
+  0%, 100% {
+    background-position: 200% center;
+  }
+  50% {
+    background-position: 0% center;
+  }
 }
