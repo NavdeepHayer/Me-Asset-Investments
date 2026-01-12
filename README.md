@@ -1,73 +1,109 @@
-# React + TypeScript + Vite
+# ME Asset Management
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for ME Asset Management, a discretionary investment firm specializing in income-producing real estate assets across hotels, student housing, and commercial properties.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Frontend**: React 19, TypeScript, Tailwind CSS 4
+- **Build Tool**: Vite
+- **Backend**: Supabase (Authentication, Database, Edge Functions)
+- **Animations**: Framer Motion
+- **Deployment**: DigitalOcean App Platform
 
-## React Compiler
+## Features
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Public Website
+- Company information and investment philosophy
+- Project portfolio showcase
+- Team section
+- Mailing list subscription
 
-## Expanding the ESLint configuration
+### Admin Panel (`/admin`)
+- **User Management**: Invite users via email, manage admin roles, reset passwords, delete users
+- **Project Management**: Add, edit, and manage property projects
+- **Content Management**: Edit site content directly from the database
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Authentication
+- Email/password authentication via Supabase
+- User invitation flow with email verification
+- Password reset functionality
+- Role-based access control (admin/user)
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Getting Started
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Supabase project
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Environment Variables
+
+Create a `.env` file in the root directory:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Installation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+```bash
+# Install dependencies
+npm install
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
 ```
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── admin/        # Admin panel components
+│   ├── sections/     # Page sections (Hero, Projects, Team, etc.)
+│   └── ui/           # Reusable UI components
+├── content/          # Static site content
+├── contexts/         # React contexts (Auth)
+├── hooks/            # Custom React hooks
+├── lib/              # Supabase client setup
+├── pages/            # Page components (Home, Admin, SetPassword)
+└── assets/           # Images and static assets
+```
+
+## Supabase Setup
+
+### Required Tables
+- `profiles` - User profiles with `is_admin` flag
+- `site_content` - Editable site content (key-value pairs)
+- `projects` - Property projects data
+- `mailing_list` - Newsletter subscriptions
+
+### Edge Functions
+- `admin-user-management` - Handles user invitations, password resets, and admin operations
+
+### URL Configuration
+Add these to your Supabase Redirect URLs:
+- `https://your-domain.com/`
+- `https://your-domain.com/set-password`
+- `http://localhost:5173/` (for development)
+- `http://localhost:5173/set-password` (for development)
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run preview` | Preview production build |
+| `npm run lint` | Run ESLint |
+
+## License
+
+Private - All rights reserved.
