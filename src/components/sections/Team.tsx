@@ -1,7 +1,18 @@
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ScrollReveal } from "../ui/ScrollReveal";
+import { supabase } from "../../lib/supabase";
 import { siteContent } from "../../content/siteContent";
+
+interface TeamMember {
+  id?: string;
+  name: string;
+  role: string;
+  bio: string;
+  link?: string;
+  display_order?: number;
+  visible?: boolean;
+}
 
 interface TeamMemberProps {
   name: string;
@@ -64,7 +75,36 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
 }
 
 export function Team() {
-  const { team } = siteContent;
+  const { team: staticTeam } = siteContent;
+  const [members, setMembers] = useState<TeamMember[]>(staticTeam.members);
+  const [_loading, setLoading] = useState(true);
+
+  // Fetch team members from database
+  useEffect(() => {
+    const fetchTeamMembers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('team_members')
+          .select('*')
+          .eq('visible', true)
+          .order('display_order', { ascending: true });
+
+        if (error) {
+          console.error('Error fetching team members:', error);
+          // Keep using static content as fallback
+        } else if (data && data.length > 0) {
+          setMembers(data);
+        }
+      } catch (err) {
+        console.error('Error fetching team members:', err);
+        // Keep using static content as fallback
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTeamMembers();
+  }, []);
 
   return (
     <section className="section-spacing" data-team-section>
@@ -74,19 +114,19 @@ export function Team() {
             data-team-heading
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-light text-white/90 mb-10 sm:mb-14 md:mb-20 lg:mb-24 xl:mb-28 text-center tracking-wide"
           >
-            {team.headline}
+            {staticTeam.headline}
           </h2>
         </ScrollReveal>
 
         {/* Grid layout - 1 col mobile, 2 cols desktop */}
         <div data-team-grid className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 md:gap-16 lg:gap-x-24 lg:gap-y-20 xl:gap-x-32 xl:gap-y-24 2xl:gap-x-40">
-          {team.members.map((member, index) => (
+          {members.map((member, index) => (
             <TeamMember
-              key={member.name}
+              key={member.id || member.name}
               name={member.name}
               role={member.role}
               bio={member.bio}
-              link={"link" in member ? (member.link as string) : undefined}
+              link={member.link}
               index={index}
             />
           ))}

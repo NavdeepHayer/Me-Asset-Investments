@@ -6,7 +6,7 @@ import { useAuth } from "../../contexts/AuthContext";
 
 export function Header() {
   const { company } = siteContent;
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -91,6 +91,16 @@ export function Header() {
                       >
                         Dashboard
                       </a>
+                      {isAdmin && (
+                        <a
+                          href="/admin"
+                          className="block px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          Admin Panel
+                        </a>
+                      )}
+                      <div className="border-t border-white/10 my-1" />
                       <button
                         onClick={handleSignOut}
                         className="w-full text-left px-4 py-2 text-sm text-white/70 hover:text-white hover:bg-white/5 transition-colors"
