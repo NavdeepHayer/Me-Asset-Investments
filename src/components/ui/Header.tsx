@@ -115,13 +115,13 @@ export function Header() {
               // Not logged in - show login button
               <button
                 onClick={() => setIsLoginModalOpen(true)}
-                className="inline-flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 border border-white/20 hover:border-white/40 transition-all duration-300 group"
+                className="inline-flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 border border-white/20 hover:border-amber-400/40 transition-all duration-300 group"
               >
                 <span className="text-xs md:text-base font-semibold text-white/70 group-hover:text-white tracking-wide">
                   ME
                 </span>
-                <span className="text-white/30 text-xs md:text-base">|</span>
-                <span className="text-[8px] md:text-xs tracking-[0.1em] md:tracking-[0.15em] uppercase text-white/50 group-hover:text-white/80 transition-colors">
+                <span className="text-amber-400/50 text-xs md:text-base">|</span>
+                <span className="text-[8px] md:text-xs tracking-[0.1em] md:tracking-[0.15em] uppercase text-amber-400 group-hover:text-amber-300 transition-colors animate-shimmer bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-400 bg-[length:200%_100%] bg-clip-text text-transparent font-medium">
                   Investor Login
                 </span>
               </button>
