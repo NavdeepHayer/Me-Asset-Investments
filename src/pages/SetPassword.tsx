@@ -21,6 +21,19 @@ export function SetPassword() {
       const accessToken = hashParams.get('access_token');
       const refreshToken = hashParams.get('refresh_token');
 
+      // Check for error in URL (expired/invalid link)
+      const errorCode = hashParams.get('error_code');
+      const errorDescription = hashParams.get('error_description');
+
+      if (errorCode || hashParams.get('error')) {
+        const message = errorDescription
+          ? decodeURIComponent(errorDescription.replace(/\+/g, ' '))
+          : 'This link is invalid or has expired.';
+        setError(message);
+        setChecking(false);
+        return;
+      }
+
       if (type === 'invite' || type === 'signup') {
         setAuthEvent('invite');
       } else if (type === 'recovery') {
@@ -164,11 +177,18 @@ export function SetPassword() {
           </p>
 
           {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
-              <p className="text-red-400 text-sm">{error}</p>
+            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-center">
+              <p className="text-red-400 text-sm mb-4">{error}</p>
+              <a
+                href="/"
+                className="inline-block px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm rounded transition-colors"
+              >
+                Return to Homepage
+              </a>
             </div>
           )}
 
+          {!error && (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-white/80 mb-2">
@@ -211,6 +231,7 @@ export function SetPassword() {
               {loading ? 'Setting Password...' : 'Set Password'}
             </button>
           </form>
+          )}
         </div>
 
         {/* Back to home link */}
