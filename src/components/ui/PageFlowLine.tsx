@@ -10,9 +10,9 @@ interface GraphicPosition {
 
 interface TeamMemberPosition {
   index: number;
-  centerX: number;
-  centerY: number;
-  isLeft: boolean; // true if on left side of grid (desktop)
+  top: number;
+  bottom: number;
+  nameSide: 'left' | 'right'; // which side the name/title is on
 }
 
 interface TeamPosition {
@@ -21,6 +21,8 @@ interface TeamPosition {
   headingTop: number;
   headingBottom: number;
   centerX: number;
+  leftEdge: number;
+  rightEdge: number;
   members: TeamMemberPosition[];
 }
 
@@ -132,52 +134,6 @@ function TransitionBox({
         <span style={{ fontSize: labelFontSize }}>{label}</span>
       </div>
     </motion.div>
-  );
-}
-
-// Component for team member branch lines - short animated stubs
-function TeamBranch({
-  member,
-  centerX,
-  scrollYProgress,
-  viewportHeight,
-  scrollableHeight
-}: {
-  member: TeamMemberPosition;
-  centerX: number;
-  scrollYProgress: ReturnType<typeof useScroll>['scrollYProgress'];
-  viewportHeight: number;
-  scrollableHeight: number;
-}) {
-  // Short stub line - 30px in the direction of the member
-  const stubLength = 30;
-  // Determine direction based on member position relative to center line
-  const direction = member.centerX > centerX ? 1 : -1;
-  const branchEndX = centerX + (stubLength * direction);
-
-  // Calculate scroll position when this member's Y enters the viewport
-  const memberScrollY = member.centerY - viewportHeight * 0.6;
-  const branchStart = Math.max(0, Math.min(1, memberScrollY / scrollableHeight));
-  const branchEnd = Math.min(1, branchStart + 0.04); // Animate over 4% of page scroll
-
-  // Animate the end X position from center to full extension
-  const animatedEndX = useTransform(
-    scrollYProgress,
-    [branchStart, branchEnd],
-    [centerX, branchEndX]
-  );
-
-  return (
-    <motion.line
-      x1={centerX}
-      y1={member.centerY}
-      x2={animatedEndX}
-      y2={member.centerY}
-      stroke="rgba(255,255,255,0.5)"
-      strokeWidth="2"
-      strokeLinecap="round"
-      filter="url(#glow-flow)"
-    />
   );
 }
 
@@ -312,12 +268,14 @@ function FlowLines({ positions }: { positions: Positions }) {
   const skylineToCompletedTurnY1 = skyline.bottom + 30; // First turn - go right
   const skylineToCompletedTurnY2 = completed.top - 50; // Second turn - go left toward completed
 
-  // For completed to team: go down center, around heading, then through team section
+  // For completed to team: go down center, around heading, then zigzag through team members
   const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
   const headingAvoidX = teamCenterX + 220; // Go right to clear ME | Team heading
   const completedToTeamTurnY1 = team ? team.headingTop - 30 : 0; // Above heading - go right
-  const completedToTeamTurnY2 = team ? team.headingBottom + 40 : 0; // Below heading - go back to center
+  const completedToTeamTurnY2 = team ? team.headingBottom + 40 : 0; // Below heading
   const teamSectionBottom = team ? team.sectionBottom - 50 : 0; // End point in team section
+  const teamLeftX = team ? team.leftEdge : 40; // Left edge for zigzag
+  const teamRightX = team ? team.rightEdge : window.innerWidth - 40; // Right edge for zigzag
 
   // For mailing list box: line splits at top, goes around both sides, meets at bottom center
   const mailingCenterX = mailing ? mailing.centerX : heroCenter;
@@ -532,16 +490,54 @@ function FlowLines({ positions }: { positions: Positions }) {
               />
             </>
           )}
-          {/* Completed to Team - goes down center, around heading, through team section */}
-          {team && (
-            <>
+          {/* Completed to Team - zigzag pattern through team members */}
+          {team && team.members.length > 0 && (() => {
+            const members = team.members;
+            const firstMember = members[0];
+
+            // Start X based on first member's name side
+            const startX = firstMember.nameSide === 'left' ? teamLeftX : teamRightX;
+
+            // Build the zigzag path
+            let pathSegments: string[] = [];
+
+            // From completed, around heading, to first member's side
+            pathSegments.push(
+              `M ${completed.centerX} ${completed.bottom}`,
+              `L ${completed.centerX} ${completedToTeamTurnY1}`,
+              `L ${headingAvoidX} ${completedToTeamTurnY1}`,
+              `L ${headingAvoidX} ${completedToTeamTurnY2}`,
+              `L ${startX} ${completedToTeamTurnY2}`
+            );
+
+            // Zigzag through each team member
+            members.forEach((member, i) => {
+              const currentX = member.nameSide === 'left' ? teamLeftX : teamRightX;
+
+              // Go down alongside this member (from top to bottom)
+              pathSegments.push(`L ${currentX} ${member.top - 20}`);
+              pathSegments.push(`L ${currentX} ${member.bottom + 20}`);
+
+              // If there's a next member, cross horizontally to their side
+              if (i < members.length - 1) {
+                const nextMember = members[i + 1];
+                const nextX = nextMember.nameSide === 'left' ? teamLeftX : teamRightX;
+                // Cross in the gap between members
+                const crossY = (member.bottom + nextMember.top) / 2;
+                pathSegments.push(`L ${currentX} ${crossY}`);
+                pathSegments.push(`L ${nextX} ${crossY}`);
+              }
+            });
+
+            // End at mailing section (center bottom of team)
+            const lastMember = members[members.length - 1];
+            const lastX = lastMember.nameSide === 'left' ? teamLeftX : teamRightX;
+            pathSegments.push(`L ${lastX} ${teamSectionBottom}`);
+            pathSegments.push(`L ${teamCenterX} ${teamSectionBottom}`);
+
+            return (
               <motion.path
-                d={`M ${completed.centerX} ${completed.bottom}
-                    L ${completed.centerX} ${completedToTeamTurnY1}
-                    L ${headingAvoidX} ${completedToTeamTurnY1}
-                    L ${headingAvoidX} ${completedToTeamTurnY2}
-                    L ${teamCenterX} ${completedToTeamTurnY2}
-                    L ${teamCenterX} ${teamSectionBottom}`}
+                d={pathSegments.join(' ')}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
                 strokeWidth="2"
@@ -550,19 +546,8 @@ function FlowLines({ positions }: { positions: Positions }) {
                 filter="url(#glow-flow)"
                 style={{ pathLength: completedToTeam }}
               />
-              {/* Branch lines to each team member */}
-              {team.members.map((member) => (
-                <TeamBranch
-                  key={member.index}
-                  member={member}
-                  centerX={teamCenterX}
-                  scrollYProgress={scrollYProgress}
-                  viewportHeight={viewportHeight}
-                  scrollableHeight={scrollableHeight}
-                />
-              ))}
-            </>
-          )}
+            );
+          })()}
           {/* Mailing List Box - line splits and goes around both sides */}
           {mailing && (
             <>
@@ -763,29 +748,17 @@ function FlowLines({ positions }: { positions: Positions }) {
               </>
             );
           })()}
+          {/* Mobile: simple straight line through team section */}
           {team && (
-            <>
-              <motion.line
-                x1={completed.centerX} y1={completed.bottom}
-                x2={teamCenterX} y2={teamSectionBottom}
-                stroke="rgba(255,255,255,0.5)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                filter="url(#glow-flow)"
-                style={{ pathLength: completedToTeam }}
-              />
-              {/* Branch lines to each team member */}
-              {team.members.map((member) => (
-                <TeamBranch
-                  key={member.index}
-                  member={member}
-                  centerX={teamCenterX}
-                  scrollYProgress={scrollYProgress}
-                  viewportHeight={viewportHeight}
-                  scrollableHeight={scrollableHeight}
-                />
-              ))}
-            </>
+            <motion.line
+              x1={completed.centerX} y1={completed.bottom}
+              x2={teamCenterX} y2={teamSectionBottom}
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: completedToTeam }}
+            />
           )}
           {/* Mailing List Box - line splits and goes around both sides (mobile) */}
           {mailing && (
@@ -980,9 +953,13 @@ export function PageFlowLine() {
         current = current.offsetParent as HTMLElement;
       }
 
-      // Get horizontal center
-      const sectionRect = teamSection.getBoundingClientRect();
-      const centerX = sectionRect.left + sectionRect.width / 2 + window.scrollX;
+      // Get the content container inside the section (not the full-width section)
+      const contentContainer = teamSection.querySelector('.container-wide') as HTMLElement;
+      const containerRect = contentContainer ? contentContainer.getBoundingClientRect() : teamSection.getBoundingClientRect();
+      const centerX = containerRect.left + containerRect.width / 2 + window.scrollX;
+      // Position line right at the content edges
+      const leftEdge = containerRect.left + window.scrollX + 10;
+      const rightEdge = containerRect.right + window.scrollX - 10;
 
       // Find all team members
       const members: TeamMemberPosition[] = [];
@@ -990,6 +967,8 @@ export function PageFlowLine() {
       memberElements.forEach((el) => {
         const memberEl = el as HTMLElement;
         const index = parseInt(memberEl.getAttribute('data-team-member') || '0', 10);
+        // Get which side the name is on from data attribute (set in Team.tsx)
+        const nameSide = (memberEl.getAttribute('data-team-member-side') as 'left' | 'right') || (index % 2 === 0 ? 'left' : 'right');
 
         // Get position
         let memberOffsetTop = 0;
@@ -999,19 +978,11 @@ export function PageFlowLine() {
           curr = curr.offsetParent as HTMLElement;
         }
 
-        const memberRect = memberEl.getBoundingClientRect();
-        const memberCenterX = memberRect.left + memberRect.width / 2 + window.scrollX;
-        const memberCenterY = memberOffsetTop + memberEl.offsetHeight / 2;
-
-        // On desktop 2-col grid: even indices are left (0, 2, 4), odd are right (1, 3, 5)
-        // But we need to check actual position relative to center
-        const isLeft = memberCenterX < centerX;
-
         members.push({
           index,
-          centerX: memberCenterX,
-          centerY: memberCenterY,
-          isLeft
+          top: memberOffsetTop,
+          bottom: memberOffsetTop + memberEl.offsetHeight,
+          nameSide
         });
       });
 
@@ -1024,6 +995,8 @@ export function PageFlowLine() {
         headingTop: headingOffsetTop,
         headingBottom: headingOffsetTop + teamHeading.offsetHeight,
         centerX,
+        leftEdge,
+        rightEdge,
         members
       };
     }

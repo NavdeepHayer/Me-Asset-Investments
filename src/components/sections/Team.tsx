@@ -33,8 +33,8 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
     offset: ["start 0.7", "start 0.4"]
   });
 
-  // On desktop: left members come from left, right from right
-  // On mobile: alternate left/right based on index
+  // Even indices (0, 2, 4): Name on LEFT, Bio on RIGHT
+  // Odd indices (1, 3, 5): Bio on LEFT, Name on RIGHT
   const isOddIndex = index % 2 === 1;
   const initialX = isOddIndex ? 30 : -30;
 
@@ -42,23 +42,14 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const x = useTransform(scrollYProgress, [0, 1], [initialX, 0]);
 
-  return (
-    <motion.div
-      ref={ref}
-      data-team-member={index}
-      className="h-full"
-      style={{ opacity, x }}
-    >
-      <div className="mb-3 sm:mb-4 lg:mb-6 xl:mb-8">
-        <h3 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white mb-1.5 sm:mb-2 lg:mb-3">
-          {name}
-        </h3>
-        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/40 tracking-wide uppercase">
-          {role}
-        </p>
-      </div>
-      <p className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-2xl text-white/60 leading-relaxed font-light whitespace-pre-line">
-        {bio}
+  // Name/role section
+  const nameSection = (
+    <div className="lg:w-[35%] lg:flex-shrink-0">
+      <h3 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white mb-1.5 sm:mb-2 lg:mb-3">
+        {name}
+      </h3>
+      <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/40 tracking-wide uppercase">
+        {role}
       </p>
       {link && (
         <a
@@ -70,6 +61,53 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
           Visit website
         </a>
       )}
+    </div>
+  );
+
+  // Bio section
+  const bioSection = (
+    <div className="lg:flex-1">
+      <p className="text-lg sm:text-xl md:text-xl lg:text-2xl xl:text-2xl text-white/60 leading-relaxed font-light whitespace-pre-line">
+        {bio}
+      </p>
+    </div>
+  );
+
+  return (
+    <motion.div
+      ref={ref}
+      data-team-member={index}
+      data-team-member-side={isOddIndex ? 'right' : 'left'}
+      style={{ opacity, x }}
+    >
+      {/* Mobile: Stack vertically */}
+      <div className="lg:hidden mb-3 sm:mb-4">
+        <h3 className="text-2xl sm:text-3xl md:text-3xl font-light text-white mb-1.5 sm:mb-2">
+          {name}
+        </h3>
+        <p className="text-sm sm:text-base md:text-lg text-white/40 tracking-wide uppercase">
+          {role}
+        </p>
+      </div>
+      <p className="lg:hidden text-lg sm:text-xl md:text-xl text-white/60 leading-relaxed font-light whitespace-pre-line">
+        {bio}
+      </p>
+      {link && (
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="lg:hidden inline-block mt-4 text-sm sm:text-base text-white/50 hover:text-white/80 transition-colors duration-300 underline underline-offset-4"
+        >
+          Visit website
+        </a>
+      )}
+
+      {/* Desktop: Horizontal row with alternating sides */}
+      <div className={`hidden lg:flex items-start gap-12 xl:gap-16 2xl:gap-20 ${isOddIndex ? 'flex-row-reverse' : 'flex-row'}`}>
+        {nameSection}
+        {bioSection}
+      </div>
     </motion.div>
   );
 }
@@ -118,8 +156,8 @@ export function Team() {
           </h2>
         </ScrollReveal>
 
-        {/* Grid layout - 1 col mobile, 2 cols desktop */}
-        <div data-team-grid className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-12 md:gap-16 lg:gap-x-24 lg:gap-y-20 xl:gap-x-32 xl:gap-y-24 2xl:gap-x-40">
+        {/* Stacked list layout - full width rows */}
+        <div data-team-grid className="flex flex-col gap-16 sm:gap-20 md:gap-24 lg:gap-28 xl:gap-32">
           {members.map((member, index) => (
             <TeamMember
               key={member.id || member.name}
