@@ -953,12 +953,13 @@ export function PageFlowLine() {
         current = current.offsetParent as HTMLElement;
       }
 
-      // Get horizontal center and edges - position line right next to names
-      const sectionRect = teamSection.getBoundingClientRect();
-      const centerX = sectionRect.left + sectionRect.width / 2 + window.scrollX;
-      // Position line very close to content - just 20px from edge
-      const leftEdge = sectionRect.left + window.scrollX + 20;
-      const rightEdge = sectionRect.right + window.scrollX - 20;
+      // Get the content container inside the section (not the full-width section)
+      const contentContainer = teamSection.querySelector('.container-wide') as HTMLElement;
+      const containerRect = contentContainer ? contentContainer.getBoundingClientRect() : teamSection.getBoundingClientRect();
+      const centerX = containerRect.left + containerRect.width / 2 + window.scrollX;
+      // Position line right at the content edges
+      const leftEdge = containerRect.left + window.scrollX + 10;
+      const rightEdge = containerRect.right + window.scrollX - 10;
 
       // Find all team members
       const members: TeamMemberPosition[] = [];
