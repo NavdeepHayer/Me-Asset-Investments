@@ -155,12 +155,14 @@ export const siteContent = {
     ],
   },
 
-  mailingList: {
-    headline: "Stay informed. Join our mailing list for updates on our portfolio and opportunities.",
+  contactForm: {
+    headline: "Let's get in touch. We'd love to hear from you.",
     namePlaceholder: "Name",
     emailPlaceholder: "Email",
-    buttonText: "Subscribe",
-    successMessage: "Thank you for subscribing.",
+    subjectPlaceholder: "Subject",
+    messagePlaceholder: "Your message",
+    buttonText: "Send Message",
+    successMessage: "Thank you for your message. We'll be in touch soon.",
     errorMessage: "Something went wrong. Please try again.",
   },
 
@@ -170,13 +172,6 @@ export const siteContent = {
       email: "verender@meassetmanagement.com",
       person: "Verender Badial",
     },
-    socialLinks: [
-      { name: "LinkedIn", url: "#", icon: "linkedin" },
-    ],
-    legalLinks: [
-      { name: "Privacy", url: "#" },
-      { name: "Terms", url: "#" },
-    ],
   },
 };
 

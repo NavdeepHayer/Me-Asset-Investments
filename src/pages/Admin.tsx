@@ -4,8 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { UserManagement } from '../components/admin/UserManagement';
 import { ProjectManagement } from '../components/admin/ProjectManagement';
 import { ContentManagement } from '../components/admin/ContentManagement';
+import { ContactManagement } from '../components/admin/ContactManagement';
 
-type Tab = 'users' | 'projects' | 'content';
+type Tab = 'users' | 'projects' | 'content' | 'messages';
 
 export function Admin() {
   const { user, isAdmin, loading } = useAuth();
@@ -45,13 +46,14 @@ export function Admin() {
     { id: 'users', label: 'Users' },
     { id: 'projects', label: 'Projects' },
     { id: 'content', label: 'Content' },
+    { id: 'messages', label: 'Messages' },
   ];
 
   return (
     <div className="min-h-screen bg-[#2d382c]">
       {/* Header */}
       <header className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
               <a
@@ -75,7 +77,7 @@ export function Admin() {
 
       {/* Tab Navigation */}
       <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="px-4 sm:px-6 lg:px-8">
           <nav className="flex gap-8" aria-label="Tabs">
             {tabs.map((tab) => (
               <button
@@ -103,10 +105,11 @@ export function Admin() {
       </div>
 
       {/* Tab Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'users' && <UserManagement />}
         {activeTab === 'projects' && <ProjectManagement />}
         {activeTab === 'content' && <ContentManagement />}
+        {activeTab === 'messages' && <ContactManagement />}
       </main>
     </div>
   );
