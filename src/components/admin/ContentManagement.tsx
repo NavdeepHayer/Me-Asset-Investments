@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
+import { TermsPrivacyEditor } from './TermsPrivacyEditor';
 
 interface SiteContent {
   id: string;
@@ -19,7 +20,7 @@ interface TeamMember {
   visible: boolean;
 }
 
-type ContentSection = 'text' | 'team';
+type ContentSection = 'text' | 'team' | 'legal';
 
 const contentLabels: Record<string, string> = {
   intro: 'Introduction',
@@ -237,6 +238,16 @@ export function ContentManagement() {
         >
           Team Members
         </button>
+        <button
+          onClick={() => setActiveSection('legal')}
+          className={`px-4 py-2 text-sm font-medium transition-colors ${
+            activeSection === 'legal'
+              ? 'bg-white text-[#2d382c]'
+              : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+          }`}
+        >
+          Terms & Privacy
+        </button>
       </div>
 
       {/* Text Content Section */}
@@ -336,6 +347,11 @@ export function ContentManagement() {
             </div>
           )}
         </div>
+      )}
+
+      {/* Terms & Privacy Section */}
+      {activeSection === 'legal' && (
+        <TermsPrivacyEditor />
       )}
 
       {/* Edit/Create Team Member Modal */}

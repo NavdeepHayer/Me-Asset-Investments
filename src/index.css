@@ -178,3 +178,56 @@
     background-position: 0% center;
   }
 }
+
+/* Legal content styles for Terms & Privacy modal */
+.legal-content p {
+  margin-bottom: 0.75rem;
+}
+
+.legal-content p:last-child {
+  margin-bottom: 0;
+}
+
+.legal-content strong {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.legal-content ul,
+.legal-content ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.legal-content li {
+  margin-bottom: 0.375rem;
+}
+
+.legal-content a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: underline;
+}
+
+.legal-content a:hover {
+  color: white;
+}
+
+.legal-content h1,
+.legal-content h2,
+.legal-content h3 {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 600;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.legal-content h1 {
+  font-size: 1.25rem;
+}
+
+.legal-content h2 {
+  font-size: 1.125rem;
+}
+
+.legal-content h3 {
+  font-size: 1rem;
+}
