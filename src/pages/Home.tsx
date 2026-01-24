@@ -61,7 +61,7 @@ export function Home() {
   }, []);
 
   return (
-    <>
+    <div className="relative overflow-hidden">
       <Header />
       <PageFlowLine />
 
@@ -102,6 +102,6 @@ export function Home() {
         {/* Footer */}
         <Footer />
       </main>
-    </>
+    </div>
   );
 }
