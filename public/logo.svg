@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 100" width="480" height="100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 100" width="560" height="100">
   <defs>
     <style>
       .logo-text-me { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; }
@@ -6,15 +6,15 @@
     </style>
   </defs>
 
-  <!-- Dark background matching site -->
-  <rect width="480" height="100" fill="#2d3e50"/>
+  <!-- Dark green background matching site #2d382c -->
+  <rect width="560" height="100" fill="#2d382c"/>
 
   <!-- ME text in gold -->
-  <text x="20" y="64" class="logo-text-me" font-size="48" fill="#c9a54d">ME</text>
+  <text x="25" y="64" class="logo-text-me" font-size="48" fill="#c9a54d">ME</text>
 
-  <!-- Separator bar in white/faded -->
-  <text x="85" y="64" font-family="Georgia, serif" font-size="48" font-weight="300" fill="rgba(255,255,255,0.4)">|</text>
+  <!-- Separator bar in white -->
+  <text x="95" y="64" font-family="Georgia, serif" font-size="48" font-weight="300" fill="#ffffff" opacity="0.4">|</text>
 
   <!-- Asset Management text in white -->
-  <text x="110" y="64" class="logo-text-asset" font-size="48" fill="#ffffff">Asset Management</text>
+  <text x="125" y="64" class="logo-text-asset" font-size="48" fill="#ffffff">Asset Management</text>
 </svg>

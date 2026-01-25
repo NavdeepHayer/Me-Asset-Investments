@@ -6,8 +6,8 @@
     </style>
   </defs>
 
-  <!-- Dark background matching site -->
-  <rect width="280" height="140" fill="#2d3e50"/>
+  <!-- Dark green background matching site #2d382c -->
+  <rect width="280" height="140" fill="#2d382c"/>
 
   <!-- ME text in gold - large and centered -->
   <text x="140" y="65" class="logo-me" font-size="56" fill="#c9a54d" text-anchor="middle">ME</text>
