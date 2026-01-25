@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 120" width="280" height="120">
+  <defs>
+    <style>
+      .logo-me { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; }
+      .logo-sub { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; letter-spacing: 0.1em; }
+    </style>
+  </defs>
+
+  <!-- ME text in gold - large and centered -->
+  <text x="140" y="55" class="logo-me" font-size="56" fill="#c9a54d" text-anchor="middle">ME</text>
+
+  <!-- Decorative line -->
+  <line x1="70" y1="72" x2="210" y2="72" stroke="#c9a54d" stroke-width="1" opacity="0.6"/>
+
+  <!-- Asset Management text - smaller below -->
+  <text x="140" y="100" class="logo-sub" font-size="22" fill="#2d3e50" text-anchor="middle">ASSET MANAGEMENT</text>
+</svg>
