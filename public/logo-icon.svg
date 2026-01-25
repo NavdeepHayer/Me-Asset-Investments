@@ -5,8 +5,8 @@
     </style>
   </defs>
 
-  <!-- Background rounded rectangle -->
-  <rect x="0" y="0" width="120" height="120" rx="12" ry="12" fill="#2d3e50"/>
+  <!-- Background matching site color -->
+  <rect x="0" y="0" width="120" height="120" fill="#2d3e50"/>
 
   <!-- ME text in gold -->
   <text x="60" y="76" class="me-text" font-size="52" fill="#c9a54d" text-anchor="middle">ME</text>
