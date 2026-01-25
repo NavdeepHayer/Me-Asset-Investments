@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120">
+  <defs>
+    <style>
+      .me-text { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; }
+    </style>
+  </defs>
+
+  <!-- ME text in gold - no background -->
+  <text x="60" y="76" class="me-text" font-size="52" fill="#c9a54d" text-anchor="middle">ME</text>
+</svg>

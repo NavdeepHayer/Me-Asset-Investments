@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 580 100" width="580" height="100">
+  <defs>
+    <style>
+      .logo-text-me { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; }
+      .logo-text-asset { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
+    </style>
+  </defs>
+
+  <!-- Dark green background matching site #2d382c -->
+  <rect width="580" height="100" fill="#2d382c"/>
+
+  <!-- ME text in gold -->
+  <text x="25" y="64" class="logo-text-me" font-size="48" fill="#c9a54d">ME</text>
+
+  <!-- Separator bar - with more spacing -->
+  <text x="105" y="64" font-family="Georgia, serif" font-size="48" font-weight="300" fill="#ffffff" opacity="0.5">|</text>
+
+  <!-- Asset Management text in white - pushed right for spacing -->
+  <text x="145" y="64" class="logo-text-asset" font-size="48" fill="#ffffff">Asset Management</text>
+</svg>
