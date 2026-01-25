@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 150" width="280" height="150">
+  <defs>
+    <style>
+      .logo-text-me { font-family: Georgia, 'Times New Roman', serif; font-weight: 600; }
+      .logo-text-asset { font-family: Georgia, 'Times New Roman', serif; font-weight: 400; }
+    </style>
+  </defs>
+
+  <!-- Dark green background matching site #2d382c -->
+  <rect width="280" height="150" fill="#2d382c"/>
+
+  <!-- ME | on first line -->
+  <text x="140" y="55" class="logo-text-me" font-size="48" fill="#c9a54d" text-anchor="middle">ME <tspan fill="#ffffff" opacity="0.5" font-weight="300">|</tspan></text>
+
+  <!-- Asset on second line -->
+  <text x="140" y="100" class="logo-text-asset" font-size="32" fill="#ffffff" text-anchor="middle">Asset</text>
+
+  <!-- Management on third line -->
+  <text x="140" y="135" class="logo-text-asset" font-size="32" fill="#ffffff" text-anchor="middle">Management</text>
+</svg>
