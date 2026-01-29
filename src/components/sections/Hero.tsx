@@ -1,11 +1,7 @@
 import { motion } from "framer-motion";
 import { siteContent } from "../../content/siteContent";
 
-interface HeroProps {
-  hasNews?: boolean;
-}
-
-export function Hero({ hasNews = false }: HeroProps) {
+export function Hero() {
   const { company } = siteContent;
 
   // Animation timing constants (in seconds)
@@ -35,41 +31,21 @@ export function Hero({ hasNews = false }: HeroProps) {
   const taglineDelay = logoDelay + 0.5;
 
   // Single continuous path that draws all buildings left to right
-  // Path ending changes based on whether news exists (left vs right side)
-
-  // When news exists: line wraps around LEFT side (goes back from right to left, then down)
-  // When no news: line wraps around RIGHT side (continues right, then down)
-  const skylinePath = hasNews
-    ? `
-      M 0 195
-      L 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
-      L 55 195 L 55 85 L 63 72 L 71 85 L 71 90 L 79 77 L 87 90 L 87 88 L 95 75 L 103 88 L 103 195
-      L 125 195 L 145 20 L 165 195
-      L 180 195 L 180 110 L 184 102 L 184 90 Q 200 55, 216 90 L 216 102 L 220 110 L 220 195
-      L 245 195 L 245 100 Q 245 50, 260 50 Q 275 50, 275 100 L 275 195
-      L 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195
-      L 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195
-      L 400 195
-      L 400 210
-      L 0 210
-      L 0 240
-      L 200 240
-      L 200 280
-    `
-    : `
-      M 0 195
-      L 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
-      L 55 195 L 55 85 L 63 72 L 71 85 L 71 90 L 79 77 L 87 90 L 87 88 L 95 75 L 103 88 L 103 195
-      L 125 195 L 145 20 L 165 195
-      L 180 195 L 180 110 L 184 102 L 184 90 Q 200 55, 216 90 L 216 102 L 220 110 L 220 195
-      L 245 195 L 245 100 Q 245 50, 260 50 Q 275 50, 275 100 L 275 195
-      L 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195
-      L 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195
-      L 400 195
-      L 400 220
-      L 200 220
-      L 200 280
-    `;
+  // then wraps around right side and down to center
+  const skylinePath = `
+    M 0 195
+    L 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
+    L 55 195 L 55 85 L 63 72 L 71 85 L 71 90 L 79 77 L 87 90 L 87 88 L 95 75 L 103 88 L 103 195
+    L 125 195 L 145 20 L 165 195
+    L 180 195 L 180 110 L 184 102 L 184 90 Q 200 55, 216 90 L 216 102 L 220 110 L 220 195
+    L 245 195 L 245 100 Q 245 50, 260 50 Q 275 50, 275 100 L 275 195
+    L 295 195 L 295 75 L 305 65 L 315 65 L 325 75 L 325 195
+    L 340 195 L 340 120 L 345 115 L 345 95 L 350 90 L 350 70 L 360 70 L 360 90 L 365 95 L 365 115 L 370 120 L 370 195
+    L 400 195
+    L 400 220
+    L 200 220
+    L 200 280
+  `;
 
   return (
     <section className="min-h-screen flex items-center justify-center relative overflow-hidden" data-hero>
@@ -374,13 +350,8 @@ export function Hero({ hasNews = false }: HeroProps) {
       />
 
       {/* Content - Desktop: rises up from behind skyline, Mobile: positioned above skyline */}
-      {/* Position: left when news exists, right when no news */}
       <div
-        className={`container-wide relative z-10 px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh] ${
-          hasNews
-            ? 'text-left pl-8 sm:pl-12 md:pl-16 lg:pl-24'
-            : 'text-right pr-8 sm:pr-12 md:pr-16 lg:pr-24'
-        }`}
+        className="container-wide relative z-10 px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh] text-right pr-8 sm:pr-12 md:pr-16 lg:pr-24"
         style={{ transform: 'translateZ(0)' }}
       >
         <motion.div
@@ -400,9 +371,7 @@ export function Hero({ hasNews = false }: HeroProps) {
           </h1>
         </motion.div>
         <motion.p
-          className={`text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl ${
-            hasNews ? '' : 'ml-auto'
-          }`}
+          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl ml-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}

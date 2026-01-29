@@ -13,11 +13,6 @@ interface TextContent {
   mission: string;
 }
 
-interface NewsItem {
-  id: string;
-  visible: boolean;
-}
-
 export function Home() {
   const staticContent = siteContent;
   const [content, setContent] = useState<TextContent>({
@@ -28,28 +23,6 @@ export function Home() {
     mission: staticContent.mission.text,
   });
   const [_loading, setLoading] = useState(true);
-  const [hasNews, setHasNews] = useState(false);
-
-  // Fetch news count to determine layout
-  useEffect(() => {
-    const checkNewsExists = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('news')
-          .select('id')
-          .eq('visible', true)
-          .limit(1);
-
-        if (!error && data && data.length > 0) {
-          setHasNews(true);
-        }
-      } catch (err) {
-        console.error('Error checking news:', err);
-      }
-    };
-
-    checkNewsExists();
-  }, []);
 
   // Fetch text content from database
   useEffect(() => {
@@ -94,7 +67,7 @@ export function Home() {
 
       <main>
         {/* Hero with ME branding */}
-        <Hero hasNews={hasNews} />
+        <Hero />
 
         {/* Intro - with crane graphic */}
         <ContentBlock text={content.intro} graphic="crane" graphicPosition="right" />
