@@ -90,11 +90,11 @@ export function Home() {
         {/* Projects Section */}
         <Projects />
 
-        {/* News Section */}
-        <News />
-
         {/* Completed Building - represents finished investment */}
         <ContentBlock text="" graphic="completed" graphicPosition="left" />
+
+        {/* News Section */}
+        <News />
 
         {/* Team Section */}
         <Team />
