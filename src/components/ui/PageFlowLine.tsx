@@ -218,12 +218,12 @@ function FlowLines({ positions }: { positions: Positions }) {
       craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
       blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
       frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
-      // Skyline to News: start after skyline internal flow completes, route right around Projects then left to News
-      skylineToNews: [localToGlobal(skyline, 0.78), newsToGlobal(0.3)] as [number, number],
-      // News to Completed: continue down left side of News to completed
-      newsToCompleted: [newsToGlobal(0.3), localToGlobal(completed, 0.08)] as [number, number],
-      // Fallback skyline to completed (when no news section exists)
+      // Skyline to Completed: route right around Projects to completed
       skylineToCompleted: [localToGlobal(skyline, 0.78), localToGlobal(completed, 0.08)] as [number, number],
+      // Completed to News: go left from completed to News section
+      completedToNews: [localToGlobal(completed, 0.78), newsToGlobal(0.3)] as [number, number],
+      // News to Team transition (replaces old newsToCompleted)
+      newsToTeam: [newsToGlobal(0.5), teamToGlobal(0.1)] as [number, number],
       // Completed to Team: start after completed internal flow completes, draw through Team section
       completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
       // Team to Mailing box: start after team section, both sides animate together
@@ -242,9 +242,9 @@ function FlowLines({ positions }: { positions: Positions }) {
   const craneToBlueprint = useTransform(scrollYProgress, ranges.craneToBlueprint, [0, 1]);
   const blueprintToFramework = useTransform(scrollYProgress, ranges.blueprintToFramework, [0, 1]);
   const frameworkToSkyline = useTransform(scrollYProgress, ranges.frameworkToSkyline, [0, 1]);
-  const skylineToNews = useTransform(scrollYProgress, ranges.skylineToNews, [0, 1]);
-  const newsToCompleted = useTransform(scrollYProgress, ranges.newsToCompleted, [0, 1]);
   const skylineToCompleted = useTransform(scrollYProgress, ranges.skylineToCompleted, [0, 1]);
+  const completedToNews = useTransform(scrollYProgress, ranges.completedToNews, [0, 1]);
+  const newsToTeam = useTransform(scrollYProgress, ranges.newsToTeam, [0, 1]);
   const completedToTeam = useTransform(scrollYProgress, ranges.completedToTeam, [0, 1]);
   const teamToMailingBox = useTransform(scrollYProgress, ranges.teamToMailingBox, [0, 1]);
 
@@ -286,18 +286,16 @@ function FlowLines({ positions }: { positions: Positions }) {
   const halfBoxWidth = boxWidth / 2 + boxPadding;
   const halfBoxHeight = boxHeight / 2 + boxPadding;
 
-  // For skyline to completed: route down the right side, around Projects, then LEFT around News
+  // For skyline to completed: route down the right side, around Projects
   const rightSideMarginX = window.innerWidth - 80; // Right edge of viewport
   const leftSideMarginX = 80; // Left edge of viewport
   const skylineToProjectsTurnY = skyline.bottom + 30; // First turn - go right around Projects
+  const skylineToCompletedTurnY = completed.top - 50; // Turn point to go toward completed
 
-  // News section routing (goes LEFT for variety)
-  const newsTop = news ? news.sectionTop : completed.top - 100;
-  const newsBottom = news ? news.sectionBottom : completed.top - 50;
-
-  // Transition point: where line switches from right side to left side (between Projects and News)
-  const projectsToNewsTurnY = news ? news.sectionTop - 30 : completed.top - 80;
-  const newsToCompletedTurnY = completed.top - 50; // Turn point to go toward completed
+  // News section routing (News is now AFTER Completed, goes LEFT)
+  const newsTop = news ? news.sectionTop : 0;
+  const newsBottom = news ? news.sectionBottom : 0;
+  const completedToNewsTurnY = news ? news.sectionTop - 30 : 0; // Turn point from completed to news
 
   // For completed to team: go down center, around heading, then zigzag through team members
   const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
@@ -476,54 +474,20 @@ function FlowLines({ positions }: { positions: Positions }) {
               />
             </>
           )}
-          {/* Skyline to News to Completed - goes RIGHT around Projects, then LEFT around News */}
-          {news ? (
+          {/* Skyline to Completed - goes RIGHT around Projects */}
+          {skylineToBoxConfig && (
             <>
-              {/* Part 1: Skyline to News - goes right around Projects, then crosses to left for News */}
+              {/* Top path around box */}
               <motion.path
                 d={`M ${skyline.centerX} ${skyline.bottom}
                     L ${skyline.centerX} ${skylineToProjectsTurnY}
                     L ${rightSideMarginX} ${skylineToProjectsTurnY}
-                    L ${rightSideMarginX} ${projectsToNewsTurnY}
-                    L ${leftSideMarginX} ${projectsToNewsTurnY}
-                    L ${leftSideMarginX} ${newsTop}`}
-                fill="none"
-                stroke="rgba(255,255,255,0.5)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                filter="url(#glow-flow)"
-                style={{ pathLength: skylineToNews }}
-              />
-              {/* Part 2: News to Completed - continues down left side, then to completed */}
-              <motion.path
-                d={`M ${leftSideMarginX} ${newsTop}
-                    L ${leftSideMarginX} ${newsBottom}
-                    L ${leftSideMarginX} ${newsToCompletedTurnY}
-                    L ${completed.centerX} ${newsToCompletedTurnY}
-                    L ${completed.centerX} ${completed.top}`}
-                fill="none"
-                stroke="rgba(255,255,255,0.5)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                filter="url(#glow-flow)"
-                style={{ pathLength: newsToCompleted }}
-              />
-            </>
-          ) : skylineToBoxConfig && (
-            <>
-              {/* Fallback: Original path when no news section (with transition box) */}
-              <motion.path
-                d={`M ${skyline.centerX} ${skyline.bottom}
-                    L ${skyline.centerX} ${skylineToProjectsTurnY}
-                    L ${rightSideMarginX} ${skylineToProjectsTurnY}
-                    L ${rightSideMarginX} ${newsToCompletedTurnY}
-                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${newsToCompletedTurnY}
+                    L ${rightSideMarginX} ${skylineToCompletedTurnY}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY}
                     L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToBoxConfig.centerY - halfBoxHeight}
                     L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToBoxConfig.centerY - halfBoxHeight}
-                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${newsToCompletedTurnY}
-                    L ${completed.centerX} ${newsToCompletedTurnY}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY}
+                    L ${completed.centerX} ${skylineToCompletedTurnY}
                     L ${completed.centerX} ${completed.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -533,16 +497,17 @@ function FlowLines({ positions }: { positions: Positions }) {
                 filter="url(#glow-flow)"
                 style={{ pathLength: skylineToCompleted }}
               />
+              {/* Bottom path around box */}
               <motion.path
                 d={`M ${skyline.centerX} ${skyline.bottom}
                     L ${skyline.centerX} ${skylineToProjectsTurnY}
                     L ${rightSideMarginX} ${skylineToProjectsTurnY}
-                    L ${rightSideMarginX} ${newsToCompletedTurnY}
-                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${newsToCompletedTurnY}
+                    L ${rightSideMarginX} ${skylineToCompletedTurnY}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY}
                     L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToBoxConfig.centerY + halfBoxHeight}
                     L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToBoxConfig.centerY + halfBoxHeight}
-                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${newsToCompletedTurnY}
-                    L ${completed.centerX} ${newsToCompletedTurnY}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY}
+                    L ${completed.centerX} ${skylineToCompletedTurnY}
                     L ${completed.centerX} ${completed.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -554,7 +519,24 @@ function FlowLines({ positions }: { positions: Positions }) {
               />
             </>
           )}
-          {/* Completed to Team - zigzag pattern through team members */}
+          {/* Completed to News - goes LEFT to News section */}
+          {news && (
+            <motion.path
+              d={`M ${completed.centerX} ${completed.bottom}
+                  L ${completed.centerX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${newsTop}
+                  L ${leftSideMarginX} ${newsBottom}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: completedToNews }}
+            />
+          )}
+          {/* News to Team - from News section, around heading, zigzag through team members */}
           {team && team.members.length > 0 && (() => {
             const members = team.members;
             const firstMember = members[0];
@@ -565,10 +547,14 @@ function FlowLines({ positions }: { positions: Positions }) {
             // Build the zigzag path
             let pathSegments: string[] = [];
 
-            // From completed, around heading, to first member's side
+            // Start from News section (left side) if news exists, otherwise from completed
+            const startY = news ? newsBottom : completed.bottom;
+            const startXPos = news ? leftSideMarginX : completed.centerX;
+
+            // From news/completed, around heading, to first member's side
             pathSegments.push(
-              `M ${completed.centerX} ${completed.bottom}`,
-              `L ${completed.centerX} ${completedToTeamTurnY1}`,
+              `M ${startXPos} ${startY}`,
+              `L ${startXPos} ${completedToTeamTurnY1}`,
               `L ${headingAvoidX} ${completedToTeamTurnY1}`,
               `L ${headingAvoidX} ${completedToTeamTurnY2}`,
               `L ${startX} ${completedToTeamTurnY2}`
@@ -608,7 +594,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#glow-flow)"
-                style={{ pathLength: completedToTeam }}
+                style={{ pathLength: news ? newsToTeam : completedToTeam }}
               />
             );
           })()}
@@ -812,49 +798,35 @@ function FlowLines({ positions }: { positions: Positions }) {
               </>
             );
           })()}
-          {/* Mobile: News section routing (left side) */}
+          {/* Mobile: Completed to News section routing (left side) */}
           {news && (
-            <>
-              {/* Skyline to News: down, then left to news section */}
-              <motion.path
-                d={`M ${skyline.centerX} ${skyline.bottom + 100}
-                    L ${skyline.centerX} ${projectsToNewsTurnY - 20}
-                    L ${leftSideMarginX} ${projectsToNewsTurnY - 20}
-                    L ${leftSideMarginX} ${newsBottom}`}
-                fill="none"
-                stroke="rgba(255,255,255,0.5)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                filter="url(#glow-flow)"
-                style={{ pathLength: skylineToNews }}
-              />
-              {/* News to Completed */}
-              <motion.path
-                d={`M ${leftSideMarginX} ${newsBottom}
-                    L ${leftSideMarginX} ${newsToCompletedTurnY}
-                    L ${completed.centerX} ${newsToCompletedTurnY}
-                    L ${completed.centerX} ${completed.top}`}
-                fill="none"
-                stroke="rgba(255,255,255,0.5)"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                filter="url(#glow-flow)"
-                style={{ pathLength: newsToCompleted }}
-              />
-            </>
+            <motion.path
+              d={`M ${completed.centerX} ${completed.bottom}
+                  L ${completed.centerX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${newsTop}
+                  L ${leftSideMarginX} ${newsBottom}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: completedToNews }}
+            />
           )}
-          {/* Mobile: simple straight line through team section */}
+          {/* Mobile: simple straight line through team section (from News if exists) */}
           {team && (
             <motion.line
-              x1={completed.centerX} y1={completed.bottom}
-              x2={teamCenterX} y2={teamSectionBottom}
+              x1={news ? leftSideMarginX : completed.centerX}
+              y1={news ? newsBottom : completed.bottom}
+              x2={teamCenterX}
+              y2={teamSectionBottom}
               stroke="rgba(255,255,255,0.5)"
               strokeWidth="2"
               strokeLinecap="round"
               filter="url(#glow-flow)"
-              style={{ pathLength: completedToTeam }}
+              style={{ pathLength: news ? newsToTeam : completedToTeam }}
             />
           )}
           {/* Mailing List Box - line splits and goes around both sides (mobile) */}
