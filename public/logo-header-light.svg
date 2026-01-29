@@ -9,10 +9,10 @@
   <!-- White background -->
   <rect x="0" y="0" width="360" height="50" fill="white"/>
 
-  <!-- ME text in gold -->
-  <text x="15" y="34" class="me-text" font-size="28" fill="#c9a54d">ME</text>
+  <!-- ME text in green -->
+  <text x="15" y="34" class="me-text" font-size="28" fill="#2d382c">ME</text>
 
-  <!-- Separator bar in green -->
+  <!-- Separator bar in green/faded -->
   <text x="68" y="34" font-family="Georgia, serif" font-size="28" font-weight="300" fill="#2d382c" opacity="0.3">|</text>
 
   <!-- ASSET MANAGEMENT in green, uppercase, tracked -->
