@@ -137,11 +137,10 @@ export function NewsDetail() {
 
             {/* Main content */}
             {news.content && (
-              <div className="text-base sm:text-lg text-white/60 font-light leading-relaxed space-y-6">
-                {news.content.split('\n\n').map((paragraph, index) => (
-                  <p key={index}>{paragraph}</p>
-                ))}
-              </div>
+              <div
+                className="news-content text-base sm:text-lg text-white/60 font-light leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: news.content }}
+              />
             )}
 
             {/* Quote */}
@@ -176,6 +175,54 @@ export function NewsDetail() {
       </main>
 
       <Footer />
+
+      <style>{`
+        .news-content p {
+          margin-bottom: 1.5rem;
+        }
+        .news-content h1 {
+          font-size: 1.75rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.85);
+          margin: 2rem 0 1rem;
+        }
+        .news-content h2 {
+          font-size: 1.5rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.8);
+          margin: 1.75rem 0 1rem;
+        }
+        .news-content h3 {
+          font-size: 1.25rem;
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.75);
+          margin: 1.5rem 0 0.75rem;
+        }
+        .news-content ul,
+        .news-content ol {
+          margin: 1rem 0;
+          padding-left: 1.5rem;
+        }
+        .news-content li {
+          margin-bottom: 0.5rem;
+        }
+        .news-content a {
+          color: rgba(255, 255, 255, 0.8);
+          text-decoration: underline;
+          text-underline-offset: 2px;
+          transition: color 0.2s;
+        }
+        .news-content a:hover {
+          color: rgba(255, 255, 255, 1);
+        }
+        .news-content strong {
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.7);
+        }
+        .news-content em {
+          font-style: italic;
+        }
+      `}</style>
     </div>
   );
 }

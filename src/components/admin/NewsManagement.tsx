@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
+import { RichTextEditor } from './RichTextEditor';
 
 interface NewsItem {
   id: string;
@@ -340,12 +341,10 @@ export function NewsManagement() {
 
                 <div>
                   <label className="block text-xs font-medium text-white/60 mb-1">Full Content</label>
-                  <textarea
+                  <RichTextEditor
                     value={editingNews.content}
-                    onChange={(e) => setEditingNews({ ...editingNews, content: e.target.value })}
-                    rows={6}
-                    className="w-full px-3 py-2 bg-white/5 border border-white/20 text-white text-sm focus:outline-none focus:border-white/40 resize-none"
-                    placeholder="Full article content (use double line breaks for paragraphs)..."
+                    onChange={(value) => setEditingNews({ ...editingNews, content: value })}
+                    placeholder="Full article content..."
                   />
                 </div>
 
