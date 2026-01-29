@@ -7,14 +7,14 @@
   </defs>
 
   <!-- White background -->
-  <rect width="360" height="50" fill="#ffffff"/>
+  <rect x="0" y="0" width="360" height="50" fill="white"/>
 
   <!-- ME text in gold -->
   <text x="15" y="34" class="me-text" font-size="28" fill="#c9a54d">ME</text>
 
-  <!-- Separator bar in green/30 -->
+  <!-- Separator bar in green -->
   <text x="68" y="34" font-family="Georgia, serif" font-size="28" font-weight="300" fill="#2d382c" opacity="0.3">|</text>
 
   <!-- ASSET MANAGEMENT in green, uppercase, tracked -->
-  <text x="95" y="33" class="asset-text" font-size="18" fill="#2d382c" opacity="0.85">ASSET MANAGEMENT</text>
+  <text x="95" y="33" class="asset-text" font-size="18" fill="#2d382c">ASSET MANAGEMENT</text>
 </svg>
