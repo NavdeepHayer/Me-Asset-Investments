@@ -3,10 +3,11 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { UserManagement } from '../components/admin/UserManagement';
 import { ProjectManagement } from '../components/admin/ProjectManagement';
+import { NewsManagement } from '../components/admin/NewsManagement';
 import { ContentManagement } from '../components/admin/ContentManagement';
 import { ContactManagement } from '../components/admin/ContactManagement';
 
-type Tab = 'users' | 'projects' | 'content' | 'messages';
+type Tab = 'users' | 'projects' | 'news' | 'content' | 'messages';
 
 export function Admin() {
   const { user, isAdmin, loading } = useAuth();
@@ -45,6 +46,7 @@ export function Admin() {
   const tabs: { id: Tab; label: string }[] = [
     { id: 'users', label: 'Users' },
     { id: 'projects', label: 'Projects' },
+    { id: 'news', label: 'News' },
     { id: 'content', label: 'Content' },
     { id: 'messages', label: 'Messages' },
   ];
@@ -108,6 +110,7 @@ export function Admin() {
       <main className="px-4 sm:px-6 lg:px-8 py-8">
         {activeTab === 'users' && <UserManagement />}
         {activeTab === 'projects' && <ProjectManagement />}
+        {activeTab === 'news' && <NewsManagement />}
         {activeTab === 'content' && <ContentManagement />}
         {activeTab === 'messages' && <ContactManagement />}
       </main>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Hero, ContentBlock, TextSection, Projects, Team, MailingList, Footer } from "../components/sections";
+import { Hero, ContentBlock, TextSection, Projects, News, Team, MailingList, Footer } from "../components/sections";
 import { Header } from "../components/ui/Header";
 import { PageFlowLine } from "../components/ui/PageFlowLine";
 import { supabase } from "../lib/supabase";
@@ -89,6 +89,9 @@ export function Home() {
 
         {/* Projects Section */}
         <Projects />
+
+        {/* News Section */}
+        <News />
 
         {/* Completed Building - represents finished investment */}
         <ContentBlock text="" graphic="completed" graphicPosition="left" />
