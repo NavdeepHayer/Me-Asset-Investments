@@ -1,7 +1,11 @@
 import { motion } from "framer-motion";
 import { siteContent } from "../../content/siteContent";
 
-export function Hero() {
+interface HeroProps {
+  hasNews?: boolean;
+}
+
+export function Hero({ hasNews = false }: HeroProps) {
   const { company } = siteContent;
 
   // Animation timing constants (in seconds)
@@ -350,7 +354,15 @@ export function Hero() {
       />
 
       {/* Content - Desktop: rises up from behind skyline, Mobile: positioned above skyline */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh]" style={{ transform: 'translateZ(0)' }}>
+      {/* Position: left when news exists, right when no news */}
+      <div
+        className={`container-wide relative z-10 px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh] ${
+          hasNews
+            ? 'text-left pl-8 sm:pl-12 md:pl-16 lg:pl-24'
+            : 'text-right pr-8 sm:pr-12 md:pr-16 lg:pr-24'
+        }`}
+        style={{ transform: 'translateZ(0)' }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -368,7 +380,9 @@ export function Hero() {
           </h1>
         </motion.div>
         <motion.p
-          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
+          className={`text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl ${
+            hasNews ? '' : 'ml-auto'
+          }`}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}
