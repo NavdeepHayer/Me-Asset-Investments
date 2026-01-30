@@ -16,6 +16,7 @@ interface TeamMember {
   role: string;
   bio: string;
   image: string;
+  linkedin_url: string;
   display_order: number;
   visible: boolean;
 }
@@ -38,6 +39,7 @@ const emptyTeamMember: Omit<TeamMember, 'id'> = {
   role: '',
   bio: '',
   image: '',
+  linkedin_url: '',
   display_order: 0,
   visible: true,
 };
@@ -148,6 +150,7 @@ export function ContentManagement() {
           role: member.role,
           bio: member.bio,
           image: member.image,
+          linkedin_url: member.linkedin_url,
           display_order: member.display_order,
           visible: member.visible,
         })
@@ -169,6 +172,7 @@ export function ContentManagement() {
           role: member.role,
           bio: member.bio,
           image: member.image,
+          linkedin_url: member.linkedin_url,
           display_order: member.display_order,
           visible: member.visible,
         });
@@ -423,6 +427,17 @@ export function ContentManagement() {
                     value={editingMember.image}
                     onChange={(e) => setEditingMember({ ...editingMember, image: e.target.value })}
                     placeholder="/images/team/name.jpeg"
+                    className="w-full px-3 py-2 bg-white/5 border border-white/20 text-white text-sm focus:outline-none focus:border-white/40"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-medium text-white/60 mb-1">LinkedIn URL</label>
+                  <input
+                    type="text"
+                    value={editingMember.linkedin_url}
+                    onChange={(e) => setEditingMember({ ...editingMember, linkedin_url: e.target.value })}
+                    placeholder="https://linkedin.com/in/username"
                     className="w-full px-3 py-2 bg-white/5 border border-white/20 text-white text-sm focus:outline-none focus:border-white/40"
                   />
                 </div>

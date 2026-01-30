@@ -10,6 +10,7 @@ interface TeamMember {
   role: string;
   bio: string;
   link?: string;
+  linkedin_url?: string;
   display_order?: number;
   visible?: boolean;
 }
@@ -19,10 +20,11 @@ interface TeamMemberProps {
   role: string;
   bio: string;
   link?: string;
+  linkedin_url?: string;
   index: number;
 }
 
-function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
+function TeamMember({ name, role, bio, link, linkedin_url, index }: TeamMemberProps) {
   const ref = useRef<HTMLDivElement>(null);
 
   // Track scroll progress for this element
@@ -48,9 +50,24 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
       <h3 className="text-2xl sm:text-3xl md:text-3xl lg:text-4xl xl:text-5xl font-light text-white mb-1.5 sm:mb-2 lg:mb-3">
         {name}
       </h3>
-      <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/40 tracking-wide uppercase">
-        {role}
-      </p>
+      <div className="flex items-center gap-3">
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/40 tracking-wide uppercase">
+          {role}
+        </p>
+        {linkedin_url && (
+          <a
+            href={linkedin_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-white/40 hover:text-white/80 transition-colors duration-300"
+            aria-label={`${name}'s LinkedIn profile`}
+          >
+            <svg className="w-5 h-5 lg:w-6 lg:h-6" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+          </a>
+        )}
+      </div>
       {link && (
         <a
           href={link}
@@ -85,9 +102,24 @@ function TeamMember({ name, role, bio, link, index }: TeamMemberProps) {
         <h3 className="text-2xl sm:text-3xl md:text-3xl font-light text-white mb-1.5 sm:mb-2">
           {name}
         </h3>
-        <p className="text-sm sm:text-base md:text-lg text-white/40 tracking-wide uppercase">
-          {role}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm sm:text-base md:text-lg text-white/40 tracking-wide uppercase">
+            {role}
+          </p>
+          {linkedin_url && (
+            <a
+              href={linkedin_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/40 hover:text-white/80 transition-colors duration-300"
+              aria-label={`${name}'s LinkedIn profile`}
+            >
+              <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+            </a>
+          )}
+        </div>
       </div>
       <p className="lg:hidden text-lg sm:text-xl md:text-xl text-white/60 leading-relaxed font-light whitespace-pre-line">
         {bio}
@@ -165,6 +197,7 @@ export function Team() {
               role={member.role}
               bio={member.bio}
               link={member.link}
+              linkedin_url={member.linkedin_url}
               index={index}
             />
           ))}
