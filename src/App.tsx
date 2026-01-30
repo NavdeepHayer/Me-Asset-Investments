@@ -1,6 +1,7 @@
 import { Home } from "./pages/Home";
 import { Admin } from "./pages/Admin";
 import { SetPassword } from "./pages/SetPassword";
+import { NewsDetail } from "./pages/NewsDetail";
 import { ToastProvider } from "./components/ui/Toast";
 import { AuthProvider } from "./contexts/AuthContext";
 
@@ -26,6 +27,11 @@ function Router() {
       window.location.href = `/set-password${hash}`;
       return null;
     }
+  }
+
+  // Handle news detail pages: /news/:id
+  if (path.startsWith('/news/')) {
+    return <NewsDetail />;
   }
 
   switch (path) {

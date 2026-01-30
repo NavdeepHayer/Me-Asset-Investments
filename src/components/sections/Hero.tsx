@@ -31,7 +31,7 @@ export function Hero() {
   const taglineDelay = logoDelay + 0.5;
 
   // Single continuous path that draws all buildings left to right
-  // goes down at the right, then returns to center and continues down
+  // then wraps around right side and down to center
   const skylinePath = `
     M 0 195
     L 25 195 L 25 55 L 30 48 L 35 25 L 40 48 L 45 55 L 45 195
@@ -350,7 +350,10 @@ export function Hero() {
       />
 
       {/* Content - Desktop: rises up from behind skyline, Mobile: positioned above skyline */}
-      <div className="container-wide relative z-10 text-center px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh]" style={{ transform: 'translateZ(0)' }}>
+      <div
+        className="container-wide relative z-10 px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh] text-right pr-8 sm:pr-12 md:pr-16 lg:pr-24"
+        style={{ transform: 'translateZ(0)' }}
+      >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -368,7 +371,7 @@ export function Hero() {
           </h1>
         </motion.div>
         <motion.p
-          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
+          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl ml-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}

@@ -34,6 +34,13 @@ interface MailingPosition {
   rightEdge: number;
 }
 
+interface NewsPosition {
+  sectionTop: number;
+  sectionBottom: number;
+  centerX: number;
+  leftEdge: number;
+}
+
 interface TransitionBoxConfig {
   id: string;
   label: string;
@@ -51,6 +58,7 @@ interface Positions {
   graphics: GraphicPosition[];
   team: TeamPosition | null;
   mailing: MailingPosition | null;
+  news: NewsPosition | null;
   isDesktop: boolean;
   transitionBoxes: TransitionBoxConfig[];
   mobileTransitionBoxes: TransitionBoxConfig[];
@@ -140,7 +148,7 @@ function TransitionBox({
 // Child component that handles the scroll-linked animations
 // This ensures hooks are always called consistently
 function FlowLines({ positions }: { positions: Positions }) {
-  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, team, mailing, isDesktop, transitionBoxes, mobileTransitionBoxes } = positions;
+  const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, team, mailing, news, isDesktop, transitionBoxes, mobileTransitionBoxes } = positions;
   const [crane, blueprint, framework, skyline, completed] = graphics;
   const scrollableHeight = documentHeight - viewportHeight;
 
@@ -179,6 +187,15 @@ function FlowLines({ positions }: { positions: Positions }) {
     return Math.max(0, Math.min(1, scrollY / scrollableHeight));
   }, [mailing, viewportHeight, scrollableHeight]);
 
+  // Helper: convert news section scroll to global percentage
+  const newsToGlobal = useCallback((localScroll: number) => {
+    if (!news) return 0;
+    const sectionHeight = news.sectionBottom - news.sectionTop;
+    const scrollRange = sectionHeight + viewportHeight;
+    const scrollY = localScroll * scrollRange + (news.sectionTop - viewportHeight);
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  }, [news, viewportHeight, scrollableHeight]);
+
   // Helper: convert a Y position to scroll percentage (when that Y is in middle of viewport)
   const yToScrollProgress = useCallback((y: number) => {
     // When does this Y position reach the middle of the viewport?
@@ -201,8 +218,12 @@ function FlowLines({ positions }: { positions: Positions }) {
       craneToBlueprint: [localToGlobal(blueprint, -0.05), localToGlobal(blueprint, 0.08)] as [number, number],
       blueprintToFramework: [localToGlobal(framework, -0.05), localToGlobal(framework, 0.08)] as [number, number],
       frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
-      // Skyline to completed: start after skyline internal flow completes (0.78), end at completed entry
+      // Skyline to Completed: route right around Projects to completed
       skylineToCompleted: [localToGlobal(skyline, 0.78), localToGlobal(completed, 0.08)] as [number, number],
+      // Completed to News: go left from completed to News section
+      completedToNews: [localToGlobal(completed, 0.78), newsToGlobal(0.3)] as [number, number],
+      // News to Team transition (replaces old newsToCompleted)
+      newsToTeam: [newsToGlobal(0.5), teamToGlobal(0.1)] as [number, number],
       // Completed to Team: start after completed internal flow completes, draw through Team section
       completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
       // Team to Mailing box: start after team section, both sides animate together
@@ -222,6 +243,8 @@ function FlowLines({ positions }: { positions: Positions }) {
   const blueprintToFramework = useTransform(scrollYProgress, ranges.blueprintToFramework, [0, 1]);
   const frameworkToSkyline = useTransform(scrollYProgress, ranges.frameworkToSkyline, [0, 1]);
   const skylineToCompleted = useTransform(scrollYProgress, ranges.skylineToCompleted, [0, 1]);
+  const completedToNews = useTransform(scrollYProgress, ranges.completedToNews, [0, 1]);
+  const newsToTeam = useTransform(scrollYProgress, ranges.newsToTeam, [0, 1]);
   const completedToTeam = useTransform(scrollYProgress, ranges.completedToTeam, [0, 1]);
   const teamToMailingBox = useTransform(scrollYProgress, ranges.teamToMailingBox, [0, 1]);
 
@@ -264,9 +287,15 @@ function FlowLines({ positions }: { positions: Positions }) {
   const halfBoxHeight = boxHeight / 2 + boxPadding;
 
   // For skyline to completed: route down the right side, around Projects
-  const sideMarginX = window.innerWidth - 80; // Right edge of viewport
-  const skylineToCompletedTurnY1 = skyline.bottom + 30; // First turn - go right
-  const skylineToCompletedTurnY2 = completed.top - 50; // Second turn - go left toward completed
+  const rightSideMarginX = window.innerWidth - 80; // Right edge of viewport
+  const leftSideMarginX = 80; // Left edge of viewport
+  const skylineToProjectsTurnY = skyline.bottom + 30; // First turn - go right around Projects
+  const skylineToCompletedTurnY = completed.top - 50; // Turn point to go toward completed
+
+  // News section routing (News is now AFTER Completed, goes LEFT)
+  const newsTop = news ? news.sectionTop : 0;
+  const newsBottom = news ? news.sectionBottom : 0;
+  const completedToNewsTurnY = news ? news.sectionTop - 30 : 0; // Turn point from completed to news
 
   // For completed to team: go down center, around heading, then zigzag through team members
   const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
@@ -445,20 +474,20 @@ function FlowLines({ positions }: { positions: Positions }) {
               />
             </>
           )}
-          {/* Skyline to Completed - goes down right side, around Projects, with transition box */}
+          {/* Skyline to Completed - goes RIGHT around Projects */}
           {skylineToBoxConfig && (
             <>
-              {/* Top path: goes above the box */}
+              {/* Top path around box */}
               <motion.path
                 d={`M ${skyline.centerX} ${skyline.bottom}
-                    L ${skyline.centerX} ${skylineToCompletedTurnY1}
-                    L ${sideMarginX} ${skylineToCompletedTurnY1}
-                    L ${sideMarginX} ${skylineToCompletedTurnY2}
-                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY2}
+                    L ${skyline.centerX} ${skylineToProjectsTurnY}
+                    L ${rightSideMarginX} ${skylineToProjectsTurnY}
+                    L ${rightSideMarginX} ${skylineToCompletedTurnY}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY}
                     L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToBoxConfig.centerY - halfBoxHeight}
                     L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToBoxConfig.centerY - halfBoxHeight}
-                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY2}
-                    L ${completed.centerX} ${skylineToCompletedTurnY2}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY}
+                    L ${completed.centerX} ${skylineToCompletedTurnY}
                     L ${completed.centerX} ${completed.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -468,17 +497,17 @@ function FlowLines({ positions }: { positions: Positions }) {
                 filter="url(#glow-flow)"
                 style={{ pathLength: skylineToCompleted }}
               />
-              {/* Bottom path: goes below the box */}
+              {/* Bottom path around box */}
               <motion.path
                 d={`M ${skyline.centerX} ${skyline.bottom}
-                    L ${skyline.centerX} ${skylineToCompletedTurnY1}
-                    L ${sideMarginX} ${skylineToCompletedTurnY1}
-                    L ${sideMarginX} ${skylineToCompletedTurnY2}
-                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY2}
+                    L ${skyline.centerX} ${skylineToProjectsTurnY}
+                    L ${rightSideMarginX} ${skylineToProjectsTurnY}
+                    L ${rightSideMarginX} ${skylineToCompletedTurnY}
+                    L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToCompletedTurnY}
                     L ${skylineToBoxConfig.centerX + halfBoxWidth} ${skylineToBoxConfig.centerY + halfBoxHeight}
                     L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToBoxConfig.centerY + halfBoxHeight}
-                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY2}
-                    L ${completed.centerX} ${skylineToCompletedTurnY2}
+                    L ${skylineToBoxConfig.centerX - halfBoxWidth} ${skylineToCompletedTurnY}
+                    L ${completed.centerX} ${skylineToCompletedTurnY}
                     L ${completed.centerX} ${completed.top}`}
                 fill="none"
                 stroke="rgba(255,255,255,0.5)"
@@ -490,7 +519,24 @@ function FlowLines({ positions }: { positions: Positions }) {
               />
             </>
           )}
-          {/* Completed to Team - zigzag pattern through team members */}
+          {/* Completed to News - goes LEFT to News section */}
+          {news && (
+            <motion.path
+              d={`M ${completed.centerX} ${completed.bottom}
+                  L ${completed.centerX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${newsTop}
+                  L ${leftSideMarginX} ${newsBottom}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: completedToNews }}
+            />
+          )}
+          {/* News to Team - from News section, around heading, zigzag through team members */}
           {team && team.members.length > 0 && (() => {
             const members = team.members;
             const firstMember = members[0];
@@ -501,10 +547,14 @@ function FlowLines({ positions }: { positions: Positions }) {
             // Build the zigzag path
             let pathSegments: string[] = [];
 
-            // From completed, around heading, to first member's side
+            // Start from News section (left side) if news exists, otherwise from completed
+            const startY = news ? newsBottom : completed.bottom;
+            const startXPos = news ? leftSideMarginX : completed.centerX;
+
+            // From news/completed, around heading, to first member's side
             pathSegments.push(
-              `M ${completed.centerX} ${completed.bottom}`,
-              `L ${completed.centerX} ${completedToTeamTurnY1}`,
+              `M ${startXPos} ${startY}`,
+              `L ${startXPos} ${completedToTeamTurnY1}`,
               `L ${headingAvoidX} ${completedToTeamTurnY1}`,
               `L ${headingAvoidX} ${completedToTeamTurnY2}`,
               `L ${startX} ${completedToTeamTurnY2}`
@@ -544,7 +594,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#glow-flow)"
-                style={{ pathLength: completedToTeam }}
+                style={{ pathLength: news ? newsToTeam : completedToTeam }}
               />
             );
           })()}
@@ -748,16 +798,35 @@ function FlowLines({ positions }: { positions: Positions }) {
               </>
             );
           })()}
-          {/* Mobile: simple straight line through team section */}
+          {/* Mobile: Completed to News section routing (left side) */}
+          {news && (
+            <motion.path
+              d={`M ${completed.centerX} ${completed.bottom}
+                  L ${completed.centerX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${completedToNewsTurnY}
+                  L ${leftSideMarginX} ${newsTop}
+                  L ${leftSideMarginX} ${newsBottom}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: completedToNews }}
+            />
+          )}
+          {/* Mobile: simple straight line through team section (from News if exists) */}
           {team && (
             <motion.line
-              x1={completed.centerX} y1={completed.bottom}
-              x2={teamCenterX} y2={teamSectionBottom}
+              x1={news ? leftSideMarginX : completed.centerX}
+              y1={news ? newsBottom : completed.bottom}
+              x2={teamCenterX}
+              y2={teamSectionBottom}
               stroke="rgba(255,255,255,0.5)"
               strokeWidth="2"
               strokeLinecap="round"
               filter="url(#glow-flow)"
-              style={{ pathLength: completedToTeam }}
+              style={{ pathLength: news ? newsToTeam : completedToTeam }}
             />
           )}
           {/* Mailing List Box - line splits and goes around both sides (mobile) */}
@@ -1001,6 +1070,32 @@ export function PageFlowLine() {
       };
     }
 
+    // Find News section
+    let news: NewsPosition | null = null;
+    const newsSection = document.querySelector('[data-news-section]') as HTMLElement;
+
+    if (newsSection) {
+      let newsOffsetTop = 0;
+      let current: HTMLElement | null = newsSection;
+      while (current) {
+        newsOffsetTop += current.offsetTop;
+        current = current.offsetParent as HTMLElement;
+      }
+
+      // Get the content container inside the section
+      const contentContainer = newsSection.querySelector('.container-wide') as HTMLElement;
+      const containerRect = contentContainer ? contentContainer.getBoundingClientRect() : newsSection.getBoundingClientRect();
+      const centerX = containerRect.left + containerRect.width / 2 + window.scrollX;
+      const leftEdge = containerRect.left + window.scrollX + 10;
+
+      news = {
+        sectionTop: newsOffsetTop,
+        sectionBottom: newsOffsetTop + newsSection.offsetHeight,
+        centerX,
+        leftEdge
+      };
+    }
+
     // Find Mailing List section and content container
     let mailing: MailingPosition | null = null;
     const mailingSection = document.querySelector('[data-mailing-section]') as HTMLElement;
@@ -1141,6 +1236,7 @@ export function PageFlowLine() {
       graphics,
       team,
       mailing,
+      news,
       isDesktop,
       transitionBoxes,
       mobileTransitionBoxes
