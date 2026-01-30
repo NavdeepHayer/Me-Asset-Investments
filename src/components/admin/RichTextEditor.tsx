@@ -1,13 +1,18 @@
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
+import { supabase } from '../../lib/supabase';
 
 interface RichTextEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  bucketName?: string;
 }
 
-export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, placeholder, bucketName = 'news-content' }: RichTextEditorProps) {
   const editorRef = useRef<HTMLDivElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
 
   const execCommand = useCallback((command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -35,8 +40,115 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     }
   }, [execCommand]);
 
+  const insertHtml = useCallback((html: string) => {
+    if (editorRef.current) {
+      editorRef.current.focus();
+      document.execCommand('insertHTML', false, html);
+      onChange(editorRef.current.innerHTML);
+    }
+  }, [onChange]);
+
+  const uploadFile = async (file: File, folder: string): Promise<string | null> => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+
+    const { error } = await supabase.storage
+      .from(bucketName)
+      .upload(fileName, file);
+
+    if (error) {
+      console.error('Upload error:', error);
+      alert('Failed to upload file: ' + error.message);
+      return null;
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
+
+    return publicUrl;
+  };
+
+  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image must be less than 10MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const publicUrl = await uploadFile(file, 'images');
+      if (publicUrl) {
+        insertHtml(`<img src="${publicUrl}" alt="${file.name}" style="max-width: 100%; height: auto; margin: 1rem 0;" />`);
+      }
+    } finally {
+      setUploading(false);
+      // Reset input so same file can be selected again
+      if (imageInputRef.current) {
+        imageInputRef.current.value = '';
+      }
+    }
+  }, [insertHtml, bucketName]);
+
+  const handlePdfUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      alert('Please select a PDF file');
+      return;
+    }
+
+    // Validate file size (max 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      alert('PDF must be less than 20MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const publicUrl = await uploadFile(file, 'pdfs');
+      if (publicUrl) {
+        insertHtml(`<iframe src="${publicUrl}" class="pdf-embed" style="width: 100%; height: 500px; border: 1px solid rgba(255,255,255,0.2); margin: 1rem 0;"></iframe>`);
+      }
+    } finally {
+      setUploading(false);
+      // Reset input so same file can be selected again
+      if (pdfInputRef.current) {
+        pdfInputRef.current.value = '';
+      }
+    }
+  }, [insertHtml, bucketName]);
+
   return (
     <div className="rich-text-editor">
+      {/* Hidden file inputs */}
+      <input
+        ref={imageInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleImageUpload}
+        className="hidden"
+      />
+      <input
+        ref={pdfInputRef}
+        type="file"
+        accept="application/pdf"
+        onChange={handlePdfUpload}
+        className="hidden"
+      />
+
       {/* Toolbar */}
       <div className="flex flex-wrap gap-1 p-2 bg-white/10 border border-white/20 border-b-0">
         <select
@@ -121,6 +233,34 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
 
         <div className="w-px bg-white/20 mx-1" />
 
+        {/* Image Upload Button */}
+        <button
+          type="button"
+          onClick={() => imageInputRef.current?.click()}
+          disabled={uploading}
+          className="px-2 py-1 text-xs bg-white/10 border border-white/20 text-white/70 hover:bg-white/20 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Insert Image"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+        </button>
+
+        {/* PDF Upload Button */}
+        <button
+          type="button"
+          onClick={() => pdfInputRef.current?.click()}
+          disabled={uploading}
+          className="px-2 py-1 text-xs bg-white/10 border border-white/20 text-white/70 hover:bg-white/20 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+          title="Insert PDF"
+        >
+          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+        </button>
+
+        <div className="w-px bg-white/20 mx-1" />
+
         <button
           type="button"
           onClick={() => execCommand('removeFormat')}
@@ -131,6 +271,17 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
+
+        {/* Upload indicator */}
+        {uploading && (
+          <span className="ml-2 text-xs text-white/50 flex items-center gap-1">
+            <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+            Uploading...
+          </span>
+        )}
       </div>
 
       {/* Editor */}
@@ -184,6 +335,15 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
           font-size: 1rem;
           font-weight: 600;
           margin: 0.75rem 0 0.5rem;
+        }
+        .rich-text-editor [contenteditable] img {
+          max-width: 100%;
+          height: auto;
+          margin: 0.5rem 0;
+        }
+        .rich-text-editor [contenteditable] iframe {
+          max-width: 100%;
+          margin: 0.5rem 0;
         }
       `}</style>
     </div>

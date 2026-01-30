@@ -222,6 +222,21 @@ export function NewsDetail() {
         .news-content em {
           font-style: italic;
         }
+        .news-content img {
+          max-width: 100%;
+          height: auto;
+          margin: 1.5rem 0;
+          border-radius: 4px;
+        }
+        .news-content iframe {
+          max-width: 100%;
+          width: 100%;
+          height: 600px;
+          margin: 1.5rem 0;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 4px;
+          background: rgba(255, 255, 255, 0.95);
+        }
       `}</style>
     </div>
   );
