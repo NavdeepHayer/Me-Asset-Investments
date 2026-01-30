@@ -120,7 +120,9 @@ export function RichTextEditor({ value, onChange, placeholder, bucketName = 'new
     try {
       const publicUrl = await uploadFile(file, 'pdfs');
       if (publicUrl) {
-        insertHtml(`<iframe src="${publicUrl}" class="pdf-embed" style="width: 100%; height: 500px; border: 1px solid rgba(255,255,255,0.2); margin: 1rem 0;"></iframe>`);
+        // Add parameters to hide PDF viewer toolbar and navigation
+        const pdfUrl = `${publicUrl}#toolbar=0&navpanes=0&scrollbar=0`;
+        insertHtml(`<iframe src="${pdfUrl}" class="pdf-embed" style="width: 100%; height: 500px; border: 1px solid rgba(255,255,255,0.2); margin: 1rem 0;"></iframe>`);
       }
     } finally {
       setUploading(false);
