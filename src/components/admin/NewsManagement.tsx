@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import { RichTextEditor } from './RichTextEditor';
+import { ImagePicker } from './ImagePicker';
 
 interface NewsItem {
   id: string;
@@ -15,6 +16,7 @@ interface NewsItem {
   external_link: string;
   display_order: number;
   visible: boolean;
+  image_url: string;
 }
 
 const emptyNews: Omit<NewsItem, 'id'> = {
@@ -27,6 +29,7 @@ const emptyNews: Omit<NewsItem, 'id'> = {
   external_link: '',
   display_order: 0,
   visible: true,
+  image_url: '',
 };
 
 function formatDate(dateString: string): string {
@@ -84,6 +87,7 @@ export function NewsManagement() {
           external_link: item.external_link,
           display_order: item.display_order,
           visible: item.visible,
+          image_url: item.image_url,
           updated_at: new Date().toISOString(),
         })
         .eq('id', item.id);
@@ -109,6 +113,7 @@ export function NewsManagement() {
           external_link: item.external_link,
           display_order: item.display_order,
           visible: item.visible,
+          image_url: item.image_url,
         });
 
       if (error) {
@@ -201,6 +206,16 @@ export function NewsManagement() {
             }`}
           >
             <div className="flex items-start justify-between gap-4">
+              {/* Thumbnail */}
+              {item.image_url && (
+                <div className="w-16 h-16 bg-white/5 overflow-hidden flex-shrink-0">
+                  <img
+                    src={item.image_url}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-3 mb-2">
                   <span className="text-xs text-white/40">
@@ -209,6 +224,11 @@ export function NewsManagement() {
                   {!item.visible && (
                     <span className="px-2 py-0.5 text-xs font-medium bg-red-500/20 text-red-400">
                       Hidden
+                    </span>
+                  )}
+                  {!item.image_url && (
+                    <span className="px-2 py-0.5 text-xs font-medium bg-yellow-500/20 text-yellow-400">
+                      No Image
                     </span>
                   )}
                 </div>
@@ -305,6 +325,13 @@ export function NewsManagement() {
                     required
                   />
                 </div>
+
+                <ImagePicker
+                  value={editingNews.image_url}
+                  onChange={(url) => setEditingNews({ ...editingNews, image_url: url })}
+                  label="Featured Image"
+                  required
+                />
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>

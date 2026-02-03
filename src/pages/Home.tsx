@@ -93,11 +93,14 @@ export function Home() {
         {/* Completed Building - represents finished investment */}
         <ContentBlock text="" graphic="completed" graphicPosition="left" />
 
-        {/* News Section */}
-        <News />
-
         {/* Team Section */}
         <Team />
+
+        {/* Document/Signature - deal closing */}
+        <ContentBlock text="" graphic="document" graphicPosition="right" />
+
+        {/* News Section */}
+        <News />
 
         {/* Mailing List */}
         <MailingList />

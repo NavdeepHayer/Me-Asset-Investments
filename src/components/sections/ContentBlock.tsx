@@ -4,7 +4,7 @@ import { ScrollReveal } from "../ui/ScrollReveal";
 
 interface ContentBlockProps {
   text: string;
-  graphic?: "crane" | "blueprint" | "framework" | "skyline" | "completed";
+  graphic?: "crane" | "blueprint" | "framework" | "skyline" | "completed" | "document";
   graphicPosition?: "left" | "right";
   className?: string;
 }
@@ -54,8 +54,8 @@ export function ContentBlock({
   );
 }
 
-function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framework" | "skyline" | "completed" }) {
-  const isWide = variant === "skyline" || variant === "completed";
+function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framework" | "skyline" | "completed" | "document" }) {
+  const isWide = variant === "skyline" || variant === "completed" || variant === "document";
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { scrollYProgress } = useScroll({
@@ -77,6 +77,7 @@ function GraphicElement({ variant }: { variant: "crane" | "blueprint" | "framewo
       {variant === "framework" && <FrameworkGraphic scrollProgress={scrollYProgress} />}
       {variant === "skyline" && <RenovationGraphic scrollProgress={scrollYProgress} />}
       {variant === "completed" && <CompletedBuildingGraphic scrollProgress={scrollYProgress} />}
+      {variant === "document" && <DocumentSignatureGraphic scrollProgress={scrollYProgress} />}
     </motion.div>
   );
 }
@@ -1026,6 +1027,236 @@ function CompletedBuildingGraphic({ scrollProgress }: GraphicProps) {
 
         {/* Company sign above entrance */}
         <rect x="145" y="152" width="30" height="3" fill="rgba(255,255,255,0.2)" />
+      </motion.g>
+    </motion.svg>
+  );
+}
+
+// Document with signature - represents closing a deal/finding a project
+function DocumentSignatureGraphic({ scrollProgress }: GraphicProps) {
+  const flowThrough = useScrollTransform(scrollProgress, 0.08, 0.78);
+  const ground = useScrollTransform(scrollProgress, 0.10, 0.18);
+  const desk = useScrollTransform(scrollProgress, 0.14, 0.26);
+  const document = useScrollTransform(scrollProgress, 0.20, 0.36);
+  const headerLine = useScrollTransform(scrollProgress, 0.28, 0.40);
+  const textLines = useScrollTransform(scrollProgress, 0.34, 0.50);
+  const checkbox = useScrollTransform(scrollProgress, 0.44, 0.54);
+  const signatureLine = useScrollTransform(scrollProgress, 0.48, 0.58);
+  const signature = useScrollTransform(scrollProgress, 0.54, 0.72);
+  const pen = useScrollTransform(scrollProgress, 0.58, 0.68);
+  const stamp = useScrollTransform(scrollProgress, 0.64, 0.76);
+  const finishing = useScrollTransform(scrollProgress, 0.70, 0.82);
+
+  return (
+    <motion.svg viewBox="0 0 320 200" className="w-full h-full gpu-accelerated">
+      <defs>
+        <filter id="glow-document" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+
+      {/* Flow line - enters from top, flows through document, exits bottom */}
+      <motion.path
+        d="M 160 0
+           L 160 25
+           L 100 25
+           L 100 60
+           L 220 60
+           L 220 95
+           L 100 95
+           L 100 130
+           L 160 130
+           L 160 165
+           L 160 200"
+        fill="none"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#glow-document)"
+        style={{ pathLength: flowThrough }}
+      />
+
+      {/* Ground/table surface */}
+      <motion.line x1="40" y1="185" x2="280" y2="185" stroke="rgba(255,255,255,0.12)" strokeWidth="1"
+        style={{ pathLength: ground }} />
+
+      {/* Desk surface */}
+      <motion.g style={{ opacity: desk }}>
+        <rect x="60" y="175" width="200" height="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+        {/* Desk edge detail */}
+        <line x1="60" y1="175" x2="260" y2="175" stroke="rgba(255,255,255,0.15)" strokeWidth="1.5" />
+      </motion.g>
+
+      {/* Main document paper */}
+      <motion.g style={{ opacity: document }}>
+        {/* Document shadow */}
+        <rect x="88" y="33" width="144" height="145" fill="rgba(0,0,0,0.1)" />
+        {/* Document paper */}
+        <rect x="85" y="30" width="150" height="145" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+        {/* Paper corner fold */}
+        <path d="M 215 30 L 235 30 L 235 50 L 215 50 Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" />
+        <path d="M 215 30 L 215 50 L 235 50" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+      </motion.g>
+
+      {/* Document header/title */}
+      <motion.g style={{ opacity: headerLine }}>
+        {/* Header bar */}
+        <rect x="100" y="40" width="120" height="12" fill="rgba(255,255,255,0.12)" />
+        {/* Company logo placeholder */}
+        <rect x="105" y="43" width="20" height="6" fill="rgba(255,255,255,0.15)" />
+        {/* Title text line */}
+        <rect x="130" y="44" width="60" height="4" fill="rgba(255,255,255,0.1)" />
+      </motion.g>
+
+      {/* Document text lines */}
+      <motion.g style={{ opacity: textLines }}>
+        {/* Section 1 */}
+        <rect x="100" y="60" width="110" height="3" fill="rgba(255,255,255,0.08)" />
+        <rect x="100" y="67" width="100" height="2" fill="rgba(255,255,255,0.06)" />
+        <rect x="100" y="73" width="115" height="2" fill="rgba(255,255,255,0.06)" />
+        <rect x="100" y="79" width="90" height="2" fill="rgba(255,255,255,0.06)" />
+
+        {/* Section 2 */}
+        <rect x="100" y="90" width="105" height="3" fill="rgba(255,255,255,0.08)" />
+        <rect x="100" y="97" width="110" height="2" fill="rgba(255,255,255,0.06)" />
+        <rect x="100" y="103" width="95" height="2" fill="rgba(255,255,255,0.06)" />
+        <rect x="100" y="109" width="108" height="2" fill="rgba(255,255,255,0.06)" />
+
+        {/* Terms/conditions small text */}
+        <rect x="100" y="120" width="118" height="1.5" fill="rgba(255,255,255,0.04)" />
+        <rect x="100" y="124" width="112" height="1.5" fill="rgba(255,255,255,0.04)" />
+        <rect x="100" y="128" width="100" height="1.5" fill="rgba(255,255,255,0.04)" />
+      </motion.g>
+
+      {/* Checkbox/agreement box */}
+      <motion.g style={{ opacity: checkbox }}>
+        <rect x="100" y="135" width="8" height="8" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        {/* Checkmark */}
+        <motion.path
+          d="M 101 139 L 104 142 L 107 136"
+          fill="none"
+          stroke="rgba(255,255,255,0.4)"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          style={{ pathLength: checkbox }}
+        />
+        {/* Agreement text */}
+        <rect x="112" y="137" width="80" height="2" fill="rgba(255,255,255,0.06)" />
+      </motion.g>
+
+      {/* Signature line */}
+      <motion.g style={{ opacity: signatureLine }}>
+        <line x1="100" y1="160" x2="180" y2="160" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        {/* "Sign here" label */}
+        <rect x="100" y="163" width="30" height="2" fill="rgba(255,255,255,0.06)" />
+        {/* Date line */}
+        <line x1="195" y1="160" x2="225" y2="160" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+        <rect x="195" y="163" width="15" height="2" fill="rgba(255,255,255,0.06)" />
+      </motion.g>
+
+      {/* Signature - cursive flowing line */}
+      <motion.path
+        d="M 105 158
+           Q 110 152, 118 155
+           Q 125 158, 128 150
+           Q 132 144, 140 152
+           Q 145 158, 150 148
+           Q 155 142, 162 150
+           Q 168 156, 175 152"
+        fill="none"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ pathLength: signature }}
+      />
+
+      {/* Date written */}
+      <motion.g style={{ opacity: signature }}>
+        <text x="200" y="158" fill="rgba(255,255,255,0.3)" fontSize="6" fontFamily="serif">2024</text>
+      </motion.g>
+
+      {/* Pen */}
+      <motion.g style={{ opacity: pen }}>
+        {/* Pen body */}
+        <rect x="175" y="145" width="35" height="5" fill="rgba(255,255,255,0.15)" stroke="rgba(255,255,255,0.2)" strokeWidth="0.5" rx="1" transform="rotate(-25 192 147)" />
+        {/* Pen tip */}
+        <path d="M 178 157 L 175 162 L 180 159 Z" fill="rgba(255,255,255,0.25)" />
+        {/* Pen clip */}
+        <rect x="200" y="143" width="8" height="2" fill="rgba(255,255,255,0.2)" transform="rotate(-25 204 144)" />
+      </motion.g>
+
+      {/* Official stamp/seal */}
+      <motion.g style={{ opacity: stamp }}>
+        {/* Stamp circle */}
+        <circle cx="205" y="95" r="18" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" />
+        {/* Inner circle */}
+        <circle cx="205" cy="95" r="12" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="0.8" />
+        {/* Star/seal design in center */}
+        <motion.path
+          d="M 205 87 L 207 92 L 213 92 L 209 96 L 211 102 L 205 99 L 199 102 L 201 96 L 197 92 L 203 92 Z"
+          fill="rgba(255,255,255,0.2)"
+          stroke="rgba(255,255,255,0.25)"
+          strokeWidth="0.5"
+          style={{ scale: stamp }}
+        />
+      </motion.g>
+
+      {/* Second document underneath (deal papers stack) */}
+      <motion.g style={{ opacity: finishing }}>
+        <rect x="78" y="35" width="145" height="140" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" />
+        <rect x="72" y="40" width="145" height="135" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.5" />
+      </motion.g>
+
+      {/* Key on desk - symbolic of unlocking value */}
+      <motion.g style={{ opacity: finishing }}>
+        {/* Key body */}
+        <rect x="245" y="165" width="20" height="6" fill="rgba(255,255,255,0.12)" stroke="rgba(255,255,255,0.15)" strokeWidth="0.5" rx="1" />
+        {/* Key bow (handle) */}
+        <circle cx="270" cy="168" r="6" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
+        <circle cx="270" cy="168" r="3" fill="rgba(255,255,255,0.08)" />
+        {/* Key teeth */}
+        <path d="M 245 168 L 243 168 L 243 172 L 246 172 L 246 170 L 248 170 L 248 172 L 251 172 L 251 168"
+          fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="1" />
+      </motion.g>
+
+      {/* Handshake silhouette in background */}
+      <motion.g style={{ opacity: finishing }}>
+        <path
+          d="M 45 155
+             Q 50 150, 55 152
+             L 65 145
+             Q 70 142, 75 145
+             L 80 150
+             Q 85 155, 80 160
+             L 70 165
+             Q 65 168, 60 165
+             L 50 158
+             Q 45 155, 45 155"
+          fill="none"
+          stroke="rgba(255,255,255,0.08)"
+          strokeWidth="1"
+        />
+        <path
+          d="M 55 155
+             Q 60 158, 65 155
+             L 75 148"
+          fill="none"
+          stroke="rgba(255,255,255,0.06)"
+          strokeWidth="0.8"
+        />
+      </motion.g>
+
+      {/* Additional papers/folder on desk */}
+      <motion.g style={{ opacity: desk }}>
+        <rect x="250" y="145" width="25" height="30" fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5" transform="rotate(5 262 160)" />
+        <rect x="252" y="147" width="25" height="30" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.06)" strokeWidth="0.5" transform="rotate(3 265 162)" />
       </motion.g>
     </motion.svg>
   );
