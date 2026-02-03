@@ -798,24 +798,7 @@ function FlowLines({ positions }: { positions: Positions }) {
               </>
             );
           })()}
-          {/* Mobile: Completed to News section routing (left side) */}
-          {news && (
-            <motion.path
-              d={`M ${completed.centerX} ${completed.bottom}
-                  L ${completed.centerX} ${completedToNewsTurnY}
-                  L ${leftSideMarginX} ${completedToNewsTurnY}
-                  L ${leftSideMarginX} ${newsTop}
-                  L ${leftSideMarginX} ${newsBottom}`}
-              fill="none"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: completedToNews }}
-            />
-          )}
-          {/* Mobile: No line through team section - mailing box draws independently */}
+          {/* Mobile: No lines through News or Team sections - flow stops at building, mailing box draws independently */}
           {/* Mailing List Box - draws box around contact section (mobile) */}
           {mailing && (
             <>
