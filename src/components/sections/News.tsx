@@ -54,8 +54,8 @@ function NewsCard({ item, index }: NewsCardProps) {
   const opacity = useTransform(scrollYProgress, [0, 1], [0, 1]);
   const x = useTransform(scrollYProgress, [0, 1], [initialX, 0]);
 
-  // Determine the link - either external or internal news page
-  const linkUrl = item.external_link || `/news/${item.id}`;
+  // Always link to internal article page - external links are shown within the article
+  const linkUrl = `/news/${item.id}`;
   const ctaText = item.cta_text || 'Read More';
 
   return (
