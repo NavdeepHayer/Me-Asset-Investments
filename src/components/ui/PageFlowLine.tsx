@@ -815,27 +815,13 @@ function FlowLines({ positions }: { positions: Positions }) {
               style={{ pathLength: completedToNews }}
             />
           )}
-          {/* Mobile: simple straight line through team section (from News if exists) */}
-          {team && (
-            <motion.line
-              x1={news ? leftSideMarginX : completed.centerX}
-              y1={news ? newsBottom : completed.bottom}
-              x2={teamCenterX}
-              y2={teamSectionBottom}
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: news ? newsToTeam : completedToTeam }}
-            />
-          )}
-          {/* Mailing List Box - line splits and goes around both sides (mobile) */}
+          {/* Mobile: No line through team section - mailing box draws independently */}
+          {/* Mailing List Box - draws box around contact section (mobile) */}
           {mailing && (
             <>
               {/* Left side of box */}
               <motion.path
-                d={`M ${mailingCenterX} ${teamSectionBottom}
-                    L ${mailingCenterX} ${mailingTop}
+                d={`M ${mailingCenterX} ${mailingTop}
                     L ${mailingLeftX} ${mailingTop}
                     L ${mailingLeftX} ${mailingBottom}
                     L ${mailingCenterX} ${mailingBottom}`}
@@ -849,8 +835,7 @@ function FlowLines({ positions }: { positions: Positions }) {
               />
               {/* Right side of box */}
               <motion.path
-                d={`M ${mailingCenterX} ${teamSectionBottom}
-                    L ${mailingCenterX} ${mailingTop}
+                d={`M ${mailingCenterX} ${mailingTop}
                     L ${mailingRightX} ${mailingTop}
                     L ${mailingRightX} ${mailingBottom}
                     L ${mailingCenterX} ${mailingBottom}`}

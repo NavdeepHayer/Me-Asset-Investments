@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useCallback, useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 
 interface RichTextEditorProps {
@@ -13,6 +13,15 @@ export function RichTextEditor({ value, onChange, placeholder, bucketName = 'new
   const imageInputRef = useRef<HTMLInputElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const isInternalChange = useRef(false);
+
+  // Only update innerHTML when value changes externally (not from user typing)
+  useEffect(() => {
+    if (editorRef.current && !isInternalChange.current) {
+      editorRef.current.innerHTML = value;
+    }
+    isInternalChange.current = false;
+  }, [value]);
 
   const execCommand = useCallback((command: string, value?: string) => {
     document.execCommand(command, false, value);
@@ -23,6 +32,7 @@ export function RichTextEditor({ value, onChange, placeholder, bucketName = 'new
 
   const handleInput = useCallback(() => {
     if (editorRef.current) {
+      isInternalChange.current = true;
       onChange(editorRef.current.innerHTML);
     }
   }, [onChange]);
@@ -292,7 +302,6 @@ export function RichTextEditor({ value, onChange, placeholder, bucketName = 'new
         contentEditable
         onInput={handleInput}
         onPaste={handlePaste}
-        dangerouslySetInnerHTML={{ __html: value }}
         className="min-h-[200px] p-3 bg-white/5 border border-white/20 text-white text-sm focus:outline-none focus:border-white/40 overflow-y-auto"
         style={{ maxHeight: '400px' }}
         data-placeholder={placeholder}
