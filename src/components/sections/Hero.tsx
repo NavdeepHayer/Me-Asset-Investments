@@ -351,7 +351,7 @@ export function Hero() {
 
       {/* Content - Desktop: rises up from behind skyline, Mobile: positioned above skyline */}
       <div
-        className="container-wide relative z-10 px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh] text-right pr-8 sm:pr-12 md:pr-16 lg:pr-24"
+        className="container-wide relative z-10 px-4 sm:px-6 mb-[18vh] sm:mb-[16vh] md:mb-[38vh] text-center"
         style={{ transform: 'translateZ(0)' }}
       >
         <motion.div
@@ -371,7 +371,7 @@ export function Hero() {
           </h1>
         </motion.div>
         <motion.p
-          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl ml-auto"
+          className="text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl text-white/40 md:text-[#f5f0e8]/50 font-light tracking-wide max-w-sm sm:max-w-lg lg:max-w-xl xl:max-w-2xl mx-auto"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: taglineDelay, ease: [0.22, 1, 0.36, 1] }}
