@@ -112,9 +112,37 @@ export function GalleryManagement() {
     }
   };
 
-  // Discover categories on mount
+  // Discover categories on mount and do a full bucket scan
   useEffect(() => {
-    discoverCategories();
+    const init = async () => {
+      // First, let's see what's actually in the bucket root
+      console.log('[Gallery Init] Scanning bucket root...');
+      const { data: rootData, error: rootError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('', { limit: 100 });
+
+      if (rootError) {
+        console.error('[Gallery Init] Error scanning root:', rootError);
+      } else {
+        console.log('[Gallery Init] Bucket root contents:', rootData);
+      }
+
+      // Check the images folder
+      console.log('[Gallery Init] Scanning images folder...');
+      const { data: imagesData, error: imagesError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('images', { limit: 100 });
+
+      if (imagesError) {
+        console.error('[Gallery Init] Error scanning images folder:', imagesError);
+      } else {
+        console.log('[Gallery Init] Images folder contents:', imagesData);
+      }
+
+      // Now discover categories
+      discoverCategories();
+    };
+    init();
   }, []);
 
   // Load categories from localStorage (as backup/additions)
@@ -167,6 +195,8 @@ export function GalleryManagement() {
       }
 
       for (const folderPath of pathsToCheck) {
+        console.log(`[Gallery Load] Checking path: ${folderPath}`);
+
         const { data, error } = await supabase.storage
           .from(STORAGE_BUCKET)
           .list(folderPath, {
@@ -175,9 +205,11 @@ export function GalleryManagement() {
           });
 
         if (error) {
-          console.log(`[Gallery] No files found at ${folderPath} (this is normal if path doesn't exist)`);
+          console.log(`[Gallery Load] Error at ${folderPath}:`, error.message);
           continue;
         }
+
+        console.log(`[Gallery Load] Raw data from ${folderPath}:`, data);
 
         if (data) {
           const items: MediaItem[] = data
@@ -272,24 +304,30 @@ export function GalleryManagement() {
         const folderPath = mediaType === 'images' ? `images/${activeCategory}` : activeCategory;
         const filePath = `${folderPath}/${filename}`;
 
-        const { error } = await supabase.storage
+        console.log(`[Gallery Upload] Uploading to: ${filePath}`);
+
+        const { data, error } = await supabase.storage
           .from(STORAGE_BUCKET)
           .upload(filePath, file);
 
         if (error) {
-          console.error('Upload error:', error);
+          console.error('[Gallery Upload] Upload error:', error);
+          showToast(`Upload failed: ${error.message}`, 'error');
           errorCount++;
         } else {
+          console.log('[Gallery Upload] Upload successful:', data);
           successCount++;
         }
       } catch (err) {
-        console.error('Upload error:', err);
+        console.error('[Gallery Upload] Upload exception:', err);
         errorCount++;
       }
     }
 
     if (successCount > 0) {
       showToast(`${successCount} file(s) uploaded successfully`, 'success');
+      // Small delay to ensure Supabase has indexed the file
+      await new Promise(resolve => setTimeout(resolve, 500));
       loadMedia();
     }
     if (errorCount > 0) {
