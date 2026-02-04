@@ -16,8 +16,9 @@ const PUBLIC_IMAGES = [
   '/images/projects/swansea.jpeg',
 ];
 
-// Supabase storage buckets to load images from
-const STORAGE_BUCKETS = ['news-images', 'news-content'];
+// Supabase storage bucket and folder for images
+const STORAGE_BUCKET = 'news-content';
+const STORAGE_FOLDER = 'images';
 
 interface UploadedImage {
   url: string;
@@ -43,49 +44,41 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
   const [selectedImage, setSelectedImage] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load uploaded images from all Supabase storage buckets
+  // Load uploaded images from Supabase storage
   const loadUploadedImages = async () => {
     setLoading(true);
     try {
-      const allImages: UploadedImage[] = [];
+      const { data, error } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list(STORAGE_FOLDER, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
 
-      for (const bucketName of STORAGE_BUCKETS) {
-        try {
-          const { data, error } = await supabase.storage
-            .from(bucketName)
-            .list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
-
-          if (error) {
-            console.error(`Error loading from ${bucketName}:`, error);
-            continue;
-          }
-
-          if (data) {
-            const images = data
-              .filter(file => {
-                // Only include image files
-                const ext = file.name.split('.').pop()?.toLowerCase();
-                return !file.name.startsWith('.') &&
-                       ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '');
-              })
-              .map(file => {
-                const { data: urlData } = supabase.storage
-                  .from(bucketName)
-                  .getPublicUrl(file.name);
-                return {
-                  url: urlData.publicUrl,
-                  bucket: bucketName,
-                  name: file.name,
-                };
-              });
-            allImages.push(...images);
-          }
-        } catch (err) {
-          console.error(`Error loading from ${bucketName}:`, err);
-        }
+      if (error) {
+        console.error('Error loading images:', error);
+        setUploadedImages([]);
+        setLoading(false);
+        return;
       }
 
-      setUploadedImages(allImages);
+      if (data) {
+        const images = data
+          .filter(file => {
+            // Only include image files
+            const ext = file.name.split('.').pop()?.toLowerCase();
+            return !file.name.startsWith('.') &&
+                   ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '');
+          })
+          .map(file => {
+            const { data: urlData } = supabase.storage
+              .from(STORAGE_BUCKET)
+              .getPublicUrl(`${STORAGE_FOLDER}/${file.name}`);
+            return {
+              url: urlData.publicUrl,
+              bucket: STORAGE_BUCKET,
+              name: file.name,
+            };
+          });
+        setUploadedImages(images);
+      }
     } catch (err) {
       console.error('Error loading images:', err);
     }
@@ -119,10 +112,11 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
       // Generate unique filename
       const ext = file.name.split('.').pop();
       const filename = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
+      const filePath = `${STORAGE_FOLDER}/${filename}`;
 
       const { error } = await supabase.storage
-        .from('news-images')
-        .upload(filename, file);
+        .from(STORAGE_BUCKET)
+        .upload(filePath, file);
 
       if (error) {
         console.error('Upload error:', error);
@@ -131,8 +125,8 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
         showToast('Image uploaded successfully', 'success');
         // Get the public URL and select it
         const { data: urlData } = supabase.storage
-          .from('news-images')
-          .getPublicUrl(filename);
+          .from(STORAGE_BUCKET)
+          .getPublicUrl(filePath);
         setSelectedImage(urlData.publicUrl);
         // Reload the list
         loadUploadedImages();
@@ -160,6 +154,16 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
 
   return (
     <div>
+      {/* File input - MUST be outside AnimatePresence to work in Firefox */}
+      <input
+        ref={fileInputRef}
+        id={fileInputId}
+        type="file"
+        accept="image/*"
+        onChange={handleUpload}
+        disabled={uploading}
+        className="sr-only"
+      />
 
       <label className="block text-xs font-medium text-white/60 mb-1">
         {label} {required && '*'}
@@ -269,18 +273,9 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
                 </button>
               </div>
 
-              {/* Upload section (for uploaded tab) - uses native label for reliability */}
+              {/* Upload section (for uploaded tab) - label triggers input outside modal */}
               {activeTab === 'uploaded' && (
                 <div className="p-4 border-b border-white/10">
-                  <input
-                    ref={fileInputRef}
-                    id={fileInputId}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleUpload}
-                    disabled={uploading}
-                    className="sr-only"
-                  />
                   <label
                     htmlFor={fileInputId}
                     className={`inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors cursor-pointer ${
