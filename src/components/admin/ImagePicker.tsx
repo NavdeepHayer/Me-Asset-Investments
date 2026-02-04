@@ -42,10 +42,15 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
   const [selectedImage, setSelectedImage] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Handle upload button click
-  const handleUploadClick = () => {
+  // Handle upload button click - use setTimeout to decouple from modal events
+  const handleUploadClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     if (fileInputRef.current && !uploading) {
-      fileInputRef.current.click();
+      // Use setTimeout to ensure the click happens after all event handlers complete
+      setTimeout(() => {
+        fileInputRef.current?.click();
+      }, 100);
     }
   };
 
