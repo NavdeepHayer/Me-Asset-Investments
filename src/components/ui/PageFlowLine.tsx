@@ -234,9 +234,9 @@ function FlowLines({ positions }: { positions: Positions }) {
       // Team to Document: from team section to document graphic
       teamToDocument: [teamToGlobal(0.7), documentToGlobal(0.08)] as [number, number],
       // Document to News: from document graphic to news section
-      documentToNews: [documentToGlobal(0.78), newsToGlobal(0.3)] as [number, number],
-      // News to Mailing box: start after news section, both sides animate together
-      newsToMailingBox: [newsToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
+      documentToNews: [documentToGlobal(0.78), newsToGlobal(0.5)] as [number, number],
+      // News to Mailing box: start when documentToNews completes, both sides animate together
+      newsToMailingBox: [newsToGlobal(0.5), mailingToGlobal(0.6)] as [number, number],
       // Mobile box animation ranges
       // Start when box enters viewport
       mobileBox1: [yToScrollProgress(mobileBox1Y) - 0.08, yToScrollProgress(mobileBox1Y) + 0.25] as [number, number],
