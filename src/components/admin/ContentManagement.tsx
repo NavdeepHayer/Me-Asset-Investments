@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
 import { TermsPrivacyEditor } from './TermsPrivacyEditor';
+import { ImagePicker } from './ImagePicker';
 
 interface SiteContent {
   id: string;
@@ -420,16 +421,12 @@ export function ContentManagement() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Image URL</label>
-                  <input
-                    type="text"
-                    value={editingMember.image}
-                    onChange={(e) => setEditingMember({ ...editingMember, image: e.target.value })}
-                    placeholder="/images/team/name.jpeg"
-                    className="w-full px-3 py-2 bg-white/5 border border-white/20 text-white text-sm focus:outline-none focus:border-white/40"
-                  />
-                </div>
+                <ImagePicker
+                  value={editingMember.image}
+                  onChange={(url) => setEditingMember({ ...editingMember, image: url })}
+                  label="Profile Image"
+                  suggestedCategory="team"
+                />
 
                 <div>
                   <label className="block text-xs font-medium text-white/60 mb-1">LinkedIn URL</label>

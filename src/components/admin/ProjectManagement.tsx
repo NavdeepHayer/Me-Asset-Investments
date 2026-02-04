@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
+import { ImagePicker } from './ImagePicker';
 
 interface Project {
   id: string;
@@ -361,16 +362,12 @@ export function ProjectManagement() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-white/60 mb-1">Image Path</label>
-                  <input
-                    type="text"
-                    value={editingProject.image}
-                    onChange={(e) => setEditingProject({ ...editingProject, image: e.target.value })}
-                    placeholder="/images/projects/filename.jpeg"
-                    className="w-full px-3 py-2 bg-white/5 border border-white/20 text-white text-sm focus:outline-none focus:border-white/40"
-                  />
-                </div>
+                <ImagePicker
+                  value={editingProject.image}
+                  onChange={(url) => setEditingProject({ ...editingProject, image: url })}
+                  label="Project Image"
+                  suggestedCategory="projects"
+                />
 
                 <div className="flex items-center gap-2">
                   <input
