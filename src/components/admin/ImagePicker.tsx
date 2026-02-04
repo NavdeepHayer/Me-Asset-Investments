@@ -57,42 +57,44 @@ export function ImagePicker({
     const allImages: GalleryImage[] = [];
 
     try {
-      // Load from each category
+      // Load from each category - check both new path (images/{category}) and legacy path ({category})
       for (const category of categories) {
-        const folderPath = `images/${category}`;
+        const pathsToCheck = [`images/${category}`, category];
 
-        const { data, error } = await supabase.storage
-          .from(STORAGE_BUCKET)
-          .list(folderPath, {
-            limit: 100,
-            sortBy: { column: 'created_at', order: 'desc' }
-          });
-
-        if (error) {
-          console.error(`Error loading images from ${category}:`, error);
-          continue;
-        }
-
-        if (data) {
-          const categoryImages = data
-            .filter(file => {
-              if (file.name.startsWith('.')) return false;
-              const ext = file.name.split('.').pop()?.toLowerCase() || '';
-              return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
-            })
-            .map(file => {
-              const { data: urlData } = supabase.storage
-                .from(STORAGE_BUCKET)
-                .getPublicUrl(`${folderPath}/${file.name}`);
-
-              return {
-                url: urlData.publicUrl,
-                name: file.name,
-                category: category,
-              };
+        for (const folderPath of pathsToCheck) {
+          const { data, error } = await supabase.storage
+            .from(STORAGE_BUCKET)
+            .list(folderPath, {
+              limit: 100,
+              sortBy: { column: 'created_at', order: 'desc' }
             });
 
-          allImages.push(...categoryImages);
+          if (error) {
+            // Silent - path might not exist
+            continue;
+          }
+
+          if (data) {
+            const categoryImages = data
+              .filter(file => {
+                if (file.name.startsWith('.')) return false;
+                const ext = file.name.split('.').pop()?.toLowerCase() || '';
+                return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+              })
+              .map(file => {
+                const { data: urlData } = supabase.storage
+                  .from(STORAGE_BUCKET)
+                  .getPublicUrl(`${folderPath}/${file.name}`);
+
+                return {
+                  url: urlData.publicUrl,
+                  name: file.name,
+                  category: category,
+                };
+              });
+
+            allImages.push(...categoryImages);
+          }
         }
       }
 

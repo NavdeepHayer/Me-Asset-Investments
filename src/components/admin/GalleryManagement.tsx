@@ -72,57 +72,61 @@ export function GalleryManagement() {
     setSelectedItems(new Set());
 
     try {
-      const folderPath = mediaType === 'images' ? `images/${activeCategory}` : activeCategory;
+      const allItems: MediaItem[] = [];
 
-      const { data, error } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .list(folderPath, {
-          limit: 100,
-          sortBy: { column: 'created_at', order: 'desc' }
-        });
+      // Check both new path (images/{category}) and legacy path ({category}) for backwards compatibility
+      const pathsToCheck = mediaType === 'images'
+        ? [`images/${activeCategory}`, activeCategory] // New path first, then legacy
+        : [activeCategory];
 
-      if (error) {
-        console.error('Error loading media:', error);
-        setMedia([]);
-        setLoading(false);
-        return;
-      }
-
-      if (data) {
-        const items: MediaItem[] = data
-          .filter(file => {
-            if (file.name.startsWith('.')) return false;
-
-            const ext = file.name.split('.').pop()?.toLowerCase() || '';
-            if (mediaType === 'images') {
-              return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
-            } else {
-              return ['pdf'].includes(ext);
-            }
-          })
-          .map(file => {
-            const { data: urlData } = supabase.storage
-              .from(STORAGE_BUCKET)
-              .getPublicUrl(`${folderPath}/${file.name}`);
-
-            // Debug: Log the generated URL to help diagnose issues
-            console.log(`[Gallery] Generated URL for ${file.name}:`, urlData.publicUrl);
-
-            return {
-              name: file.name,
-              url: urlData.publicUrl,
-              category: activeCategory,
-              type: mediaType === 'images' ? 'image' : 'document',
-              size: file.metadata?.size,
-              created_at: file.created_at,
-            };
+      for (const folderPath of pathsToCheck) {
+        const { data, error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .list(folderPath, {
+            limit: 100,
+            sortBy: { column: 'created_at', order: 'desc' }
           });
 
-        setMedia(items);
+        if (error) {
+          console.log(`[Gallery] No files found at ${folderPath} (this is normal if path doesn't exist)`);
+          continue;
+        }
 
-        // Debug: Log total items found
-        console.log(`[Gallery] Loaded ${items.length} ${mediaType} from ${folderPath}`);
+        if (data) {
+          const items: MediaItem[] = data
+            .filter(file => {
+              if (file.name.startsWith('.')) return false;
+
+              const ext = file.name.split('.').pop()?.toLowerCase() || '';
+              if (mediaType === 'images') {
+                return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+              } else {
+                return ['pdf'].includes(ext);
+              }
+            })
+            .map(file => {
+              const { data: urlData } = supabase.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(`${folderPath}/${file.name}`);
+
+              console.log(`[Gallery] Found ${file.name} at ${folderPath}:`, urlData.publicUrl);
+
+              return {
+                name: file.name,
+                url: urlData.publicUrl,
+                category: activeCategory,
+                type: mediaType === 'images' ? 'image' : 'document',
+                size: file.metadata?.size,
+                created_at: file.created_at,
+              };
+            });
+
+          allItems.push(...items);
+        }
       }
+
+      setMedia(allItems);
+      console.log(`[Gallery] Total loaded: ${allItems.length} ${mediaType} for category ${activeCategory}`);
     } catch (err) {
       console.error('Error loading media:', err);
       setMedia([]);
