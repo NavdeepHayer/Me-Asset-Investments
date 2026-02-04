@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import { createPortal } from 'react-dom';
+import { useState, useEffect, useRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
@@ -35,6 +34,7 @@ interface ImagePickerProps {
 
 export function ImagePicker({ value, onChange, label = 'Image', required = false }: ImagePickerProps) {
   const { showToast } = useToast();
+  const fileInputId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'public' | 'uploaded'>('public');
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -42,18 +42,6 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
   const [uploading, setUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Handle upload button click - use setTimeout to decouple from modal events
-  const handleUploadClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (fileInputRef.current && !uploading) {
-      // Use setTimeout to ensure the click happens after all event handlers complete
-      setTimeout(() => {
-        fileInputRef.current?.click();
-      }, 100);
-    }
-  };
 
   // Load uploaded images from all Supabase storage buckets
   const loadUploadedImages = async () => {
@@ -170,28 +158,8 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
     setSelectedImage('');
   };
 
-  // File input rendered via portal at document body level to avoid modal event issues
-  const fileInputPortal = createPortal(
-    <input
-      ref={fileInputRef}
-      type="file"
-      accept="image/*"
-      onChange={handleUpload}
-      style={{
-        position: 'fixed',
-        top: '-9999px',
-        left: '-9999px',
-        opacity: 0,
-        pointerEvents: 'none',
-      }}
-      tabIndex={-1}
-    />,
-    document.body
-  );
-
   return (
     <div>
-      {fileInputPortal}
 
       <label className="block text-xs font-medium text-white/60 mb-1">
         {label} {required && '*'}
@@ -301,15 +269,22 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
                 </button>
               </div>
 
-              {/* Upload button (for uploaded tab) */}
+              {/* Upload section (for uploaded tab) - uses native label for reliability */}
               {activeTab === 'uploaded' && (
                 <div className="p-4 border-b border-white/10">
-                  <button
-                    type="button"
-                    onClick={handleUploadClick}
+                  <input
+                    ref={fileInputRef}
+                    id={fileInputId}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleUpload}
                     disabled={uploading}
-                    className={`inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors ${
-                      uploading ? 'opacity-50 cursor-not-allowed' : ''
+                    className="sr-only"
+                  />
+                  <label
+                    htmlFor={fileInputId}
+                    className={`inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors cursor-pointer ${
+                      uploading ? 'opacity-50 pointer-events-none' : ''
                     }`}
                   >
                     {uploading ? (
@@ -328,7 +303,7 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
                         Upload New Image
                       </>
                     )}
-                  </button>
+                  </label>
                   <span className="text-xs text-white/40 ml-3">Max 5MB</span>
                 </div>
               )}
