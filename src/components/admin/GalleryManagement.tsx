@@ -17,6 +17,7 @@ interface MediaItem {
   type: 'image' | 'document';
   size?: number;
   created_at?: string;
+  storagePath: string; // Full path in storage for deletion
 }
 
 type MediaType = 'images' | 'documents';
@@ -224,9 +225,10 @@ export function GalleryManagement() {
               }
             })
             .map(file => {
+              const fullPath = `${folderPath}/${file.name}`;
               const { data: urlData } = supabase.storage
                 .from(STORAGE_BUCKET)
-                .getPublicUrl(`${folderPath}/${file.name}`);
+                .getPublicUrl(fullPath);
 
               console.log(`[Gallery] Found ${file.name} at ${folderPath}:`, urlData.publicUrl);
 
@@ -237,6 +239,7 @@ export function GalleryManagement() {
                 type: mediaType === 'images' ? 'image' : 'document',
                 size: file.metadata?.size,
                 created_at: file.created_at,
+                storagePath: fullPath, // Store actual path for deletion
               };
             });
 
@@ -372,8 +375,9 @@ export function GalleryManagement() {
       const item = media.find(m => m.url === url);
       if (!item) continue;
 
-      const folderPath = mediaType === 'images' ? `images/${activeCategory}` : activeCategory;
-      const filePath = `${folderPath}/${item.name}`;
+      // Use the stored path where the file was actually found
+      const filePath = item.storagePath;
+      console.log(`[Gallery Delete] Deleting file at path: ${filePath}`);
 
       const { error } = await supabase.storage
         .from(STORAGE_BUCKET)
