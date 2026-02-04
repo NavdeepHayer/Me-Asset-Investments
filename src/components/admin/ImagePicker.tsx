@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
@@ -34,6 +34,7 @@ interface ImagePickerProps {
 
 export function ImagePicker({ value, onChange, label = 'Image', required = false }: ImagePickerProps) {
   const { showToast } = useToast();
+  const uniqueId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'public' | 'uploaded'>('public');
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -41,6 +42,13 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
   const [uploading, setUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle upload button click
+  const handleUploadClick = () => {
+    if (fileInputRef.current && !uploading) {
+      fileInputRef.current.click();
+    }
+  };
 
   // Load uploaded images from all Supabase storage buckets
   const loadUploadedImages = async () => {
@@ -275,12 +283,14 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
                     type="file"
                     accept="image/*"
                     onChange={handleUpload}
-                    className="hidden"
-                    id="image-upload"
+                    style={{ position: 'absolute', left: '-9999px', opacity: 0 }}
+                    id={`image-upload-${uniqueId}`}
                   />
-                  <label
-                    htmlFor="image-upload"
-                    className={`inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors cursor-pointer ${
+                  <button
+                    type="button"
+                    onClick={handleUploadClick}
+                    disabled={uploading}
+                    className={`inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-sm font-medium transition-colors ${
                       uploading ? 'opacity-50 cursor-not-allowed' : ''
                     }`}
                   >
@@ -300,7 +310,7 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
                         Upload New Image
                       </>
                     )}
-                  </label>
+                  </button>
                   <span className="text-xs text-white/40 ml-3">Max 5MB</span>
                 </div>
               )}
