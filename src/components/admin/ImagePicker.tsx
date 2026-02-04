@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useId } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
@@ -34,7 +34,6 @@ interface ImagePickerProps {
 
 export function ImagePicker({ value, onChange, label = 'Image', required = false }: ImagePickerProps) {
   const { showToast } = useToast();
-  const uniqueId = useId();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'public' | 'uploaded'>('public');
   const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
@@ -167,6 +166,17 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
 
   return (
     <div>
+      {/* File input - placed outside modal to prevent event issues */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleUpload}
+        className="sr-only"
+        tabIndex={-1}
+        aria-hidden="true"
+      />
+
       <label className="block text-xs font-medium text-white/60 mb-1">
         {label} {required && '*'}
       </label>
@@ -278,14 +288,6 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
               {/* Upload button (for uploaded tab) */}
               {activeTab === 'uploaded' && (
                 <div className="p-4 border-b border-white/10">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleUpload}
-                    style={{ position: 'absolute', left: '-9999px', opacity: 0 }}
-                    id={`image-upload-${uniqueId}`}
-                  />
                   <button
                     type="button"
                     onClick={handleUploadClick}
