@@ -345,6 +345,13 @@ export function GalleryManagement() {
 
   // Handle selection toggle
   const toggleSelection = (url: string) => {
+    const item = media.find(m => m.url === url);
+    if (item) {
+      console.log(`[Gallery Select] Selected: ${item.name}`);
+      console.log(`[Gallery Select] Storage path: ${item.storagePath}`);
+      console.log(`[Gallery Select] Full URL: ${item.url}`);
+    }
+
     const newSelected = new Set(selectedItems);
     if (newSelected.has(url)) {
       newSelected.delete(url);
@@ -373,20 +380,29 @@ export function GalleryManagement() {
 
     for (const url of selectedItems) {
       const item = media.find(m => m.url === url);
-      if (!item) continue;
+      if (!item) {
+        console.error(`[Gallery Delete] Could not find item for URL: ${url}`);
+        continue;
+      }
 
       // Use the stored path where the file was actually found
       const filePath = item.storagePath;
-      console.log(`[Gallery Delete] Deleting file at path: ${filePath}`);
+      console.log(`[Gallery Delete] Attempting to delete:`);
+      console.log(`  - Name: ${item.name}`);
+      console.log(`  - Storage Path: ${filePath}`);
+      console.log(`  - Bucket: ${STORAGE_BUCKET}`);
 
-      const { error } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from(STORAGE_BUCKET)
         .remove([filePath]);
 
+      console.log(`[Gallery Delete] Supabase response:`, { data, error });
+
       if (error) {
-        console.error('Delete error:', error);
+        console.error('[Gallery Delete] Delete error:', error);
         errorCount++;
       } else {
+        console.log(`[Gallery Delete] Successfully deleted: ${filePath}`);
         successCount++;
       }
     }
