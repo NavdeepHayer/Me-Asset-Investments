@@ -16,6 +16,15 @@ const PUBLIC_IMAGES = [
   '/images/projects/swansea.jpeg',
 ];
 
+// Supabase storage buckets to load images from
+const STORAGE_BUCKETS = ['news-images', 'news-content'];
+
+interface UploadedImage {
+  url: string;
+  bucket: string;
+  name: string;
+}
+
 interface ImagePickerProps {
   value: string;
   onChange: (url: string) => void;
@@ -27,34 +36,55 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
   const { showToast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'public' | 'uploaded'>('public');
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const [uploadedImages, setUploadedImages] = useState<UploadedImage[]>([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load uploaded images from Supabase storage
+  // Load uploaded images from all Supabase storage buckets
   const loadUploadedImages = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase.storage
-        .from('news-images')
-        .list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+      const allImages: UploadedImage[] = [];
 
-      if (error) {
-        console.error('Error loading images:', error);
-        showToast('Failed to load uploaded images', 'error');
-      } else if (data) {
-        const urls = data
-          .filter(file => !file.name.startsWith('.'))
-          .map(file => {
-            const { data: urlData } = supabase.storage
-              .from('news-images')
-              .getPublicUrl(file.name);
-            return urlData.publicUrl;
-          });
-        setUploadedImages(urls);
+      for (const bucketName of STORAGE_BUCKETS) {
+        try {
+          const { data, error } = await supabase.storage
+            .from(bucketName)
+            .list('', { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+
+          if (error) {
+            console.error(`Error loading from ${bucketName}:`, error);
+            continue;
+          }
+
+          if (data) {
+            const images = data
+              .filter(file => {
+                // Only include image files
+                const ext = file.name.split('.').pop()?.toLowerCase();
+                return !file.name.startsWith('.') &&
+                       ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext || '');
+              })
+              .map(file => {
+                const { data: urlData } = supabase.storage
+                  .from(bucketName)
+                  .getPublicUrl(file.name);
+                return {
+                  url: urlData.publicUrl,
+                  bucket: bucketName,
+                  name: file.name,
+                };
+              });
+            allImages.push(...images);
+          }
+        } catch (err) {
+          console.error(`Error loading from ${bucketName}:`, err);
+        }
       }
+
+      setUploadedImages(allImages);
     } catch (err) {
       console.error('Error loading images:', err);
     }
@@ -283,7 +313,7 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
                   </div>
                 ) : (
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
-                    {(activeTab === 'public' ? PUBLIC_IMAGES : uploadedImages).map((url) => (
+                    {activeTab === 'public' && PUBLIC_IMAGES.map((url) => (
                       <button
                         key={url}
                         type="button"
@@ -302,6 +332,31 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
                             (e.target as HTMLImageElement).src = '/logo-icon.svg';
                           }}
                         />
+                      </button>
+                    ))}
+                    {activeTab === 'uploaded' && uploadedImages.map((image) => (
+                      <button
+                        key={image.url}
+                        type="button"
+                        onClick={() => setSelectedImage(image.url)}
+                        className={`aspect-square bg-white/5 border-2 overflow-hidden transition-all relative group ${
+                          selectedImage === image.url
+                            ? 'border-white ring-2 ring-white/30'
+                            : 'border-white/10 hover:border-white/30'
+                        }`}
+                      >
+                        <img
+                          src={image.url}
+                          alt=""
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.target as HTMLImageElement).src = '/logo-icon.svg';
+                          }}
+                        />
+                        {/* Bucket label */}
+                        <div className="absolute bottom-0 left-0 right-0 bg-black/60 text-white/70 text-[10px] px-1 py-0.5 truncate opacity-0 group-hover:opacity-100 transition-opacity">
+                          {image.bucket}
+                        </div>
                       </button>
                     ))}
                     {activeTab === 'uploaded' && uploadedImages.length === 0 && (
