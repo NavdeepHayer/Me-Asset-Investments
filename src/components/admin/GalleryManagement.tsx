@@ -39,6 +39,7 @@ export function GalleryManagement() {
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [imageLoadErrors, setImageLoadErrors] = useState(0);
 
   // Get current categories based on media type
   const currentCategories = mediaType === 'images' ? imageCategories : documentCategories;
@@ -104,6 +105,9 @@ export function GalleryManagement() {
               .from(STORAGE_BUCKET)
               .getPublicUrl(`${folderPath}/${file.name}`);
 
+            // Debug: Log the generated URL to help diagnose issues
+            console.log(`[Gallery] Generated URL for ${file.name}:`, urlData.publicUrl);
+
             return {
               name: file.name,
               url: urlData.publicUrl,
@@ -115,6 +119,9 @@ export function GalleryManagement() {
           });
 
         setMedia(items);
+
+        // Debug: Log total items found
+        console.log(`[Gallery] Loaded ${items.length} ${mediaType} from ${folderPath}`);
       }
     } catch (err) {
       console.error('Error loading media:', err);
@@ -127,6 +134,7 @@ export function GalleryManagement() {
   // Load media when category or type changes
   useEffect(() => {
     loadMedia();
+    setImageLoadErrors(0); // Reset error count when loading new media
   }, [activeCategory, mediaType]);
 
   // Handle media type change
@@ -330,6 +338,29 @@ export function GalleryManagement() {
         className="sr-only"
       />
 
+      {/* Warning Banner for Storage Access Issues */}
+      {imageLoadErrors > 0 && (
+        <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 text-amber-200">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div className="flex-1">
+              <p className="font-medium text-amber-100">Images not displaying? Your Supabase bucket may not be public.</p>
+              <p className="text-sm mt-1 text-amber-200/80">
+                To fix: Go to Supabase Dashboard → Storage → Select "news-content" bucket → Policies tab → Add a policy to allow public SELECT access, or make the bucket public.
+              </p>
+              <button
+                onClick={() => setImageLoadErrors(0)}
+                className="text-xs mt-2 text-amber-300 hover:text-amber-100 underline"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -490,13 +521,25 @@ export function GalleryManagement() {
                 onClick={() => toggleSelection(item.url)}
               >
                 {mediaType === 'images' ? (
-                  <div className="aspect-square bg-white/5 overflow-hidden">
+                  <div className="aspect-square bg-white/5 overflow-hidden relative">
                     <img
                       src={item.url}
                       alt={item.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/logo-icon.svg';
+                        console.error(`[Gallery] Failed to load image: ${item.url}`);
+                        const img = e.target as HTMLImageElement;
+                        img.src = '/logo-icon.svg';
+                        img.classList.add('opacity-30');
+                        setImageLoadErrors(prev => prev + 1);
+                        // Show error indicator
+                        const parent = img.parentElement;
+                        if (parent && !parent.querySelector('.error-indicator')) {
+                          const errorDiv = document.createElement('div');
+                          errorDiv.className = 'error-indicator absolute inset-0 flex items-center justify-center bg-red-500/10';
+                          errorDiv.innerHTML = '<span class="text-red-400 text-[9px] px-1 py-0.5 bg-black/60">Not public</span>';
+                          parent.appendChild(errorDiv);
+                        }
                       }}
                     />
                   </div>
