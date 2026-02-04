@@ -149,7 +149,7 @@ function TransitionBox({
 // This ensures hooks are always called consistently
 function FlowLines({ positions }: { positions: Positions }) {
   const { heroBottom, heroCenter, documentHeight, viewportHeight, graphics, team, mailing, news, isDesktop, transitionBoxes, mobileTransitionBoxes } = positions;
-  const [crane, blueprint, framework, skyline, completed] = graphics;
+  const [crane, blueprint, framework, skyline, completed, documentGraphic] = graphics;
   const scrollableHeight = documentHeight - viewportHeight;
 
   const { scrollYProgress } = useScroll();
@@ -196,6 +196,15 @@ function FlowLines({ positions }: { positions: Positions }) {
     return Math.max(0, Math.min(1, scrollY / scrollableHeight));
   }, [news, viewportHeight, scrollableHeight]);
 
+  // Helper: convert document graphic scroll to global percentage
+  const documentToGlobal = useCallback((localScroll: number) => {
+    if (!documentGraphic) return 0;
+    const elementHeight = documentGraphic.bottom - documentGraphic.top;
+    const scrollRange = elementHeight + viewportHeight;
+    const scrollY = localScroll * scrollRange + (documentGraphic.top - viewportHeight);
+    return Math.max(0, Math.min(1, scrollY / scrollableHeight));
+  }, [documentGraphic, viewportHeight, scrollableHeight]);
+
   // Helper: convert a Y position to scroll percentage (when that Y is in middle of viewport)
   const yToScrollProgress = useCallback((y: number) => {
     // When does this Y position reach the middle of the viewport?
@@ -220,14 +229,14 @@ function FlowLines({ positions }: { positions: Positions }) {
       frameworkToSkyline: [localToGlobal(skyline, -0.05), localToGlobal(skyline, 0.08)] as [number, number],
       // Skyline to Completed: route right around Projects to completed
       skylineToCompleted: [localToGlobal(skyline, 0.78), localToGlobal(completed, 0.08)] as [number, number],
-      // Completed to News: go left from completed to News section
-      completedToNews: [localToGlobal(completed, 0.78), newsToGlobal(0.3)] as [number, number],
-      // News to Team transition (replaces old newsToCompleted)
-      newsToTeam: [newsToGlobal(0.5), teamToGlobal(0.1)] as [number, number],
-      // Completed to Team: start after completed internal flow completes, draw through Team section
+      // Completed to Team: go left from completed to Team section (Team comes before News now)
       completedToTeam: [localToGlobal(completed, 0.78), teamToGlobal(0.6)] as [number, number],
-      // Team to Mailing box: start after team section, both sides animate together
-      teamToMailingBox: [teamToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
+      // Team to Document: from team section to document graphic
+      teamToDocument: [teamToGlobal(0.7), documentToGlobal(0.08)] as [number, number],
+      // Document to News: from document graphic to news section
+      documentToNews: [documentToGlobal(0.78), newsToGlobal(0.3)] as [number, number],
+      // News to Mailing box: start after news section, both sides animate together
+      newsToMailingBox: [newsToGlobal(0.7), mailingToGlobal(0.6)] as [number, number],
       // Mobile box animation ranges
       // Start when box enters viewport
       mobileBox1: [yToScrollProgress(mobileBox1Y) - 0.08, yToScrollProgress(mobileBox1Y) + 0.25] as [number, number],
@@ -243,10 +252,10 @@ function FlowLines({ positions }: { positions: Positions }) {
   const blueprintToFramework = useTransform(scrollYProgress, ranges.blueprintToFramework, [0, 1]);
   const frameworkToSkyline = useTransform(scrollYProgress, ranges.frameworkToSkyline, [0, 1]);
   const skylineToCompleted = useTransform(scrollYProgress, ranges.skylineToCompleted, [0, 1]);
-  const completedToNews = useTransform(scrollYProgress, ranges.completedToNews, [0, 1]);
-  const newsToTeam = useTransform(scrollYProgress, ranges.newsToTeam, [0, 1]);
   const completedToTeam = useTransform(scrollYProgress, ranges.completedToTeam, [0, 1]);
-  const teamToMailingBox = useTransform(scrollYProgress, ranges.teamToMailingBox, [0, 1]);
+  const teamToDocument = useTransform(scrollYProgress, ranges.teamToDocument, [0, 1]);
+  const documentToNews = useTransform(scrollYProgress, ranges.documentToNews, [0, 1]);
+  const newsToMailingBox = useTransform(scrollYProgress, ranges.newsToMailingBox, [0, 1]);
 
   // Mobile box path animations - start AFTER the graphic above finishes
   // This creates continuous flow: graphic completes → line flows to box → box draws
@@ -292,10 +301,7 @@ function FlowLines({ positions }: { positions: Positions }) {
   const skylineToProjectsTurnY = skyline.bottom + 30; // First turn - go right around Projects
   const skylineToCompletedTurnY = completed.top - 50; // Turn point to go toward completed
 
-  // News section routing (News is now AFTER Completed, goes LEFT)
-  const newsTop = news ? news.sectionTop : 0;
-  const newsBottom = news ? news.sectionBottom : 0;
-  const completedToNewsTurnY = news ? news.sectionTop - 30 : 0; // Turn point from completed to news
+  // News section is now after Team and Document graphics
 
   // For completed to team: go down center, around heading, then zigzag through team members
   const teamCenterX = team ? team.centerX : heroCenter; // Center of viewport
@@ -519,24 +525,8 @@ function FlowLines({ positions }: { positions: Positions }) {
               />
             </>
           )}
-          {/* Completed to News - goes LEFT to News section */}
-          {news && (
-            <motion.path
-              d={`M ${completed.centerX} ${completed.bottom}
-                  L ${completed.centerX} ${completedToNewsTurnY}
-                  L ${leftSideMarginX} ${completedToNewsTurnY}
-                  L ${leftSideMarginX} ${newsTop}
-                  L ${leftSideMarginX} ${newsBottom}`}
-              fill="none"
-              stroke="rgba(255,255,255,0.5)"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              filter="url(#glow-flow)"
-              style={{ pathLength: completedToNews }}
-            />
-          )}
-          {/* News to Team - from News section, around heading, zigzag through team members */}
+          {/* Completed to Team - goes LEFT to Team section (Team now comes before News) */}
+          {/* Completed to Team - from Completed section, around heading, zigzag through team members */}
           {team && team.members.length > 0 && (() => {
             const members = team.members;
             const firstMember = members[0];
@@ -547,11 +537,11 @@ function FlowLines({ positions }: { positions: Positions }) {
             // Build the zigzag path
             let pathSegments: string[] = [];
 
-            // Start from News section (left side) if news exists, otherwise from completed
-            const startY = news ? newsBottom : completed.bottom;
-            const startXPos = news ? leftSideMarginX : completed.centerX;
+            // Start from completed section
+            const startY = completed.bottom;
+            const startXPos = completed.centerX;
 
-            // From news/completed, around heading, to first member's side
+            // From completed, around heading, to first member's side
             pathSegments.push(
               `M ${startXPos} ${startY}`,
               `L ${startXPos} ${completedToTeamTurnY1}`,
@@ -579,7 +569,7 @@ function FlowLines({ positions }: { positions: Positions }) {
               }
             });
 
-            // End at mailing section (center bottom of team)
+            // End at team section bottom (will continue to document)
             const lastMember = members[members.length - 1];
             const lastX = lastMember.nameSide === 'left' ? teamLeftX : teamRightX;
             pathSegments.push(`L ${lastX} ${teamSectionBottom}`);
@@ -594,16 +584,51 @@ function FlowLines({ positions }: { positions: Positions }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#glow-flow)"
-                style={{ pathLength: news ? newsToTeam : completedToTeam }}
+                style={{ pathLength: completedToTeam }}
               />
             );
           })()}
-          {/* Mailing List Box - line splits and goes around both sides */}
-          {mailing && (
+          {/* Team to Document - from Team section to Document graphic */}
+          {documentGraphic && team && (
+            <motion.path
+              d={`M ${teamCenterX} ${teamSectionBottom}
+                  L ${teamCenterX} ${documentGraphic.top - 30}
+                  L ${documentGraphic.centerX} ${documentGraphic.top - 30}
+                  L ${documentGraphic.centerX} ${documentGraphic.top}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: teamToDocument }}
+            />
+          )}
+          {/* Document to News - from Document graphic to News section */}
+          {documentGraphic && news && (
+            <motion.path
+              d={`M ${documentGraphic.centerX} ${documentGraphic.bottom}
+                  L ${documentGraphic.centerX} ${news.sectionTop - 30}
+                  L ${leftSideMarginX} ${news.sectionTop - 30}
+                  L ${leftSideMarginX} ${news.sectionTop}
+                  L ${leftSideMarginX} ${news.sectionBottom}`}
+              fill="none"
+              stroke="rgba(255,255,255,0.5)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              filter="url(#glow-flow)"
+              style={{ pathLength: documentToNews }}
+            />
+          )}
+          {/* Mailing List Box - line splits and goes around both sides (connected from News section) */}
+          {mailing && news && (
             <>
-              {/* Left side of box: center → left → down → center */}
+              {/* Left side of box: from news bottom → center → left → down → center */}
               <motion.path
-                d={`M ${mailingCenterX} ${teamSectionBottom}
+                d={`M ${leftSideMarginX} ${news.sectionBottom}
+                    L ${leftSideMarginX} ${mailingTop - 20}
+                    L ${mailingCenterX} ${mailingTop - 20}
                     L ${mailingCenterX} ${mailingTop}
                     L ${mailingLeftX} ${mailingTop}
                     L ${mailingLeftX} ${mailingBottom}
@@ -614,11 +639,13 @@ function FlowLines({ positions }: { positions: Positions }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#glow-flow)"
-                style={{ pathLength: teamToMailingBox }}
+                style={{ pathLength: newsToMailingBox }}
               />
               {/* Right side of box: center → right → down → center */}
               <motion.path
-                d={`M ${mailingCenterX} ${teamSectionBottom}
+                d={`M ${leftSideMarginX} ${news.sectionBottom}
+                    L ${leftSideMarginX} ${mailingTop - 20}
+                    L ${mailingCenterX} ${mailingTop - 20}
                     L ${mailingCenterX} ${mailingTop}
                     L ${mailingRightX} ${mailingTop}
                     L ${mailingRightX} ${mailingBottom}
@@ -629,7 +656,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#glow-flow)"
-                style={{ pathLength: teamToMailingBox }}
+                style={{ pathLength: newsToMailingBox }}
               />
             </>
           )}
@@ -798,7 +825,7 @@ function FlowLines({ positions }: { positions: Positions }) {
               </>
             );
           })()}
-          {/* Mobile: No lines through News or Team sections - flow stops at building, mailing box draws independently */}
+          {/* Mobile: No lines through Team, Document, or News sections - flow stops at building, mailing box draws independently */}
           {/* Mailing List Box - draws box around contact section (mobile) */}
           {mailing && (
             <>
@@ -814,7 +841,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#glow-flow)"
-                style={{ pathLength: teamToMailingBox }}
+                style={{ pathLength: newsToMailingBox }}
               />
               {/* Right side of box */}
               <motion.path
@@ -828,7 +855,7 @@ function FlowLines({ positions }: { positions: Positions }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 filter="url(#glow-flow)"
-                style={{ pathLength: teamToMailingBox }}
+                style={{ pathLength: newsToMailingBox }}
               />
             </>
           )}
@@ -941,7 +968,7 @@ export function PageFlowLine() {
     const isDesktop = window.innerWidth >= 1024;
 
     // Find all graphics in order
-    const graphicIds = ['crane', 'blueprint', 'framework', 'skyline', 'completed'];
+    const graphicIds = ['crane', 'blueprint', 'framework', 'skyline', 'completed', 'document'];
     const graphics: GraphicPosition[] = [];
 
     graphicIds.forEach(id => {
@@ -1097,7 +1124,7 @@ export function PageFlowLine() {
     // Calculate transition box positions
     const transitionBoxes: TransitionBoxConfig[] = [];
 
-    if (graphics.length >= 5) {
+    if (graphics.length >= 6) {
       const [crane, blueprint, framework, skyline, completed] = graphics;
 
       // Turn Y positions (same as in FlowLines component)
@@ -1147,7 +1174,7 @@ export function PageFlowLine() {
     // Calculate mobile transition box positions (within section, right after graphic)
     const mobileTransitionBoxes: TransitionBoxConfig[] = [];
 
-    if (graphics.length >= 5 && !isDesktop) {
+    if (graphics.length >= 6 && !isDesktop) {
       const [crane, blueprint, framework, skyline] = graphics;
 
       // Mobile boxes positioned just below each graphic (within same section)
@@ -1240,7 +1267,7 @@ export function PageFlowLine() {
     };
   }, [calculate]);
 
-  if (!positions || positions.graphics.length < 5) return null;
+  if (!positions || positions.graphics.length < 6) return null;
 
   return <FlowLines positions={positions} />;
 }

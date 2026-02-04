@@ -13,6 +13,7 @@ interface NewsItem {
   external_link: string | null;
   display_order: number;
   visible: boolean;
+  image_url: string | null;
 }
 
 interface NewsCardProps {
@@ -64,56 +65,69 @@ function NewsCard({ item, index }: NewsCardProps) {
       className="h-full"
       style={{ opacity, x }}
     >
-      <div className="group h-full border border-white/10 hover:border-white/25 transition-all duration-500 p-6 sm:p-8 flex flex-col">
-        {/* Date */}
-        <p className="text-sm text-white/40 tracking-wider mb-4">
-          {formatDate(item.date)}
-        </p>
+      <div className="group h-full border border-white/10 hover:border-white/25 transition-all duration-500 flex flex-col overflow-hidden">
+        {/* Featured Image */}
+        {item.image_url && (
+          <div className="aspect-[16/10] overflow-hidden bg-white/5">
+            <img
+              src={item.image_url}
+              alt={item.headline}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+            />
+          </div>
+        )}
 
-        {/* Headline */}
-        <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-light text-white/90 mb-4 tracking-wide leading-tight">
-          {item.headline}
-        </h3>
-
-        {/* Excerpt */}
-        {item.excerpt && (
-          <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed mb-4 flex-grow">
-            {item.excerpt}
+        <div className="p-6 sm:p-8 flex flex-col flex-grow">
+          {/* Date */}
+          <p className="text-sm text-white/40 tracking-wider mb-4">
+            {formatDate(item.date)}
           </p>
-        )}
 
-        {/* Quote */}
-        {item.quote && (
-          <blockquote className="border-l-2 border-white/20 pl-4 my-4">
-            <p className="font-serif text-base sm:text-lg text-white/50 italic">
-              "{item.quote}"
+          {/* Headline */}
+          <h3 className="font-serif text-xl sm:text-2xl lg:text-3xl font-light text-white/90 mb-4 tracking-wide leading-tight">
+            {item.headline}
+          </h3>
+
+          {/* Excerpt */}
+          {item.excerpt && (
+            <p className="text-base sm:text-lg text-white/60 font-light leading-relaxed mb-4 flex-grow">
+              {item.excerpt}
             </p>
-          </blockquote>
-        )}
+          )}
 
-        {/* CTA Link */}
-        <div className="mt-auto pt-4">
-          <a
-            href={linkUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-white/70 hover:text-white/90 transition-colors duration-300 group/link"
-          >
-            <span className="text-sm tracking-[0.15em] uppercase">{ctaText}</span>
-            <svg
-              className="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+          {/* Quote */}
+          {item.quote && (
+            <blockquote className="border-l-2 border-white/20 pl-4 my-4">
+              <p className="font-serif text-base sm:text-lg text-white/50 italic">
+                "{item.quote}"
+              </p>
+            </blockquote>
+          )}
+
+          {/* CTA Link */}
+          <div className="mt-auto pt-4">
+            <a
+              href={linkUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-white/70 hover:text-white/90 transition-colors duration-300 group/link"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
-          </a>
+              <span className="text-sm tracking-[0.15em] uppercase">{ctaText}</span>
+              <svg
+                className="w-4 h-4 transition-transform duration-300 group-hover/link:translate-x-1"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </svg>
+            </a>
+          </div>
         </div>
       </div>
     </motion.div>
