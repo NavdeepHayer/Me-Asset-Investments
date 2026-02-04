@@ -39,20 +39,124 @@ export function GalleryManagement() {
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [imageLoadErrors, setImageLoadErrors] = useState(0);
 
   // Get current categories based on media type
   const currentCategories = mediaType === 'images' ? imageCategories : documentCategories;
 
-  // Load categories from localStorage
+  // Auto-discover folders from Supabase storage
+  const discoverCategories = async () => {
+    try {
+      // Discover image folders by listing the 'images' directory
+      const { data: imageFolders, error: imgError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('images', { limit: 100 });
+
+      if (!imgError && imageFolders) {
+        // Filter for folders only (items without file extensions)
+        const discoveredImageFolders = imageFolders
+          .filter(item => !item.name.includes('.') && item.name !== '.emptyFolderPlaceholder')
+          .map(item => item.name);
+
+        // Merge with defaults, keeping unique values
+        const mergedImageCats = [...new Set([...DEFAULT_IMAGE_CATEGORIES, ...discoveredImageFolders])];
+        setImageCategories(mergedImageCats);
+        console.log('[Gallery] Discovered image categories:', mergedImageCats);
+      }
+
+      // Also check root level for legacy folders
+      const { data: rootFolders, error: rootError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('', { limit: 100 });
+
+      if (!rootError && rootFolders) {
+        const rootImageFolders = rootFolders
+          .filter(item => {
+            // Exclude known non-image folders and files
+            if (item.name.includes('.')) return false;
+            if (item.name === 'images' || item.name === 'pdfs') return false;
+            if (item.name === '.emptyFolderPlaceholder') return false;
+            return true;
+          })
+          .map(item => item.name);
+
+        if (rootImageFolders.length > 0) {
+          setImageCategories(prev => [...new Set([...prev, ...rootImageFolders])]);
+          console.log('[Gallery] Discovered root-level folders:', rootImageFolders);
+        }
+      }
+
+      // Discover document folders
+      const { data: docFolders, error: docError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('', { limit: 100 });
+
+      if (!docError && docFolders) {
+        const discoveredDocFolders = docFolders
+          .filter(item => {
+            if (item.name.includes('.')) return false;
+            if (item.name === 'images') return false;
+            if (item.name === '.emptyFolderPlaceholder') return false;
+            // Check if it's a known document folder or pdfs
+            return item.name === 'pdfs' || item.name.toLowerCase().includes('doc');
+          })
+          .map(item => item.name);
+
+        if (discoveredDocFolders.length > 0) {
+          const mergedDocCats = [...new Set([...DEFAULT_DOCUMENT_CATEGORIES, ...discoveredDocFolders])];
+          setDocumentCategories(mergedDocCats);
+        }
+      }
+    } catch (err) {
+      console.error('[Gallery] Error discovering categories:', err);
+    }
+  };
+
+  // Discover categories on mount and do a full bucket scan
+  useEffect(() => {
+    const init = async () => {
+      // First, let's see what's actually in the bucket root
+      console.log('[Gallery Init] Scanning bucket root...');
+      const { data: rootData, error: rootError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('', { limit: 100 });
+
+      if (rootError) {
+        console.error('[Gallery Init] Error scanning root:', rootError);
+      } else {
+        console.log('[Gallery Init] Bucket root contents:', rootData);
+      }
+
+      // Check the images folder
+      console.log('[Gallery Init] Scanning images folder...');
+      const { data: imagesData, error: imagesError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('images', { limit: 100 });
+
+      if (imagesError) {
+        console.error('[Gallery Init] Error scanning images folder:', imagesError);
+      } else {
+        console.log('[Gallery Init] Images folder contents:', imagesData);
+      }
+
+      // Now discover categories
+      discoverCategories();
+    };
+    init();
+  }, []);
+
+  // Load categories from localStorage (as backup/additions)
   useEffect(() => {
     const savedImageCats = localStorage.getItem('gallery_image_categories');
     const savedDocCats = localStorage.getItem('gallery_document_categories');
 
     if (savedImageCats) {
-      setImageCategories(JSON.parse(savedImageCats));
+      const saved = JSON.parse(savedImageCats);
+      setImageCategories(prev => [...new Set([...prev, ...saved])]);
     }
     if (savedDocCats) {
-      setDocumentCategories(JSON.parse(savedDocCats));
+      const saved = JSON.parse(savedDocCats);
+      setDocumentCategories(prev => [...new Set([...prev, ...saved])]);
     }
   }, []);
 
@@ -71,51 +175,77 @@ export function GalleryManagement() {
     setSelectedItems(new Set());
 
     try {
-      const folderPath = mediaType === 'images' ? `images/${activeCategory}` : activeCategory;
+      const allItems: MediaItem[] = [];
 
-      const { data, error } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .list(folderPath, {
-          limit: 100,
-          sortBy: { column: 'created_at', order: 'desc' }
-        });
+      // Check multiple paths for backwards compatibility with different upload locations
+      // Structure discovered: images can be at images/{category}/, {category}/, or directly in images/
+      let pathsToCheck: string[] = [];
 
-      if (error) {
-        console.error('Error loading media:', error);
-        setMedia([]);
-        setLoading(false);
-        return;
+      if (mediaType === 'images') {
+        pathsToCheck = [
+          `images/${activeCategory}`,  // New standard path: images/projects/, images/general/, etc.
+          activeCategory,              // Legacy path at root: projects/, general/, etc.
+        ];
+        // For 'general' category, also check the 'images' folder directly for loose images
+        if (activeCategory === 'general') {
+          pathsToCheck.push('images');  // Check images/ folder for files not in subfolders
+        }
+      } else {
+        pathsToCheck = [activeCategory];
       }
 
-      if (data) {
-        const items: MediaItem[] = data
-          .filter(file => {
-            if (file.name.startsWith('.')) return false;
+      for (const folderPath of pathsToCheck) {
+        console.log(`[Gallery Load] Checking path: ${folderPath}`);
 
-            const ext = file.name.split('.').pop()?.toLowerCase() || '';
-            if (mediaType === 'images') {
-              return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
-            } else {
-              return ['pdf'].includes(ext);
-            }
-          })
-          .map(file => {
-            const { data: urlData } = supabase.storage
-              .from(STORAGE_BUCKET)
-              .getPublicUrl(`${folderPath}/${file.name}`);
-
-            return {
-              name: file.name,
-              url: urlData.publicUrl,
-              category: activeCategory,
-              type: mediaType === 'images' ? 'image' : 'document',
-              size: file.metadata?.size,
-              created_at: file.created_at,
-            };
+        const { data, error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .list(folderPath, {
+            limit: 100,
+            sortBy: { column: 'created_at', order: 'desc' }
           });
 
-        setMedia(items);
+        if (error) {
+          console.log(`[Gallery Load] Error at ${folderPath}:`, error.message);
+          continue;
+        }
+
+        console.log(`[Gallery Load] Raw data from ${folderPath}:`, data);
+
+        if (data) {
+          const items: MediaItem[] = data
+            .filter(file => {
+              if (file.name.startsWith('.')) return false;
+
+              const ext = file.name.split('.').pop()?.toLowerCase() || '';
+              if (mediaType === 'images') {
+                return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+              } else {
+                return ['pdf'].includes(ext);
+              }
+            })
+            .map(file => {
+              const { data: urlData } = supabase.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(`${folderPath}/${file.name}`);
+
+              console.log(`[Gallery] Found ${file.name} at ${folderPath}:`, urlData.publicUrl);
+
+              return {
+                name: file.name,
+                url: urlData.publicUrl,
+                category: activeCategory,
+                type: mediaType === 'images' ? 'image' : 'document',
+                size: file.metadata?.size,
+                created_at: file.created_at,
+              };
+            });
+
+          allItems.push(...items);
+        }
       }
+
+      setMedia(allItems);
+      console.log(`[Gallery] Total loaded: ${allItems.length} ${mediaType} for category ${activeCategory}`);
     } catch (err) {
       console.error('Error loading media:', err);
       setMedia([]);
@@ -127,6 +257,7 @@ export function GalleryManagement() {
   // Load media when category or type changes
   useEffect(() => {
     loadMedia();
+    setImageLoadErrors(0); // Reset error count when loading new media
   }, [activeCategory, mediaType]);
 
   // Handle media type change
@@ -173,24 +304,30 @@ export function GalleryManagement() {
         const folderPath = mediaType === 'images' ? `images/${activeCategory}` : activeCategory;
         const filePath = `${folderPath}/${filename}`;
 
-        const { error } = await supabase.storage
+        console.log(`[Gallery Upload] Uploading to: ${filePath}`);
+
+        const { data, error } = await supabase.storage
           .from(STORAGE_BUCKET)
           .upload(filePath, file);
 
         if (error) {
-          console.error('Upload error:', error);
+          console.error('[Gallery Upload] Upload error:', error);
+          showToast(`Upload failed: ${error.message}`, 'error');
           errorCount++;
         } else {
+          console.log('[Gallery Upload] Upload successful:', data);
           successCount++;
         }
       } catch (err) {
-        console.error('Upload error:', err);
+        console.error('[Gallery Upload] Upload exception:', err);
         errorCount++;
       }
     }
 
     if (successCount > 0) {
       showToast(`${successCount} file(s) uploaded successfully`, 'success');
+      // Small delay to ensure Supabase has indexed the file
+      await new Promise(resolve => setTimeout(resolve, 500));
       loadMedia();
     }
     if (errorCount > 0) {
@@ -329,6 +466,29 @@ export function GalleryManagement() {
         multiple
         className="sr-only"
       />
+
+      {/* Warning Banner for Storage Access Issues */}
+      {imageLoadErrors > 0 && (
+        <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/30 text-amber-200">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <div className="flex-1">
+              <p className="font-medium text-amber-100">Images not displaying? Your Supabase bucket may not be public.</p>
+              <p className="text-sm mt-1 text-amber-200/80">
+                To fix: Go to Supabase Dashboard → Storage → Select "news-content" bucket → Policies tab → Add a policy to allow public SELECT access, or make the bucket public.
+              </p>
+              <button
+                onClick={() => setImageLoadErrors(0)}
+                className="text-xs mt-2 text-amber-300 hover:text-amber-100 underline"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -490,13 +650,25 @@ export function GalleryManagement() {
                 onClick={() => toggleSelection(item.url)}
               >
                 {mediaType === 'images' ? (
-                  <div className="aspect-square bg-white/5 overflow-hidden">
+                  <div className="aspect-square bg-white/5 overflow-hidden relative">
                     <img
                       src={item.url}
                       alt={item.name}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/logo-icon.svg';
+                        console.error(`[Gallery] Failed to load image: ${item.url}`);
+                        const img = e.target as HTMLImageElement;
+                        img.src = '/logo-icon.svg';
+                        img.classList.add('opacity-30');
+                        setImageLoadErrors(prev => prev + 1);
+                        // Show error indicator
+                        const parent = img.parentElement;
+                        if (parent && !parent.querySelector('.error-indicator')) {
+                          const errorDiv = document.createElement('div');
+                          errorDiv.className = 'error-indicator absolute inset-0 flex items-center justify-center bg-red-500/10';
+                          errorDiv.innerHTML = '<span class="text-red-400 text-[9px] px-1 py-0.5 bg-black/60">Not public</span>';
+                          parent.appendChild(errorDiv);
+                        }
                       }}
                     />
                   </div>

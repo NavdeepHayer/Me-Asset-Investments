@@ -43,11 +43,56 @@ export function ImagePicker({
   const [selectedImage, setSelectedImage] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load categories from localStorage
+  // Auto-discover folders from Supabase and merge with localStorage
   useEffect(() => {
-    const savedCats = localStorage.getItem('gallery_image_categories');
-    if (savedCats) {
-      setCategories(JSON.parse(savedCats));
+    const discoverAndLoadCategories = async () => {
+      let allCategories = [...DEFAULT_CATEGORIES];
+
+      // Load from localStorage first
+      const savedCats = localStorage.getItem('gallery_image_categories');
+      if (savedCats) {
+        allCategories = [...new Set([...allCategories, ...JSON.parse(savedCats)])];
+      }
+
+      // Discover folders from Supabase
+      try {
+        // Check 'images' folder for subfolders
+        const { data: imageFolders, error: imgError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .list('images', { limit: 100 });
+
+        if (!imgError && imageFolders) {
+          const discoveredFolders = imageFolders
+            .filter(item => !item.name.includes('.') && item.name !== '.emptyFolderPlaceholder')
+            .map(item => item.name);
+          allCategories = [...new Set([...allCategories, ...discoveredFolders])];
+        }
+
+        // Also check root level for legacy folders
+        const { data: rootFolders, error: rootError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .list('', { limit: 100 });
+
+        if (!rootError && rootFolders) {
+          const rootImageFolders = rootFolders
+            .filter(item => {
+              if (item.name.includes('.')) return false;
+              if (item.name === 'images' || item.name === 'pdfs') return false;
+              if (item.name === '.emptyFolderPlaceholder') return false;
+              return true;
+            })
+            .map(item => item.name);
+          allCategories = [...new Set([...allCategories, ...rootImageFolders])];
+        }
+      } catch (err) {
+        console.error('[ImagePicker] Error discovering categories:', err);
+      }
+
+      setCategories(allCategories);
+    };
+
+    if (isOpen) {
+      discoverAndLoadCategories();
     }
   }, [isOpen]);
 
@@ -57,24 +102,19 @@ export function ImagePicker({
     const allImages: GalleryImage[] = [];
 
     try {
-      // Load from each category
-      for (const category of categories) {
-        const folderPath = `images/${category}`;
+      // Also check the 'images' folder directly for loose images
+      const loosePaths = ['images'];
 
+      for (const loosePath of loosePaths) {
         const { data, error } = await supabase.storage
           .from(STORAGE_BUCKET)
-          .list(folderPath, {
+          .list(loosePath, {
             limit: 100,
             sortBy: { column: 'created_at', order: 'desc' }
           });
 
-        if (error) {
-          console.error(`Error loading images from ${category}:`, error);
-          continue;
-        }
-
-        if (data) {
-          const categoryImages = data
+        if (!error && data) {
+          const looseImages = data
             .filter(file => {
               if (file.name.startsWith('.')) return false;
               const ext = file.name.split('.').pop()?.toLowerCase() || '';
@@ -83,16 +123,57 @@ export function ImagePicker({
             .map(file => {
               const { data: urlData } = supabase.storage
                 .from(STORAGE_BUCKET)
-                .getPublicUrl(`${folderPath}/${file.name}`);
+                .getPublicUrl(`${loosePath}/${file.name}`);
 
               return {
                 url: urlData.publicUrl,
                 name: file.name,
-                category: category,
+                category: 'general', // Treat loose images as 'general'
               };
             });
 
-          allImages.push(...categoryImages);
+          allImages.push(...looseImages);
+        }
+      }
+
+      // Load from each category - check both new path (images/{category}) and legacy path ({category})
+      for (const category of categories) {
+        const pathsToCheck = [`images/${category}`, category];
+
+        for (const folderPath of pathsToCheck) {
+          const { data, error } = await supabase.storage
+            .from(STORAGE_BUCKET)
+            .list(folderPath, {
+              limit: 100,
+              sortBy: { column: 'created_at', order: 'desc' }
+            });
+
+          if (error) {
+            // Silent - path might not exist
+            continue;
+          }
+
+          if (data) {
+            const categoryImages = data
+              .filter(file => {
+                if (file.name.startsWith('.')) return false;
+                const ext = file.name.split('.').pop()?.toLowerCase() || '';
+                return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+              })
+              .map(file => {
+                const { data: urlData } = supabase.storage
+                  .from(STORAGE_BUCKET)
+                  .getPublicUrl(`${folderPath}/${file.name}`);
+
+                return {
+                  url: urlData.publicUrl,
+                  name: file.name,
+                  category: category,
+                };
+              });
+
+            allImages.push(...categoryImages);
+          }
         }
       }
 
