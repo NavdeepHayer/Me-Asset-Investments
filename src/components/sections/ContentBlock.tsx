@@ -1059,18 +1059,40 @@ function DocumentSignatureGraphic({ scrollProgress }: GraphicProps) {
         </filter>
       </defs>
 
-      {/* Flow line - enters from top, flows through document, exits bottom */}
+      {/* Flow line - splits around outside of document, meets at bottom */}
+      {/* Left side path: top center -> split left -> down left side -> bottom center */}
       <motion.path
         d="M 160 0
-           L 160 25
-           L 100 25
-           L 100 60
-           L 220 60
-           L 220 95
-           L 100 95
-           L 100 130
-           L 160 130
-           L 160 165
+           L 160 20
+           L 75 20
+           L 75 180
+           L 160 180"
+        fill="none"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#glow-document)"
+        style={{ pathLength: flowThrough }}
+      />
+      {/* Right side path: top center -> split right -> down right side -> bottom center */}
+      <motion.path
+        d="M 160 0
+           L 160 20
+           L 245 20
+           L 245 180
+           L 160 180"
+        fill="none"
+        stroke="rgba(255,255,255,0.5)"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        filter="url(#glow-document)"
+        style={{ pathLength: flowThrough }}
+      />
+      {/* Exit line from bottom center */}
+      <motion.path
+        d="M 160 180
            L 160 200"
         fill="none"
         stroke="rgba(255,255,255,0.5)"
