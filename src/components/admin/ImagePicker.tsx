@@ -57,6 +57,40 @@ export function ImagePicker({
     const allImages: GalleryImage[] = [];
 
     try {
+      // Also check the 'images' folder directly for loose images
+      const loosePaths = ['images'];
+
+      for (const loosePath of loosePaths) {
+        const { data, error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .list(loosePath, {
+            limit: 100,
+            sortBy: { column: 'created_at', order: 'desc' }
+          });
+
+        if (!error && data) {
+          const looseImages = data
+            .filter(file => {
+              if (file.name.startsWith('.')) return false;
+              const ext = file.name.split('.').pop()?.toLowerCase() || '';
+              return ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext);
+            })
+            .map(file => {
+              const { data: urlData } = supabase.storage
+                .from(STORAGE_BUCKET)
+                .getPublicUrl(`${loosePath}/${file.name}`);
+
+              return {
+                url: urlData.publicUrl,
+                name: file.name,
+                category: 'general', // Treat loose images as 'general'
+              };
+            });
+
+          allImages.push(...looseImages);
+        }
+      }
+
       // Load from each category - check both new path (images/{category}) and legacy path ({category})
       for (const category of categories) {
         const pathsToCheck = [`images/${category}`, category];

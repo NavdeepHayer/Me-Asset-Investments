@@ -74,10 +74,22 @@ export function GalleryManagement() {
     try {
       const allItems: MediaItem[] = [];
 
-      // Check both new path (images/{category}) and legacy path ({category}) for backwards compatibility
-      const pathsToCheck = mediaType === 'images'
-        ? [`images/${activeCategory}`, activeCategory] // New path first, then legacy
-        : [activeCategory];
+      // Check multiple paths for backwards compatibility with different upload locations
+      // Structure discovered: images can be at images/{category}/, {category}/, or directly in images/
+      let pathsToCheck: string[] = [];
+
+      if (mediaType === 'images') {
+        pathsToCheck = [
+          `images/${activeCategory}`,  // New standard path: images/projects/, images/general/, etc.
+          activeCategory,              // Legacy path at root: projects/, general/, etc.
+        ];
+        // For 'general' category, also check the 'images' folder directly for loose images
+        if (activeCategory === 'general') {
+          pathsToCheck.push('images');  // Check images/ folder for files not in subfolders
+        }
+      } else {
+        pathsToCheck = [activeCategory];
+      }
 
       for (const folderPath of pathsToCheck) {
         const { data, error } = await supabase.storage
