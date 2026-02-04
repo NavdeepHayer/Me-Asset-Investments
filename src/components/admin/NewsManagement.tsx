@@ -331,6 +331,7 @@ export function NewsManagement() {
                   onChange={(url) => setEditingNews({ ...editingNews, image_url: url })}
                   label="Featured Image"
                   required
+                  suggestedCategory="news"
                 />
 
                 <div className="grid grid-cols-2 gap-4">
