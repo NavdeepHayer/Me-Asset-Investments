@@ -44,16 +44,91 @@ export function GalleryManagement() {
   // Get current categories based on media type
   const currentCategories = mediaType === 'images' ? imageCategories : documentCategories;
 
-  // Load categories from localStorage
+  // Auto-discover folders from Supabase storage
+  const discoverCategories = async () => {
+    try {
+      // Discover image folders by listing the 'images' directory
+      const { data: imageFolders, error: imgError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('images', { limit: 100 });
+
+      if (!imgError && imageFolders) {
+        // Filter for folders only (items without file extensions)
+        const discoveredImageFolders = imageFolders
+          .filter(item => !item.name.includes('.') && item.name !== '.emptyFolderPlaceholder')
+          .map(item => item.name);
+
+        // Merge with defaults, keeping unique values
+        const mergedImageCats = [...new Set([...DEFAULT_IMAGE_CATEGORIES, ...discoveredImageFolders])];
+        setImageCategories(mergedImageCats);
+        console.log('[Gallery] Discovered image categories:', mergedImageCats);
+      }
+
+      // Also check root level for legacy folders
+      const { data: rootFolders, error: rootError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('', { limit: 100 });
+
+      if (!rootError && rootFolders) {
+        const rootImageFolders = rootFolders
+          .filter(item => {
+            // Exclude known non-image folders and files
+            if (item.name.includes('.')) return false;
+            if (item.name === 'images' || item.name === 'pdfs') return false;
+            if (item.name === '.emptyFolderPlaceholder') return false;
+            return true;
+          })
+          .map(item => item.name);
+
+        if (rootImageFolders.length > 0) {
+          setImageCategories(prev => [...new Set([...prev, ...rootImageFolders])]);
+          console.log('[Gallery] Discovered root-level folders:', rootImageFolders);
+        }
+      }
+
+      // Discover document folders
+      const { data: docFolders, error: docError } = await supabase.storage
+        .from(STORAGE_BUCKET)
+        .list('', { limit: 100 });
+
+      if (!docError && docFolders) {
+        const discoveredDocFolders = docFolders
+          .filter(item => {
+            if (item.name.includes('.')) return false;
+            if (item.name === 'images') return false;
+            if (item.name === '.emptyFolderPlaceholder') return false;
+            // Check if it's a known document folder or pdfs
+            return item.name === 'pdfs' || item.name.toLowerCase().includes('doc');
+          })
+          .map(item => item.name);
+
+        if (discoveredDocFolders.length > 0) {
+          const mergedDocCats = [...new Set([...DEFAULT_DOCUMENT_CATEGORIES, ...discoveredDocFolders])];
+          setDocumentCategories(mergedDocCats);
+        }
+      }
+    } catch (err) {
+      console.error('[Gallery] Error discovering categories:', err);
+    }
+  };
+
+  // Discover categories on mount
+  useEffect(() => {
+    discoverCategories();
+  }, []);
+
+  // Load categories from localStorage (as backup/additions)
   useEffect(() => {
     const savedImageCats = localStorage.getItem('gallery_image_categories');
     const savedDocCats = localStorage.getItem('gallery_document_categories');
 
     if (savedImageCats) {
-      setImageCategories(JSON.parse(savedImageCats));
+      const saved = JSON.parse(savedImageCats);
+      setImageCategories(prev => [...new Set([...prev, ...saved])]);
     }
     if (savedDocCats) {
-      setDocumentCategories(JSON.parse(savedDocCats));
+      const saved = JSON.parse(savedDocCats);
+      setDocumentCategories(prev => [...new Set([...prev, ...saved])]);
     }
   }, []);
 

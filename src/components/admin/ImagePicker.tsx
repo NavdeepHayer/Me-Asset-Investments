@@ -43,11 +43,56 @@ export function ImagePicker({
   const [selectedImage, setSelectedImage] = useState<string>(value);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load categories from localStorage
+  // Auto-discover folders from Supabase and merge with localStorage
   useEffect(() => {
-    const savedCats = localStorage.getItem('gallery_image_categories');
-    if (savedCats) {
-      setCategories(JSON.parse(savedCats));
+    const discoverAndLoadCategories = async () => {
+      let allCategories = [...DEFAULT_CATEGORIES];
+
+      // Load from localStorage first
+      const savedCats = localStorage.getItem('gallery_image_categories');
+      if (savedCats) {
+        allCategories = [...new Set([...allCategories, ...JSON.parse(savedCats)])];
+      }
+
+      // Discover folders from Supabase
+      try {
+        // Check 'images' folder for subfolders
+        const { data: imageFolders, error: imgError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .list('images', { limit: 100 });
+
+        if (!imgError && imageFolders) {
+          const discoveredFolders = imageFolders
+            .filter(item => !item.name.includes('.') && item.name !== '.emptyFolderPlaceholder')
+            .map(item => item.name);
+          allCategories = [...new Set([...allCategories, ...discoveredFolders])];
+        }
+
+        // Also check root level for legacy folders
+        const { data: rootFolders, error: rootError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .list('', { limit: 100 });
+
+        if (!rootError && rootFolders) {
+          const rootImageFolders = rootFolders
+            .filter(item => {
+              if (item.name.includes('.')) return false;
+              if (item.name === 'images' || item.name === 'pdfs') return false;
+              if (item.name === '.emptyFolderPlaceholder') return false;
+              return true;
+            })
+            .map(item => item.name);
+          allCategories = [...new Set([...allCategories, ...rootImageFolders])];
+        }
+      } catch (err) {
+        console.error('[ImagePicker] Error discovering categories:', err);
+      }
+
+      setCategories(allCategories);
+    };
+
+    if (isOpen) {
+      discoverAndLoadCategories();
     }
   }, [isOpen]);
 
