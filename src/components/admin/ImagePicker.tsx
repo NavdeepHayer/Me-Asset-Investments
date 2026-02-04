@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabase';
 import { useToast } from '../ui/Toast';
@@ -169,18 +170,28 @@ export function ImagePicker({ value, onChange, label = 'Image', required = false
     setSelectedImage('');
   };
 
+  // File input rendered via portal at document body level to avoid modal event issues
+  const fileInputPortal = createPortal(
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept="image/*"
+      onChange={handleUpload}
+      style={{
+        position: 'fixed',
+        top: '-9999px',
+        left: '-9999px',
+        opacity: 0,
+        pointerEvents: 'none',
+      }}
+      tabIndex={-1}
+    />,
+    document.body
+  );
+
   return (
     <div>
-      {/* File input - placed outside modal to prevent event issues */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        onChange={handleUpload}
-        className="sr-only"
-        tabIndex={-1}
-        aria-hidden="true"
-      />
+      {fileInputPortal}
 
       <label className="block text-xs font-medium text-white/60 mb-1">
         {label} {required && '*'}
