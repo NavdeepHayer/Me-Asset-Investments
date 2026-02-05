@@ -1164,7 +1164,7 @@ export function PageFlowLine() {
       // Box 4: Skyline to Completed (on second horizontal segment, turns LEFT after Projects)
       transitionBoxes.push({
         id: 'skyline-to-completed',
-        label: 'Management',
+        label: 'Projects',
         centerX: (sideMarginX + completed.centerX) / 2,
         centerY: skylineToCompletedTurnY2,
         turnDirection: 'left'
@@ -1215,7 +1215,7 @@ export function PageFlowLine() {
       // Box 4: After Skyline (within skyline section)
       mobileTransitionBoxes.push({
         id: 'mobile-skyline-to-completed',
-        label: 'Management',
+        label: 'Projects',
         centerX: pageCenter,
         centerY: skyline.bottom + boxOffset,
         turnDirection: 'left',
