@@ -50,7 +50,7 @@ export function Footer() {
   return (
     <>
       <footer className="py-6 md:py-8">
-        <div className="container-editorial">
+        <div className="w-full mx-auto px-6 md:px-12 lg:px-20">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 text-xs tracking-[0.15em] uppercase text-white/30">
             <div>
               &copy; {currentYear} {footer.copyright}
