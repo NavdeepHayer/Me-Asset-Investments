@@ -172,6 +172,11 @@ export const siteContent = {
       email: "verender@meassetmanagement.com",
       person: "Verender Badial",
     },
+    address: {
+      line1: "14 Little Portland Street",
+      city: "London",
+      postcode: "W1W 8BN",
+    },
   },
 };
 
