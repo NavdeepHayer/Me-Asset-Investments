@@ -50,15 +50,20 @@ export function Footer() {
   return (
     <>
       <footer className="py-6 md:py-8">
-        <div className="w-full mx-auto px-6 md:px-12 lg:px-20">
+        <div className="container-editorial">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 text-xs tracking-[0.15em] uppercase text-white/30">
             <div>
               &copy; {currentYear} {footer.copyright}
             </div>
             <address className="not-italic leading-relaxed">
-              {footer.address.line1}<br />
-              {footer.address.city}<br />
-              {footer.address.postcode}
+              <span className="md:hidden">
+                {footer.address.line1}<br />
+                {footer.address.city}<br />
+                {footer.address.postcode}
+              </span>
+              <span className="hidden md:inline">
+                {footer.address.line1}, {footer.address.city}, {footer.address.postcode}
+              </span>
             </address>
             <div className="flex items-center gap-6">
               <a
